@@ -14,7 +14,8 @@ public class Consulta {
 	private Paciente paciente;
 	private ArrayList<Enfermedad> enfermedadesDiag;
 
-	public Consulta(LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico, Paciente paciente) {
+	public Consulta(String codigo_cons,LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico, Paciente paciente) {
+		
 		this.fechaConsulta = fechaConsulta;
 		this.sintomas = sintomas;
 		this.diagnostico = diagnostico;
@@ -22,6 +23,16 @@ public class Consulta {
 		this.paciente = paciente;
 		this.enfermedadesDiag = new ArrayList<>();
 		
+	}
+
+	
+	public String getCodigo_cons() {
+		return codigo_cons;
+	}
+
+
+	public void setCodigo_cons(String codigo_cons) {
+		this.codigo_cons = codigo_cons;
 	}
 
 
@@ -96,5 +107,7 @@ public class Consulta {
 		}
 		return false;
 	}
+
+
 
 }
