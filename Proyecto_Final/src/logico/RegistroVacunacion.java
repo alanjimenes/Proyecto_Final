@@ -4,12 +4,20 @@ import java.time.LocalDate;
 
 public class RegistroVacunacion {
 
+	private String codigo_reg;
 	private Paciente paciente;
 	private Vacuna vacuna;
 	private LocalDate fecha;
 	private boolean aplicada;
 
+	public String getCodigo_reg() {
+		return codigo_reg;
+	}
 
+	public void setCodigo_reg(String codigo_reg) {
+		this.codigo_reg = codigo_reg;
+	}
+	
 	public Paciente getPaciente() {
 		return paciente;
 	}
@@ -49,4 +57,6 @@ public class RegistroVacunacion {
 		this.fecha = fecha;
 		this.aplicada = aplicada;
 	}
+
+	
 }
