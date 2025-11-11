@@ -6,26 +6,33 @@ public class RegistroVacunacion {
 
 	private Paciente paciente;
 	private Vacuna vacuna;
-	private LocalDate fechaAplicacion;
+	private LocalDate fecha;
 	private boolean aplicada;
 
-	public RegistroVacunacion(Paciente p, Vacuna v, LocalDate f, boolean a) {
-		this.paciente = p;
-		this.vacuna = v;
-		this.fechaAplicacion = f;
-		this.aplicada = a;
-	}
+
 
 	public Paciente getPaciente() {
 		return paciente;
+	}
+
+	public void setPaciente(Paciente paciente) {
+		this.paciente = paciente;
 	}
 
 	public Vacuna getVacuna() {
 		return vacuna;
 	}
 
-	public LocalDate getFechaAplicacion() {
-		return fechaAplicacion;
+	public void setVacuna(Vacuna vacuna) {
+		this.vacuna = vacuna;
+	}
+
+	public LocalDate getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(LocalDate fecha) {
+		this.fecha = fecha;
 	}
 
 	public boolean isAplicada() {
