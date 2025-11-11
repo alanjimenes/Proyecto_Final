@@ -10,7 +10,6 @@ public class RegistroVacunacion {
 	private boolean aplicada;
 
 
-
 	public Paciente getPaciente() {
 		return paciente;
 	}
@@ -40,6 +39,14 @@ public class RegistroVacunacion {
 	}
 
 	public void setAplicada(boolean aplicada) {
+		this.aplicada = aplicada;
+	}
+
+	public RegistroVacunacion(Paciente paciente, Vacuna vacuna, LocalDate fecha, boolean aplicada) {
+		super();
+		this.paciente = paciente;
+		this.vacuna = vacuna;
+		this.fecha = fecha;
 		this.aplicada = aplicada;
 	}
 }
