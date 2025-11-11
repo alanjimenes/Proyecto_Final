@@ -2,13 +2,12 @@ package logico;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Medico extends Persona {
 
 	private Especialidad especialidad;
 	private int maxCitasPorDia;
-	private List<Consulta> consultasRealizadas;
+	private ArrayList<Consulta> consultasRealizadas;
 
 	public Medico(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
 			Especialidad especialidad) {
@@ -34,7 +33,7 @@ public class Medico extends Persona {
 		this.maxCitasPorDia = maxCitasPorDia;
 	}
 
-	public List<Consulta> getConsultasRealizadas() {
+	public ArrayList<Consulta> getConsultasRealizadas() {
 		return consultasRealizadas;
 	}
 
