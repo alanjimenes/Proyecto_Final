@@ -14,6 +14,8 @@ public class Clinica {
 	private int genCodigoCita = 1;
 	private int genCodigoConsulta = 1;
 
+	private static Medico medicoIniciado;
+
 
 	public Clinica() {
 		this.pacientes = new ArrayList<>();
@@ -21,6 +23,7 @@ public class Clinica {
 		this.enfermedades = new ArrayList<>();
 		this.vacunas = new ArrayList<>();
 		this.citas = new ArrayList<>();
+		medicoIniciado = null;
 	}
 
 	//FALTAN LOS GETTERS AND SETTERS
@@ -69,6 +72,26 @@ public class Clinica {
 
 	public void modificarCita(Cita cita) {
 
+	}
+
+	//LOGIN
+
+	public static Medico getMedicoLogueado() {
+		return medicoIniciado;
+	}
+
+	public static void logoutMedico() {
+		medicoIniciado = null;
+	}
+
+	public boolean loginMedico(String cedula, String password) {
+		for (Medico medico : medicos) {
+			if (medico.getCedula().equals(cedula) && medico.getPassword().equals(password)) {
+				medicoIniciado = medico; 
+				return true;
+			}
+		}
+		return false; 
 	}
 
 }

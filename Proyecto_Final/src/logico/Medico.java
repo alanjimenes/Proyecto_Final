@@ -1,20 +1,24 @@
 package logico;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Medico extends Persona {
+public class Medico extends Persona implements Serializable {
 
 	private Especialidad especialidad;
 	private int maxCitasPorDia;
 	private ArrayList<Consulta> consultasRealizadas;
 
+	private String password;
+
 	public Medico(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			Especialidad especialidad) {
+			Especialidad especialidad, String password) {
 		super(cedula, nombre, apellido, fechaNacimiento, telefono);
 		this.especialidad = especialidad;
 		this.maxCitasPorDia = 10; 
 		this.consultasRealizadas = new ArrayList<>();
+		this.password = password;
 	}
 
 	public Especialidad getEspecialidad() {
@@ -39,5 +43,17 @@ public class Medico extends Persona {
 
 	public void agregarConsultaRealizada(Consulta consulta) {
 		this.consultasRealizadas.add(consulta);
+	}
+
+	public void setConsultasRealizadas(ArrayList<Consulta> consultasRealizadas) {
+		this.consultasRealizadas = consultasRealizadas;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }
