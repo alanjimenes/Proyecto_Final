@@ -15,17 +15,17 @@ public class Consulta {
 	private ArrayList<Enfermedad> enfermedadesDiag;
 
 	public Consulta(String codigo_cons,LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico, Paciente paciente) {
-		
+
 		this.fechaConsulta = fechaConsulta;
 		this.sintomas = sintomas;
 		this.diagnostico = diagnostico;
 		this.medico = medico;
 		this.paciente = paciente;
 		this.enfermedadesDiag = new ArrayList<>();
-		
+
 	}
 
-	
+
 	public String getCodigo_cons() {
 		return codigo_cons;
 	}
@@ -101,7 +101,7 @@ public class Consulta {
 
 	public boolean  bajoVigilancia() {
 		for (Enfermedad e : enfermedadesDiag) {
-			if (e.isBajoVigilancia()) {
+			if (e.isVigilancia()) {
 				return true;
 			}
 		}
