@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -46,7 +47,10 @@ public class Principal extends JFrame {
 		dim = super.getToolkit().getScreenSize(); 
 		super.setSize(dim.width, dim.height-100);
 		setLocationRelativeTo(null);
-		
+	
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
 	}
+	
 
 }
