@@ -13,7 +13,6 @@ public class Clinica {
 	private ArrayList<Vacuna> vacunas;
 	private ArrayList<Cita> citas;
 
-	private static Medico medicoIniciado;
 	private static Clinica instancia;
 
 
@@ -23,16 +22,17 @@ public class Clinica {
 		this.enfermedades = new ArrayList<>();
 		this.vacunas = new ArrayList<>();
 		this.citas = new ArrayList<>();
-		medicoIniciado = null;
 	}
 
 
 
-	public static Clinica getInstance() {
-		if (instancia == null) {
-			instancia = new Clinica();
-		}
+	public static Clinica getInstancia() {
 		return instancia;
+
+	}
+
+	public static void setInstancia(Clinica instancia) {
+		Clinica.instancia = instancia;
 	}
 
 	public void insertarPaciente(Paciente pac) {
@@ -129,31 +129,7 @@ public class Clinica {
 	}
 
 
-	public static Medico getMedicoIniciado() {
-		return medicoIniciado;
-	}
 
-
-	public static void setMedicoIniciado(Medico medicoIniciado) {
-		Clinica.medicoIniciado = medicoIniciado;
-	}
-
-
-
-
-	public static Clinica getInstancia() {
-		return instancia;
-
-	}
-
-
-	public static void setInstancia(Clinica instancia) {
-			Clinica.instancia = instancia;
-		}
-
-
-
-		/*
 	public Paciente buscarPacienteCedula(String cedula){
 
 	}
@@ -175,6 +151,5 @@ public class Clinica {
 	public void modificarCita(Cita cita) {
 
 	}
-		 */
 
-	}
+}
