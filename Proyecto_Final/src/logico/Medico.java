@@ -9,12 +9,11 @@ public class Medico extends Persona implements Serializable {
 	private Especialidad especialidad;
 	private int maxCitasPorDia;
 	private ArrayList<Consulta> consultasRealizadas;
-
 	private String password;
 
 	public Medico(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
 			Especialidad especialidad, String password) {
-		super(cedula, nombre, apellido, fechaNacimiento, telefono);
+		super(cedula, nombre, apellido, fechaNacimiento, telefono, password);
 		this.especialidad = especialidad;
 		this.maxCitasPorDia = 10; 
 		this.consultasRealizadas = new ArrayList<>();

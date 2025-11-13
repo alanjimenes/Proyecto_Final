@@ -50,7 +50,7 @@ public class RegistroVacunacion {
 		this.aplicada = aplicada;
 	}
 
-	public RegistroVacunacion(Paciente paciente, Vacuna vacuna, LocalDate fecha, boolean aplicada) {
+	public RegistroVacunacion(Cliente cliente, Vacuna vacuna, LocalDate fecha, boolean aplicada) {
 		super();
 		this.paciente = paciente;
 		this.vacuna = vacuna;
