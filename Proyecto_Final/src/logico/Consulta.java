@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Consulta {
 
 	private String codigo_cons;
-	private transient LocalDate fechaConsulta;
+	private LocalDate fechaConsulta;
 	private String sintomas;
 	private String diagnostico;
 	private Medico medico;

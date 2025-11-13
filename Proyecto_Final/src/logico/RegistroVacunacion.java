@@ -7,7 +7,7 @@ public class RegistroVacunacion {
 	private String codigo_reg;
 	private Paciente paciente;
 	private Vacuna vacuna;
-	private transient LocalDate fecha;
+	private LocalDate fecha;
 	private boolean aplicada;
 
 	public RegistroVacunacion(Paciente paciente, Vacuna vacuna, LocalDate fecha, boolean aplicada) {

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class Cita {
 
 	private String codigo_cita;
-	private transient LocalDateTime fechaHora;
+	private LocalDateTime fechaHora;
 	private Paciente paciente;
 	private Medico medico;
 	private String estado;
