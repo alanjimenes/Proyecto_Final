@@ -5,6 +5,9 @@ import java.util.ArrayList;
 
 public class Paciente extends Persona {
 
+	private String numExpediente;
+	private ArrayList<Cita> citas;
+
 	public Paciente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
 			String direccion, Historial historial, boolean enfermo, ArrayList<RegistroVacunacion> regVacunas) {
 		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion, historial, enfermo, regVacunas);
@@ -12,10 +15,6 @@ public class Paciente extends Persona {
 		this.citas = new ArrayList<>();
 
 	}
-
-	private String numExpediente;
-	private ArrayList<Cita> citas;
-
 
 	public String getNumExpediente() {
 		return numExpediente;
