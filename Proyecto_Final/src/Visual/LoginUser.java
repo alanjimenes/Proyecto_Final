@@ -62,7 +62,7 @@ public class LoginUser extends JDialog {
 
 		txtCedula = new JTextField();
 		txtCedula.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		txtCedula.setBounds(238, 36, 200, 22);
+		txtCedula.setBounds(223, 35, 200, 22);
 		contentPanel.add(txtCedula);
 		txtCedula.setColumns(10);
 
@@ -72,7 +72,7 @@ public class LoginUser extends JDialog {
 		contentPanel.add(lblPassword);
 
 		passwordField = new JPasswordField();
-		passwordField.setBounds(235, 96, 203, 22);
+		passwordField.setBounds(185, 96, 203, 22);
 		contentPanel.add(passwordField);
 
 		JPanel buttonPane = new JPanel();
