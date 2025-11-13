@@ -7,10 +7,18 @@ import java.util.ArrayList;
 public class Paciente extends Persona {
 
 	private String numExpediente;
-
 	private Historial historial;
 	private ArrayList<Cita> citas;
 	private ArrayList<RegistroVacunacion> regVacunas;
+
+	public Paciente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
+			String numExpediente, Historial historial, ArrayList<Cita> citas, ArrayList<RegistroVacunacion> regVacunas) {
+		super(cedula, nombre, apellido, fechaNacimiento, telefono);
+		this.numExpediente = numExpediente;
+		this.setHistorial(historial);
+		this.citas = citas;
+		this.regVacunas = regVacunas;
+	}
 
 
 	public String getNumExpediente() {
@@ -52,14 +60,6 @@ public class Paciente extends Persona {
 		this.historial = historial;
 	}
 
-	public Paciente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			String numExpediente, Historial historial, ArrayList<Cita> citas, ArrayList<RegistroVacunacion> regVacunas) {
-		super(cedula, nombre, apellido, fechaNacimiento, telefono);
-		this.numExpediente = numExpediente;
-		this.setHistorial(historial);
-		this.citas = citas;
-		this.regVacunas = regVacunas;
-	}
 	public void regVacuna(Vacuna vacuna, LocalDate fecha) {
 		RegistroVacunacion registro = new RegistroVacunacion(this, vacuna, fecha, true);
 		this.regVacunas.add(registro);

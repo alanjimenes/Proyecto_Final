@@ -4,12 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Consulta {
+
 	private String codigo_cons;
-	private LocalDate fechaConsulta;
+	private transient LocalDate fechaConsulta;
 	private String sintomas;
 	private String diagnostico;
-
-
 	private Medico medico;
 	private Paciente paciente;
 	private ArrayList<Enfermedad> enfermedadesDiag;
@@ -25,71 +24,57 @@ public class Consulta {
 
 	}
 
-
 	public String getCodigo_cons() {
 		return codigo_cons;
 	}
-
 
 	public void setCodigo_cons(String codigo_cons) {
 		this.codigo_cons = codigo_cons;
 	}
 
-
 	public LocalDate getFechaConsulta() {
 		return fechaConsulta;
 	}
-
 
 	public void setFechaConsulta(LocalDate fechaConsulta) {
 		this.fechaConsulta = fechaConsulta;
 	}
 
-
 	public String getSintomas() {
 		return sintomas;
 	}
-
 
 	public void setSintomas(String sintomas) {
 		this.sintomas = sintomas;
 	}
 
-
 	public String getDiagnostico() {
 		return diagnostico;
 	}
-
 
 	public void setDiagnostico(String diagnostico) {
 		this.diagnostico = diagnostico;
 	}
 
-
 	public Medico getMedico() {
 		return medico;
 	}
-
 
 	public void setMedico(Medico medico) {
 		this.medico = medico;
 	}
 
-
 	public Paciente getPaciente() {
 		return paciente;
 	}
-
 
 	public void setPaciente(Paciente paciente) {
 		this.paciente = paciente;
 	}
 
-
 	public ArrayList<Enfermedad> getEnfermedadesDiag() {
 		return enfermedadesDiag;
 	}
-
 
 	public void setEnfermedadesDiag(ArrayList<Enfermedad> enfermedadesDiag) {
 		this.enfermedadesDiag = enfermedadesDiag;
@@ -107,7 +92,4 @@ public class Consulta {
 		}
 		return false;
 	}
-
-
-
 }

@@ -5,14 +5,13 @@ import java.time.LocalDateTime;
 public class Cita {
 
 	private String codigo_cita;
-	private LocalDateTime fechaHora;
+	private transient LocalDateTime fechaHora;
 	private Paciente paciente;
 	private Medico medico;
 	private String estado;
 
-	public Cita(String codigo_cita, LocalDateTime fechaHora, Paciente paciente, Medico medico, String estado) {
+	public Cita(LocalDateTime fechaHora, Paciente paciente, Medico medico, String estado) {
 		super();
-		this.codigo_cita = codigo_cita;
 		this.fechaHora = fechaHora;
 		this.paciente = paciente;
 		this.medico = medico;

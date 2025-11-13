@@ -7,7 +7,7 @@ public class RegistroVacunacion {
 	private String codigo_reg;
 	private Paciente paciente;
 	private Vacuna vacuna;
-	private LocalDate fecha;
+	private transient LocalDate fecha;
 	private boolean aplicada;
 
 	public String getCodigo_reg() {
@@ -17,7 +17,7 @@ public class RegistroVacunacion {
 	public void setCodigo_reg(String codigo_reg) {
 		this.codigo_reg = codigo_reg;
 	}
-	
+
 	public Paciente getPaciente() {
 		return paciente;
 	}
@@ -58,5 +58,5 @@ public class RegistroVacunacion {
 		this.aplicada = aplicada;
 	}
 
-	
+
 }
