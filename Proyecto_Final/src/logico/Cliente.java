@@ -1,8 +1,9 @@
 package logico;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
-public abstract class Persona {
+public abstract class Cliente {
 
 	protected String cedula;
 	protected String nombre;
@@ -10,8 +11,11 @@ public abstract class Persona {
 	protected LocalDate fechaNacimiento;
 	protected String telefono;
 	protected String direccion; 
-
-	public Persona(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono) {
+	private Historial historial;
+	protected boolean enfermo;
+	private ArrayList<RegistroVacunacion> regVacunas;
+	
+	public Cliente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono) {
 		this.cedula = cedula;
 		this.nombre = nombre;
 		this.apellido = apellido;
@@ -67,6 +71,29 @@ public abstract class Persona {
 		this.direccion = direccion;
 	}
 
+
+	public ArrayList<RegistroVacunacion> getRegVacunas() {
+		return regVacunas;
+	}
+
+
+	public void setRegVacunas(ArrayList<RegistroVacunacion> regVacunas) {
+		this.regVacunas = regVacunas;
+	}
+
+	public Historial getHistorial() {
+		return historial;
+	}
+
+
+	public void setHistorial(Historial historial) {
+		this.historial = historial;
+	}
+
+	public void regVacuna(Vacuna vacuna, LocalDate fecha) {
+		RegistroVacunacion registro = new RegistroVacunacion(this, vacuna, fecha, true);
+		this.regVacunas.add(registro);
+	}
 
 
 }
