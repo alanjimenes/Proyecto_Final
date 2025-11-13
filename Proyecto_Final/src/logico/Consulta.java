@@ -12,6 +12,7 @@ public class Consulta {
 	private Medico medico;
 	private Paciente paciente;
 	private ArrayList<Enfermedad> enfermedadesDiag;
+	private boolean agregarAlResumen;
 
 	public Consulta(String codigo_cons,LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico, Paciente paciente) {
 
@@ -21,6 +22,7 @@ public class Consulta {
 		this.medico = medico;
 		this.paciente = paciente;
 		this.enfermedadesDiag = new ArrayList<>();
+		this.agregarAlResumen = false;
 
 	}
 
@@ -80,11 +82,20 @@ public class Consulta {
 		this.enfermedadesDiag = enfermedadesDiag;
 	}
 
+	public boolean isAgregarAlResumen() {
+		return agregarAlResumen;
+	}
+
+	public void setAgregarAlResumen(boolean agregarAlResumen) {
+		this.agregarAlResumen = agregarAlResumen;
+	}
+
+
 	public void agregarEnfermedad(Enfermedad enfermedad) {
 		this.enfermedadesDiag.add(enfermedad);
 	}
 
-	public boolean  bajoVigilancia() {
+	public boolean bajoVigilancia() {
 		for (Enfermedad e : enfermedadesDiag) {
 			if (e.isVigilancia()) {
 				return true;

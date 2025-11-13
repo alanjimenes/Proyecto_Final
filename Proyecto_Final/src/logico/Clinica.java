@@ -84,6 +84,17 @@ public class Clinica {
 		medicoIniciado = null;
 	}
 
+	/*Logica del login:
+	 * Para el usuario se usara la contraseña (menos jodon y mas sencillo ya que estara ingresado :)  )
+	 * Para la contraseña es obvio no?
+	 * 
+	 * Entonces el codigo retorna True si el medico inicio sesion correctamente
+	 * False si fallo
+	 * 
+	 * Fin de explicacion :)   
+	 * OJAZO AQUI: saben que falta insertarlo en lo visual no quise joder
+	 *  con eso ahora dejemos eso pa depue :)
+	 */
 	public boolean loginMedico(String cedula, String password) {
 		for (Medico medico : medicos) {
 			if (medico.getCedula().equals(cedula) && medico.getPassword().equals(password)) {
