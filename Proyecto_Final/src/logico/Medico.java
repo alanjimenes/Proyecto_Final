@@ -12,11 +12,12 @@ public class Medico extends Persona implements Serializable {
 	private String password;
 
 	public Medico(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			Especialidad especialidad, String password) {
-		super(cedula, nombre, apellido, fechaNacimiento, telefono, password);
+			String direccion, Historial historial, boolean enfermo, ArrayList<RegistroVacunacion> regVacunas,
+			Especialidad especialidad, int maxCitasPorDia, ArrayList<Consulta> consultasRealizadas, String password) {
+		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion, historial, enfermo, regVacunas);
 		this.especialidad = especialidad;
-		this.maxCitasPorDia = 10; 
-		this.consultasRealizadas = new ArrayList<>();
+		this.maxCitasPorDia = maxCitasPorDia;
+		this.consultasRealizadas = consultasRealizadas;
 		this.password = password;
 	}
 
@@ -55,4 +56,5 @@ public class Medico extends Persona implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 }

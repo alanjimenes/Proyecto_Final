@@ -5,23 +5,23 @@ import java.io.Serializable;
 public class User implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private String tipo;
+	private String rol;
 	private String usuario;
 	private String password;
 
-	public User(String tipo, String usuario, String password) {
+	public User(String rol, String usuario, String password) {
 		super();
-		this.tipo = tipo;
+		this.rol = rol;
 		this.usuario = usuario;
 		this.password = password;
 	}
 
-	public String getTipo() {
-		return tipo;
+	public String getRol() {
+		return rol;
 	}
 
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
+	public void setRol(String rol) {
+		this.rol = rol;
 	}
 
 	public String getUsuario() {

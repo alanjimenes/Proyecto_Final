@@ -10,6 +10,14 @@ public class RegistroVacunacion {
 	private transient LocalDate fecha;
 	private boolean aplicada;
 
+	public RegistroVacunacion(Paciente paciente, Vacuna vacuna, LocalDate fecha, boolean aplicada) {
+		super();
+		this.paciente = paciente;
+		this.vacuna = vacuna;
+		this.fecha = fecha;
+		this.aplicada = aplicada;
+	}
+
 	public String getCodigo_reg() {
 		return codigo_reg;
 	}
@@ -49,14 +57,4 @@ public class RegistroVacunacion {
 	public void setAplicada(boolean aplicada) {
 		this.aplicada = aplicada;
 	}
-
-	public RegistroVacunacion(Cliente cliente, Vacuna vacuna, LocalDate fecha, boolean aplicada) {
-		super();
-		this.paciente = paciente;
-		this.vacuna = vacuna;
-		this.fecha = fecha;
-		this.aplicada = aplicada;
-	}
-
-
 }

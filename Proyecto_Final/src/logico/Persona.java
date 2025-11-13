@@ -12,8 +12,12 @@ public abstract class Persona {
 	protected String telefono;
 	protected String direccion;
 
+	protected Historial historial;
+	protected boolean enfermo;
+	protected ArrayList<RegistroVacunacion> regVacunas;
+
 	public Persona(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			String direccion) {
+			String direccion, Historial historial, boolean enfermo, ArrayList<RegistroVacunacion> regVacunas) {
 		super();
 		this.cedula = cedula;
 		this.nombre = nombre;
@@ -21,6 +25,9 @@ public abstract class Persona {
 		this.fechaNacimiento = fechaNacimiento;
 		this.telefono = telefono;
 		this.direccion = direccion;
+		this.historial = historial;
+		this.enfermo = enfermo;
+		this.regVacunas = regVacunas;
 	}
 
 	public String getCedula() {
@@ -70,6 +77,30 @@ public abstract class Persona {
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	} 
+
+	public Historial getHistorial() {
+		return historial;
+	}
+
+	public void setHistorial(Historial historial) {
+		this.historial = historial;
+	}
+
+	public boolean isEnfermo() {
+		return enfermo;
+	}
+
+	public void setEnfermo(boolean enfermo) {
+		this.enfermo = enfermo;
+	}
+
+	public ArrayList<RegistroVacunacion> getRegVacunas() {
+		return regVacunas;
+	}
+
+	public void setRegVacunas(ArrayList<RegistroVacunacion> regVacunas) {
+		this.regVacunas = regVacunas;
+	}
 
 
 }

@@ -3,16 +3,17 @@ package logico;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Paciente extends Cliente {
-
-	protected String numExpediente;
-	protected ArrayList<Cita> citas;
+public class Paciente extends Persona {
 
 	public Paciente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			String direccion) {
-		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion);
-		// TODO Auto-generated constructor stub
+			String direccion, Historial historial, boolean enfermo, ArrayList<RegistroVacunacion> regVacunas) {
+		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion, historial, enfermo, regVacunas);
+
 	}
+
+	private String numExpediente;
+	private ArrayList<Cita> citas;
+
 
 	public String getNumExpediente() {
 		return numExpediente;
