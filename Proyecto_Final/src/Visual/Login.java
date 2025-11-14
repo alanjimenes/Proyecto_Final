@@ -21,6 +21,10 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
+import javax.swing.ImageIcon;
+import java.awt.Font;
+import java.awt.Toolkit;
 
 public class Login extends JFrame {
 
@@ -80,36 +84,43 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\elian\\Downloads\\icon_appv2.png"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 620, 562);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
 		JPanel panel = new JPanel();
+		panel.setBackground(Color.WHITE);
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
 		JLabel lblUsuario = new JLabel("Usuario:");
-		lblUsuario.setBounds(39, 39, 46, 14);
+		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblUsuario.setBounds(132, 171, 146, 36);
 		panel.add(lblUsuario);
 		
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
-		lblContrasea.setBounds(39, 98, 105, 14);
+		lblContrasea.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblContrasea.setBounds(142, 265, 123, 14);
 		panel.add(lblContrasea);
 		
 		textField = new JTextField();
-		textField.setBounds(39, 64, 191, 20);
+		textField.setBounds(132, 213, 298, 36);
 		panel.add(textField);
 		textField.setColumns(10);
 		
 		textField_1 = new JTextField();
-		textField_1.setBounds(39, 128, 191, 20);
+		textField_1.setBounds(132, 292, 298, 44);
 		panel.add(textField_1);
 		textField_1.setColumns(10);
 		
 		JButton btnLogin = new JButton("Login");
+		btnLogin.setBackground(Color.WHITE);
+		btnLogin.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnLogin.setForeground(Color.BLACK);
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(Control.getInstance().confirmLogin(textField.getText(),textField_1.getText())){
@@ -120,7 +131,12 @@ public class Login extends JFrame {
 				
 			}
 		});
-		btnLogin.setBounds(37, 175, 89, 23);
+		btnLogin.setBounds(230, 371, 117, 44);
 		panel.add(btnLogin);
+		
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setIcon(new ImageIcon("C:\\Users\\elian\\Downloads\\Gemini_Generated_Image_j6ynsij6ynsij6yn.png"));
+		lblNewLabel.setBounds(-193, -101, 893, 670);
+		panel.add(lblNewLabel);
 	}
 }
