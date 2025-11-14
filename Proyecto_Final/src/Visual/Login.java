@@ -139,4 +139,5 @@ public class Login extends JFrame {
 		lblNewLabel.setBounds(-193, -101, 893, 670);
 		panel.add(lblNewLabel);
 	}
+	//hola
 }
