@@ -29,6 +29,8 @@ public class Clinica {
 		this.users = new ArrayList<>();
 	}
 
+
+
 	public static Clinica getInstancia() {
 		return instancia;
 
@@ -142,15 +144,14 @@ public class Clinica {
 
 		this.pacientes.add(pac);
 	}
-	public Paciente buscarPacientePorCedula(String cedula) {
-		for (Paciente pac : pacientes) {
-			if (pac.getCedula().equals(cedula)) {
-				return pac;
-			}
-		}
-		return null;
+	public Paciente buscarPacientePorCodigo(String codigoExpediente) {
+	    for (Paciente pac : this.pacientes) {
+	        if (pac.getNumExpediente().equals(codigoExpediente)) {
+	            return pac;
+	        }
+	    }
+	    return null; 
 	}
-
 	public Medico buscarMedicoCedula(String cedula) {
 		for (Medico med : this.medicos) {
 			if (med.getCedula().equals(cedula)) {
