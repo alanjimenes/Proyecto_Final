@@ -51,8 +51,8 @@ public class Login extends JFrame {
 					empresaRead.close();
 				} catch (FileNotFoundException e) {
 					try {
-						// CORREGIDO: Espacio inválido
-						empresa2 = new FileOutputStream("empresa.dat");
+						
+						empresa2 = new FileOutputStream("empresa.dat"); 
 						empresaWrite = new ObjectOutputStream(empresa2);
 						User aux = new User("Administrador", "Admin", "Admin");
 						Control.getInstance().regUser(aux);
@@ -85,14 +85,12 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
-		// Esta ruta está bien, el problema es el Build Path
-		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Resources.icons/icon_appv2.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/icon.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			
-		// CORREGIDO: Espacios inválidos
-		setSize(620, 562);
+		setSize(620, 562); 
 		setResizable(false);
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(null); 
 		
 		
 		contentPane = new JPanel();
@@ -107,25 +105,21 @@ public class Login extends JFrame {
 		
 		JLabel lblUsuario = new JLabel("Usuario:");
 		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 18));
-		// CORREGIDO: Espacio inválido
-		lblUsuario.setBounds(160, 171, 146, 36);
+		lblUsuario.setBounds(160, 171, 146, 36); 
 		panel.add(lblUsuario);
 		
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
 		lblContrasea.setFont(new Font("Tahoma", Font.BOLD, 18));
-		// CORREGIDO: Espacio inválido
-		lblContrasea.setBounds(160, 265, 123, 14);
+		lblContrasea.setBounds(160, 265, 123, 14); 
 		panel.add(lblContrasea);
 		
 		textField = new JTextField();
-		// CORREGIDO: Espacio inválido
-		textField.setBounds(160, 213, 298, 36);
+		textField.setBounds(160, 213, 298, 36); 
 		panel.add(textField);
 		textField.setColumns(10);
 		
 		textField_1 = new JTextField();
-		// CORREGIDO: Espacio inválido
-		textField_1.setBounds(160, 292, 298, 44);
+		textField_1.setBounds(160, 292, 298, 44); 
 		panel.add(textField_1);
 		textField_1.setColumns(10);
 		
@@ -143,13 +137,11 @@ public class Login extends JFrame {
 				
 			}
 		});
-		// CORREGIDO: Espacio inválido
-		btnLogin.setBounds(252, 371, 117, 44);
+		btnLogin.setBounds(252, 371, 117, 44); 
 		panel.add(btnLogin);
 		
 		JLabel lblPrinIcon = new JLabel("");
-		// Esta ruta está bien, el problema es el Build Path
-		lblPrinIcon.setIcon(new ImageIcon(getClass().getResource("/Resources.icons/icon.png")));
+		lblPrinIcon.setIcon(new ImageIcon(getClass().getResource("/icons/logo.png")));
 		lblPrinIcon.setBounds(-193, -101, 893, 670);
 		panel.add(lblPrinIcon);
 	}
