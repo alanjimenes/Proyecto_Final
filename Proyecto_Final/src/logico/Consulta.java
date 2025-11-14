@@ -10,17 +10,17 @@ public class Consulta {
 	private String sintomas;
 	private String diagnostico;
 	private Medico medico;
-	private Paciente paciente;
+	private Cliente cliente;
 	private ArrayList<Enfermedad> enfermedadesDiag;
 	private boolean AddResumen;
 
-	public Consulta(String codigo_cons,LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico, Paciente paciente) {
+	public Consulta(String codigo_cons,LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico, Cliente cliente) {
 
 		this.fechaConsulta = fechaConsulta;
 		this.sintomas = sintomas;
 		this.diagnostico = diagnostico;
 		this.medico = medico;
-		this.paciente = paciente;
+		this.cliente = cliente;
 		this.enfermedadesDiag = new ArrayList<>();
 		this.AddResumen = false;
 
@@ -66,12 +66,12 @@ public class Consulta {
 		this.medico = medico;
 	}
 
-	public Paciente getPaciente() {
-		return paciente;
+	public Cliente getCliente() {
+		return cliente;
 	}
 
-	public void setPaciente(Paciente paciente) {
-		this.paciente = paciente;
+	public void setPaciente(Cliente cliente) {
+		this.cliente = cliente;
 	}
 
 	public ArrayList<Enfermedad> getEnfermedadesDiag() {

@@ -6,14 +6,14 @@ public class Cita {
 
 	private String codigo_cita;
 	private LocalDateTime fechaHora;
-	private Paciente paciente;
+	private Cliente cliente;
 	private Medico medico;
 	private String estado;
 
-	public Cita(LocalDateTime fechaHora, Paciente paciente, Medico medico, String estado) {
+	public Cita(LocalDateTime fechaHora, Cliente cliente, Medico medico, String estado) {
 		super();
 		this.fechaHora = fechaHora;
-		this.paciente = paciente;
+		this.cliente = cliente;
 		this.medico = medico;
 		this.estado = estado;
 	}
@@ -34,12 +34,12 @@ public class Cita {
 		this.fechaHora = fechaHora;
 	}
 
-	public Paciente getPaciente() {
-		return paciente;
+	public Cliente getCliente() {
+		return cliente;
 	}
 
-	public void setPaciente(Paciente paciente) {
-		this.paciente = paciente;
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
 	}
 
 	public Medico getMedico() {

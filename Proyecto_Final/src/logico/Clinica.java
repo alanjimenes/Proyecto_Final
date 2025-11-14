@@ -5,12 +5,12 @@ import java.util.ArrayList;
 
 public class Clinica {
 
-	private int genCodigoPaciente = 1;
+	private int genCodigoCliente = 1;
 	private int genCodigoCita = 1;
 	private int genCodigoConsulta = 1;
 	private int genCodigoMedico = 1;
 	private int genCodigoUser = 1;
-	private ArrayList<Paciente> pacientes;
+	private ArrayList<Cliente> clientes;
 	private ArrayList<Medico> medicos;
 	private ArrayList<Enfermedad> enfermedades;
 	private ArrayList<Vacuna> vacunas;
@@ -20,7 +20,7 @@ public class Clinica {
 	private static Clinica instancia;
 
 	public Clinica() {
-		this.pacientes = new ArrayList<>();
+		this.clientes = new ArrayList<>();
 		this.medicos = new ArrayList<>();
 		this.enfermedades = new ArrayList<>();
 		this.vacunas = new ArrayList<>();
@@ -40,12 +40,12 @@ public class Clinica {
 		Clinica.instancia = instancia;
 	}
 
-	public int getGenCodigoPaciente() {
-		return genCodigoPaciente;
+	public int getGenCodigoCliente() {
+		return genCodigoCliente;
 	}
 
-	public void setGenCodigoPaciente(int genCodigoPaciente) {
-		this.genCodigoPaciente = genCodigoPaciente;
+	public void setGenCodigoPaciente(int genCodigoCliente) {
+		this.genCodigoCliente = genCodigoCliente;
 	}
 
 
@@ -67,14 +67,14 @@ public class Clinica {
 	}
 
 
-	public ArrayList<Paciente> getPacientes() {
-		return pacientes;
+	public ArrayList<Cliente> getClientes() {
+		return clientes;
 	}
 
 
 
-	public void setPacientes(ArrayList<Paciente> pacientes) {
-		this.pacientes = pacientes;
+	public void setClientes(ArrayList<Cliente> Clientes) {
+		this.clientes = Clientes;
 	}
 
 
@@ -137,17 +137,17 @@ public class Clinica {
 	public void setGenCodigoUser(int genCodigoUser) {
 		this.genCodigoUser = genCodigoUser;
 	}
-	public void insertarPaciente(Paciente pac) {
+	public void insertarCliente(Cliente cli) {
 
-		pac.setNumExpediente("PAC-" + genCodigoPaciente);
-		genCodigoPaciente++;
+		cli.setNumExpediente("CLI-" + genCodigoCliente);
+		genCodigoCliente++;
 
-		this.pacientes.add(pac);
+		this.clientes.add(cli);
 	}
-	public Paciente buscarPacientePorCodigo(String codigoExpediente) {
-	    for (Paciente pac : this.pacientes) {
-	        if (pac.getNumExpediente().equals(codigoExpediente)) {
-	            return pac;
+	public Cliente buscarClientePorCodigo(String codigoExpediente) {
+	    for (Cliente cli : this.clientes) {
+	        if (cli.getNumExpediente().equals(codigoExpediente)) {
+	            return cli;
 	        }
 	    }
 	    return null; 

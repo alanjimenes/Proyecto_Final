@@ -3,42 +3,56 @@ package logico;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public abstract class Cliente extends Persona {
 
-	protected Historial historial;
-	protected boolean enfermo;
-	protected ArrayList<RegistroVacunacion> regVacunas;
+public class Cliente extends Persona { 
 
-	public Cliente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			String direccion, Historial historial, boolean enfermo, ArrayList<RegistroVacunacion> regVacunas) {
-		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion);
-		this.historial = historial;
-		this.enfermo = false;
-		this.regVacunas = regVacunas;
-	}
+    private String numExpediente; 
+    private Historial historial;
+    private boolean enfermo;
+    private ArrayList<RegistroVacunacion> regVacunas;
 
-	public Historial getHistorial() {
-		return historial;
-	}
+    public Cliente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
+            String direccion) {
+        
+        super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion);
 
-	public void setHistorial(Historial historial) {
-		this.historial = historial;
-	}
+        this.enfermo = false; 
+        this.historial = new Historial("HIST-" + cedula); 
+        this.regVacunas = new ArrayList<>(); 
+        
+    
+    }
 
-	public boolean isEnfermo() {
-		return enfermo;
-	}
 
-	public void setEnfermo(boolean enfermo) {
-		this.enfermo = enfermo;
-	}
+    public String getNumExpediente() {
+        return numExpediente;
+    }
 
-	public ArrayList<RegistroVacunacion> getRegVacunas() {
-		return regVacunas;
-	}
+    public void setNumExpediente(String numExpediente) {
+        this.numExpediente = numExpediente;
+    }
 
-	public void setRegVacunas(ArrayList<RegistroVacunacion> regVacunas) {
-		this.regVacunas = regVacunas;
-	}
+    public Historial getHistorial() {
+        return historial;
+    }
 
+    public void setHistorial(Historial historial) {
+        this.historial = historial;
+    }
+
+    public boolean isEnfermo() {
+        return enfermo;
+    }
+
+    public void setEnfermo(boolean enfermo) {
+        this.enfermo = enfermo;
+    }
+
+    public ArrayList<RegistroVacunacion> getRegVacunas() {
+        return regVacunas;
+    }
+
+    public void setRegVacunas(ArrayList<RegistroVacunacion> regVacunas) {
+        this.regVacunas = regVacunas;
+    }
 }

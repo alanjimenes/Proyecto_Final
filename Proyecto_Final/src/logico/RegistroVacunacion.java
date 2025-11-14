@@ -5,14 +5,14 @@ import java.time.LocalDate;
 public class RegistroVacunacion {
 
 	private String codigo_reg;
-	private Paciente paciente;
+	private Cliente cliente;
 	private Vacuna vacuna;
 	private LocalDate fecha;
 	private boolean aplicada;
 
-	public RegistroVacunacion(Paciente paciente, Vacuna vacuna, LocalDate fecha, boolean aplicada) {
-		super();
-		this.paciente = paciente;
+	public RegistroVacunacion(Cliente cliente, Vacuna vacuna, LocalDate fecha, boolean aplicada) {
+		super(); 
+		this.cliente = cliente;
 		this.vacuna = vacuna;
 		this.fecha = fecha;
 		this.aplicada = aplicada;
@@ -26,12 +26,12 @@ public class RegistroVacunacion {
 		this.codigo_reg = codigo_reg;
 	}
 
-	public Paciente getPaciente() {
-		return paciente;
+	public Cliente getCliente() {
+		return cliente;
 	}
 
-	public void setPaciente(Paciente paciente) {
-		this.paciente = paciente;
+	public void setPaciente(Cliente cliente) {
+		this.cliente = cliente;
 	}
 
 	public Vacuna getVacuna() {
