@@ -1,5 +1,6 @@
 package logico;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Clinica {
@@ -12,8 +13,8 @@ public class Clinica {
 	private ArrayList<Enfermedad> enfermedades;
 	private ArrayList<Vacuna> vacunas;
 	private ArrayList<Cita> citas;
-
 	private static Clinica instancia;
+	private Agenda agenda;
 
 
 	public Clinica() {
@@ -22,6 +23,7 @@ public class Clinica {
 		this.enfermedades = new ArrayList<>();
 		this.vacunas = new ArrayList<>();
 		this.citas = new ArrayList<>();
+		this.agenda = new Agenda();
 	}
 
 
@@ -34,24 +36,6 @@ public class Clinica {
 	public static void setInstancia(Clinica instancia) {
 		Clinica.instancia = instancia;
 	}
-
-	public void insertarPaciente(Paciente pac) {
-
-		pac.setNumExpediente("PAC-" + genCodigoPaciente);
-		genCodigoPaciente++;
-
-		this.pacientes.add(pac);
-	}
-
-	public Paciente buscarPacientePorCedula(String cedula) {
-		for (Paciente pac : pacientes) {
-			if (pac.getCedula().equals(cedula)) {
-				return pac;
-			}
-		}
-		return null;
-	}
-
 
 	public int getGenCodigoPaciente() {
 		return genCodigoPaciente;
@@ -128,28 +112,34 @@ public class Clinica {
 		this.citas = citas;
 	}
 
+	public void insertarPaciente(Paciente pac) {
 
+		pac.setNumExpediente("PAC-" + genCodigoPaciente);
+		genCodigoPaciente++;
 
-	public Paciente buscarPacienteCedula(String cedula){
-
+		this.pacientes.add(pac);
+	}
+	public Paciente buscarPacientePorCedula(String cedula) {
+		for (Paciente pac : pacientes) {
+			if (pac.getCedula().equals(cedula)) {
+				return pac;
+			}
+		}
+		return null;
 	}
 
 	public Medico buscarMedicoCedula(String cedula) {
-
+		for (Medico med : this.medicos) {
+			if (med.getCedula().equals(cedula)) {
+				return med;
+			}
+		}
+		return null;
 	}
+
 
 	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora) {
-
-	}
-
-
-
-	public void cancelarCita(Cita cita) {
-
-	}
-
-	public void modificarCita(Cita cita) {
-
+		return this.agenda.medicoDisponible(medico, fechaHora);
 	}
 
 }

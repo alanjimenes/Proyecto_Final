@@ -9,14 +9,15 @@ public class Medico extends Persona implements Serializable {
 	private Especialidad especialidad;
 	private int maxCitasPorDia;
 	private ArrayList<Consulta> consultasRealizadas;
+	private ArrayList<Cita> citasAsignadas; 
 
 	public Medico(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			String direccion, Historial historial, boolean enfermo, ArrayList<RegistroVacunacion> regVacunas,
-			Especialidad especialidad, int maxCitasPorDia, ArrayList<Consulta> consultasRealizadas, String password) {
-		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion, historial, enfermo, regVacunas);
+			String direccion, Especialidad especialidad, int maxCitasPorDia, ArrayList<Consulta> consultasRealizadas, ArrayList<Cita> citasAsignadas) {
+		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion);
 		this.especialidad = especialidad;
 		this.maxCitasPorDia = maxCitasPorDia;
 		this.consultasRealizadas = new ArrayList<>();
+		this.citasAsignadas = new ArrayList<>();
 	}
 
 	public Especialidad getEspecialidad() {
@@ -39,12 +40,24 @@ public class Medico extends Persona implements Serializable {
 		return consultasRealizadas;
 	}
 
+	public void setConsultasRealizadas(ArrayList<Consulta> consultasRealizadas) {
+		this.consultasRealizadas = consultasRealizadas;
+	}
+
 	public void agregarConsultaRealizada(Consulta consulta) {
 		this.consultasRealizadas.add(consulta);
 	}
 
-	public void setConsultasRealizadas(ArrayList<Consulta> consultasRealizadas) {
-		this.consultasRealizadas = consultasRealizadas;
+	public ArrayList<Cita> getCitasAsignadas() {
+		return citasAsignadas;
+	}
+
+	public void setCitasAsignadas(ArrayList<Cita> citasAsignadas) {
+		this.citasAsignadas = citasAsignadas;
+	}
+
+	public void agregarCitaAsignada(Cita c) {
+		this.citasAsignadas.add(c);
 	}
 
 }
