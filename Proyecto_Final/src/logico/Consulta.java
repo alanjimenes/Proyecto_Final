@@ -12,7 +12,7 @@ public class Consulta {
 	private Medico medico;
 	private Paciente paciente;
 	private ArrayList<Enfermedad> enfermedadesDiag;
-	private boolean agregarAlResumen;
+	private boolean AddResumen;
 
 	public Consulta(String codigo_cons,LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico, Paciente paciente) {
 
@@ -22,7 +22,7 @@ public class Consulta {
 		this.medico = medico;
 		this.paciente = paciente;
 		this.enfermedadesDiag = new ArrayList<>();
-		this.agregarAlResumen = false;
+		this.AddResumen = false;
 
 	}
 
@@ -83,11 +83,11 @@ public class Consulta {
 	}
 
 	public boolean isAgregarAlResumen() {
-		return agregarAlResumen;
+		return AddResumen;
 	}
 
 	public void setAgregarAlResumen(boolean agregarAlResumen) {
-		this.agregarAlResumen = agregarAlResumen;
+		this.AddResumen = agregarAlResumen;
 	}
 
 

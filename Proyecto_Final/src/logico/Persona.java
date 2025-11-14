@@ -1,7 +1,7 @@
 package logico;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+
 
 public abstract class Persona {
 

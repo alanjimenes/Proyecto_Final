@@ -6,10 +6,14 @@ import java.util.ArrayList;
 
 public class Medico extends Persona implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Especialidad especialidad;
 	private int maxCitasPorDia;
 	private ArrayList<Consulta> consultasRealizadas;
-	private ArrayList<Cita> citasAsignadas; 
+	 
 
 	public Medico(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
 			String direccion, Especialidad especialidad, int maxCitasPorDia, ArrayList<Consulta> consultasRealizadas, ArrayList<Cita> citasAsignadas) {
@@ -17,7 +21,6 @@ public class Medico extends Persona implements Serializable {
 		this.especialidad = especialidad;
 		this.maxCitasPorDia = maxCitasPorDia;
 		this.consultasRealizadas = new ArrayList<>();
-		this.citasAsignadas = new ArrayList<>();
 	}
 
 	public Especialidad getEspecialidad() {
@@ -48,16 +51,5 @@ public class Medico extends Persona implements Serializable {
 		this.consultasRealizadas.add(consulta);
 	}
 
-	public ArrayList<Cita> getCitasAsignadas() {
-		return citasAsignadas;
-	}
-
-	public void setCitasAsignadas(ArrayList<Cita> citasAsignadas) {
-		this.citasAsignadas = citasAsignadas;
-	}
-
-	public void agregarCitaAsignada(Cita c) {
-		this.citasAsignadas.add(c);
-	}
-
+	
 }

@@ -1,7 +1,7 @@
 package logico;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+
 
 public class Secretaria extends Persona {
 
@@ -9,6 +9,6 @@ public class Secretaria extends Persona {
 			String direccion) {
 		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion);
 	}
-
+//Metodos Pendientes 
 
 }

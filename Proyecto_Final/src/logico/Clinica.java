@@ -8,15 +8,16 @@ public class Clinica {
 	private int genCodigoPaciente = 1;
 	private int genCodigoCita = 1;
 	private int genCodigoConsulta = 1;
+	private int genCodigoMedico = 1;
+	private int genCodigoUser = 1;
 	private ArrayList<Paciente> pacientes;
 	private ArrayList<Medico> medicos;
 	private ArrayList<Enfermedad> enfermedades;
 	private ArrayList<Vacuna> vacunas;
 	private ArrayList<Cita> citas;
-	private static Clinica instancia;
 	private Agenda agenda;
 	private ArrayList<User>users;
-
+	private static Clinica instancia;
 
 	public Clinica() {
 		this.pacientes = new ArrayList<>();
@@ -25,9 +26,8 @@ public class Clinica {
 		this.vacunas = new ArrayList<>();
 		this.citas = new ArrayList<>();
 		this.agenda = new Agenda();
+		this.users = new ArrayList<>();
 	}
-
-
 
 	public static Clinica getInstancia() {
 		return instancia;
@@ -108,11 +108,33 @@ public class Clinica {
 		return citas;
 	}
 
-
 	public void setCitas(ArrayList<Cita> citas) {
 		this.citas = citas;
 	}
+	
+	public ArrayList<User> getUsers() {
+		return users;
+	}
 
+	public void setUsers(ArrayList<User> users) {
+		this.users = users;
+	}
+
+	public int getGenCodigoMedico() {
+		return genCodigoMedico;
+	}
+
+	public void setGenCodigoMedico(int genCodigoMedico) {
+		this.genCodigoMedico = genCodigoMedico;
+	}
+	
+	public int getGenCodigoUser() {
+		return genCodigoUser;
+	}
+
+	public void setGenCodigoUser(int genCodigoUser) {
+		this.genCodigoUser = genCodigoUser;
+	}
 	public void insertarPaciente(Paciente pac) {
 
 		pac.setNumExpediente("PAC-" + genCodigoPaciente);
@@ -143,16 +165,5 @@ public class Clinica {
 		return this.agenda.medicoDisponible(medico, fechaHora);
 	}
 
-
-
-	public ArrayList<User> getUsers() {
-		return users;
-	}
-
-
-
-	public void setUsers(ArrayList<User> users) {
-		this.users = users;
-	}
 
 }
