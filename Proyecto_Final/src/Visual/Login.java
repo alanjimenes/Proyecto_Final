@@ -51,7 +51,8 @@ public class Login extends JFrame {
 					empresaRead.close();
 				} catch (FileNotFoundException e) {
 					try {
-						empresa2 = new  FileOutputStream("empresa.dat");
+						
+						empresa2 = new FileOutputStream("empresa.dat"); 
 						empresaWrite = new ObjectOutputStream(empresa2);
 						User aux = new User("Administrador", "Admin", "Admin");
 						Control.getInstance().regUser(aux);
@@ -84,9 +85,14 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\elian\\Downloads\\icon_appv2.png"));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClass().getResource("/Resources/icons/icon_appv2.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 620, 562);
+			
+		setSize(620, 562); 
+		setResizable(false);
+		setLocationRelativeTo(null); 
+		
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -99,21 +105,21 @@ public class Login extends JFrame {
 		
 		JLabel lblUsuario = new JLabel("Usuario:");
 		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblUsuario.setBounds(132, 171, 146, 36);
+		lblUsuario.setBounds(160, 171, 146, 36); 
 		panel.add(lblUsuario);
 		
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
 		lblContrasea.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblContrasea.setBounds(142, 265, 123, 14);
+		lblContrasea.setBounds(160, 265, 123, 14); 
 		panel.add(lblContrasea);
 		
 		textField = new JTextField();
-		textField.setBounds(132, 213, 298, 36);
+		textField.setBounds(160, 213, 298, 36); 
 		panel.add(textField);
 		textField.setColumns(10);
 		
 		textField_1 = new JTextField();
-		textField_1.setBounds(132, 292, 298, 44);
+		textField_1.setBounds(160, 292, 298, 44); 
 		panel.add(textField_1);
 		textField_1.setColumns(10);
 		
@@ -131,12 +137,12 @@ public class Login extends JFrame {
 				
 			}
 		});
-		btnLogin.setBounds(230, 371, 117, 44);
+		btnLogin.setBounds(252, 371, 117, 44); 
 		panel.add(btnLogin);
 		
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon("C:\\Users\\elian\\Downloads\\Gemini_Generated_Image_j6ynsij6ynsij6yn.png"));
-		lblNewLabel.setBounds(-193, -101, 893, 670);
-		panel.add(lblNewLabel);
+		JLabel lblPrinIcon = new JLabel("");
+		lblPrinIcon.setIcon(new ImageIcon(getClass().getResource("/Resources/icons/icon.png")));
+		lblPrinIcon.setBounds(-193, -101, 893, 670);
+		panel.add(lblPrinIcon);
 	}
 }
