@@ -3,20 +3,20 @@ package logico;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Usuarios implements Serializable{
+public class Control implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	private ArrayList<User> misUsuarios;
-	private static Usuarios usuarios;
+	private static Control usuarios;
 	private static User loginUser;
 
-	private Usuarios() {
+	private Control() {
 		misUsuarios = new ArrayList<>();
 	}
 
-	public static Usuarios getInstance(){
+	public static Control getInstance(){
 		if(usuarios == null){
-			usuarios = new Usuarios();
+			usuarios = new Control();
 		}
 		return usuarios;
 	}
@@ -29,12 +29,12 @@ public class Usuarios implements Serializable{
 		this.misUsuarios = misUsers;
 	}
 
-	public static Usuarios getUsuarios() {
+	public static Control getUsuarios() {
 		return usuarios;
 	}
 
-	public static void setControl(Usuarios control) {
-		Usuarios.usuarios = control;
+	public static void setControl(Control control) {
+		Control.usuarios = control;
 	}
 
 	public static User getLoginUser() {
@@ -42,7 +42,7 @@ public class Usuarios implements Serializable{
 	}
 
 	public static void setLoginUser(User loginUser) {
-		Usuarios.loginUser = loginUser;
+		Control.loginUser = loginUser;
 	}
 
 	public void regUser(User user) {

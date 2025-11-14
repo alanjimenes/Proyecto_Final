@@ -15,6 +15,7 @@ public class Clinica {
 	private ArrayList<Cita> citas;
 	private static Clinica instancia;
 	private Agenda agenda;
+	private ArrayList<User>users;
 
 
 	public Clinica() {
@@ -140,6 +141,18 @@ public class Clinica {
 
 	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora) {
 		return this.agenda.medicoDisponible(medico, fechaHora);
+	}
+
+
+
+	public ArrayList<User> getUsers() {
+		return users;
+	}
+
+
+
+	public void setUsers(ArrayList<User> users) {
+		this.users = users;
 	}
 
 }
