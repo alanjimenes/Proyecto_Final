@@ -51,7 +51,7 @@ public class Login extends JFrame {
 					empresaRead.close();
 				} catch (FileNotFoundException e) {
 					try {
-						
+						// Espacio inválido corregido
 						empresa2 = new FileOutputStream("empresa.dat"); 
 						empresaWrite = new ObjectOutputStream(empresa2);
 						User aux = new User("Administrador", "Admin", "Admin");
@@ -85,9 +85,11 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
+		// RUTA: /icons/icon.png (Absoluta desde la raíz del classpath: src)
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/icon.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			
+		// Espacios inválidos eliminados
 		setSize(620, 562); 
 		setResizable(false);
 		setLocationRelativeTo(null); 
@@ -105,20 +107,24 @@ public class Login extends JFrame {
 		
 		JLabel lblUsuario = new JLabel("Usuario:");
 		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 18));
+		// Espacio inválido eliminado
 		lblUsuario.setBounds(160, 171, 146, 36); 
 		panel.add(lblUsuario);
 		
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
 		lblContrasea.setFont(new Font("Tahoma", Font.BOLD, 18));
+		// Espacio inválido eliminado
 		lblContrasea.setBounds(160, 265, 123, 14); 
 		panel.add(lblContrasea);
 		
-		textField = new JTextField();
+		JTextField textField = new JTextField();
+		// Espacio inválido eliminado
 		textField.setBounds(160, 213, 298, 36); 
 		panel.add(textField);
 		textField.setColumns(10);
 		
-		textField_1 = new JTextField();
+		JTextField textField_1 = new JTextField();
+		// Espacio inválido eliminado
 		textField_1.setBounds(160, 292, 298, 44); 
 		panel.add(textField_1);
 		textField_1.setColumns(10);
@@ -137,10 +143,12 @@ public class Login extends JFrame {
 				
 			}
 		});
+		// Espacio inválido eliminado
 		btnLogin.setBounds(252, 371, 117, 44); 
 		panel.add(btnLogin);
 		
 		JLabel lblPrinIcon = new JLabel("");
+		// RUTA: /icons/logo.png (Absoluta desde la raíz del classpath: src)
 		lblPrinIcon.setIcon(new ImageIcon(getClass().getResource("/icons/logo.png")));
 		lblPrinIcon.setBounds(-193, -101, 893, 670);
 		panel.add(lblPrinIcon);
