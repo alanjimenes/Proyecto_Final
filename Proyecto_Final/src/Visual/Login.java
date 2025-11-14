@@ -84,6 +84,7 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
+		setTitle("Hospital");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/icon.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			
