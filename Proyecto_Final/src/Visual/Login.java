@@ -13,25 +13,16 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-//import logical.Control;
-//import logical.User;
+import logico.Control;
+import logico.User;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.Color;
-import javax.swing.ImageIcon;
-import javax.swing.SwingConstants;
 
 public class Login extends JFrame {
-	public Login() {
-		
-		JPanel panel = new JPanel();
-		panel.setBackground(Color.WHITE);
-		getContentPane().add(panel, BorderLayout.CENTER);
-	}
 
 	private JPanel contentPane;
 	private JTextField textField;
@@ -40,7 +31,6 @@ public class Login extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -49,15 +39,15 @@ public class Login extends JFrame {
 				ObjectInputStream empresaRead;
 				ObjectOutputStream empresaWrite;
 				try {
-					empresa = new FileInputStream("empresa.dat");
+					empresa = new FileInputStream ("empresa.dat");
 					empresaRead = new ObjectInputStream(empresa);
-					Control temp = (Control) empresaRead.readObject();
+					Control temp = (Control)empresaRead.readObject();
 					Control.setControl(temp);
 					empresa.close();
 					empresaRead.close();
 				} catch (FileNotFoundException e) {
 					try {
-						empresa2 = new FileOutputStream("empresa.dat");
+						empresa2 = new  FileOutputStream("empresa.dat");
 						empresaWrite = new ObjectOutputStream(empresa2);
 						User aux = new User("Administrador", "Admin", "Admin");
 						Control.getInstance().regUser(aux);
@@ -69,14 +59,15 @@ public class Login extends JFrame {
 						// TODO Auto-generated catch block
 					}
 				} catch (IOException e) {
-
+					
+					
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
+				
 				try {
-					login frame = new login();
+					Login frame = new Login();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -88,7 +79,7 @@ public class Login extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public login() {
+	public Login() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
