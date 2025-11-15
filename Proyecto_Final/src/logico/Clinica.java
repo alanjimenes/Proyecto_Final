@@ -179,6 +179,35 @@ public class Clinica {
 	    }
 	    return null;
 	}
+	
+	
+	public boolean cancelCita(Cita cita) {
+	    if (cita.getFechaHora().toLocalDate().isBefore(LocalDate.now())) {
+	        return false; 
+	    }
+
+	    this.citas.remove(cita);
+	    
+	    if (cita.getMedico() != null) {
+	        cita.getMedico().getCitasAsignadas().remove(cita);
+	    }
+	    
+	    return true;
+	}
+	
+	
+	public boolean editCita(Cita cita, LocalDateTime nuevaFechaHora) {
+		   if (cita.getFechaHora().toLocalDate().isBefore(LocalDate.now())) {
+		        return false; 
+		    }
+		    
+		    if (!medicoDisponible(cita.getMedico(), nuevaFechaHora)) {
+		        return false; 
+		        }
+		  
+		    cita.setFechaHora(nuevaFechaHora);
+		    return true;
+		}
 
 
 }
