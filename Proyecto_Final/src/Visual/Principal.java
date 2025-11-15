@@ -109,7 +109,7 @@ public class Principal extends JFrame {
 		menuPacientes.setEnabled(false);
 
 		switch (rol) {
-		case "Admin":
+		case "Administrador":
 			menuCitas.setEnabled(true);
 			menuConsulta.setEnabled(true);
 			menuAdministracion.setEnabled(true);
