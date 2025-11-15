@@ -14,7 +14,11 @@ import logico.User;
 
 import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;;
+import javax.swing.JMenuItem;
+import javax.swing.ImageIcon;
+import java.awt.Color;
+import javax.swing.border.TitledBorder;
+import java.awt.Font;;
 
 public class Principal extends JFrame {
 
@@ -32,6 +36,7 @@ public class Principal extends JFrame {
 	 * Launch the application.
 	 */
 	public Principal(User usuarioLogueado) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/icons/icon.png")));
 		this.usuarioActual = usuarioLogueado;
 		iniciarTodo(); 
 		configurarAccesosPorRol(); 
@@ -56,44 +61,65 @@ public class Principal extends JFrame {
 		 * AGREGAR LAS COSAS DE CITAS AQUI
 		 */
 		menuCitas = new JMenu("Gestión Citas");
+		menuCitas.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuBar.add(menuCitas);
 		JMenuItem itemCrearCita = new JMenuItem("Crear/Modificar Cita");
+		itemCrearCita.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuCitas.add(itemCrearCita);
 
 		/* MENU DE PACIENTES
 		 * AGREGAR LAS COSAS DE PACIENTES AQUI
 		 */
 		menuPacientes = new JMenu("Gestión Pacientes");
+		menuPacientes.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuBar.add(menuPacientes);
 		JMenuItem itemRegPaciente = new JMenuItem("Registrar Paciente");
+		itemRegPaciente.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuPacientes.add(itemRegPaciente);
 
 		/* MENU DE CONSULTAS
 		 * AGREGAR LAS COSAS DE CONSULTAS AQUI
 		 */
 		menuConsulta = new JMenu("Consultas");
+		menuConsulta.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuBar.add(menuConsulta);
 		JMenuItem itemVerMisCitas = new JMenuItem("Ver Citas de Hoy");
+		itemVerMisCitas.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuConsulta.add(itemVerMisCitas);
 
 		/* MENU DE ADMINISTRACION
 		 * AGREGAR LAS COSAS DE ADMINISTRACION AQUI
 		 */
 		menuAdministracion = new JMenu("Administración");
+		menuAdministracion.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuBar.add(menuAdministracion);
 		JMenuItem itemGestionarUser = new JMenuItem("Gestionar Usuarios");
+		itemGestionarUser.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuAdministracion.add(itemGestionarUser);
 		JMenuItem itemGestionarMedicos = new JMenuItem("Gestionar Médicos");
+		itemGestionarMedicos.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuAdministracion.add(itemGestionarMedicos);
 
 
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout());
+		contentPane.setForeground(Color.WHITE);
+		contentPane.setBorder(null);
 		setContentPane(contentPane);
+		contentPane.setLayout(new BorderLayout(0, 0));
 
 		labelUsuario = new JLabel("Cargando...");
-		contentPane.add(labelUsuario, BorderLayout.SOUTH); 
+		labelUsuario.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		contentPane.add(labelUsuario, BorderLayout.SOUTH);
+
+		JPanel panelCentro = new JPanel(); 
+		panelCentro.setLayout(null);
+		contentPane.add(panelCentro, BorderLayout.CENTER);
+
+		JLabel lblFondoIcon = new JLabel("");
+		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/icons/logo.png")));
+		lblFondoIcon.setBounds(12, 0, 1878, 961);
+		panelCentro.add(lblFondoIcon);
+
 	}
 
 	private void configurarAccesosPorRol() {
@@ -131,7 +157,6 @@ public class Principal extends JFrame {
 			break;
 		}
 	}
-
 }
 
 
