@@ -139,7 +139,7 @@ public class RegUser extends JDialog {
 							e1.printStackTrace();
 							JOptionPane.showMessageDialog(contentPanel, "Error: No se pudo guardar el usuario en el fichero.", "Error de Fichero", JOptionPane.ERROR_MESSAGE);
 						}
-						dispose();
+						dispose(); 
 					}
 				});
 				okButton.setActionCommand("OK");
