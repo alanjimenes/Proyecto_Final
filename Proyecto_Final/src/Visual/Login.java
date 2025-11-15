@@ -113,12 +113,12 @@ public class Login extends JFrame {
 		lblContrasea.setBounds(160, 265, 123, 14); 
 		panel.add(lblContrasea);
 
-		JTextField textField = new JTextField();
+		textField = new JTextField();
 		textField.setBounds(160, 213, 298, 36); 
 		panel.add(textField);
 		textField.setColumns(10);
 
-		JTextField textField_1 = new JTextField();
+		textField_1 = new JTextField();
 		textField_1.setBounds(160, 292, 298, 44); 
 		panel.add(textField_1);
 		textField_1.setColumns(10);

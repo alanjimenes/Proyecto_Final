@@ -13,10 +13,14 @@ import logico.Control;
 import logico.User;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 import java.awt.Font;
@@ -118,8 +122,23 @@ public class RegUser extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						User user = new User(comboBox.getSelectedItem().toString(),textField.getText(),textField_1.getText());
+						if (!textField_1.getText().equals(textField_2.getText())) {
+							JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
+							return;
+						}				        
+						User user = new User(comboBox.getSelectedItem().toString(), textField.getText(), textField_1.getText());
 						Control.getInstance().regUser(user);
+						try {
+							FileOutputStream empresa2 = new FileOutputStream("empresa.dat");
+							ObjectOutputStream empresaWrite = new ObjectOutputStream(empresa2);
+							empresaWrite.writeObject(Control.getInstance());
+							empresa2.close();
+							empresaWrite.close();				            
+							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado con éxito!");				            
+						} catch (IOException e1) {
+							e1.printStackTrace();
+							JOptionPane.showMessageDialog(contentPanel, "Error: No se pudo guardar el usuario en el fichero.", "Error de Fichero", JOptionPane.ERROR_MESSAGE);
+						}
 						dispose();
 					}
 				});
