@@ -1,5 +1,6 @@
 package logico;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -164,6 +165,19 @@ public class Clinica {
 
 	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora) {
 		return this.agenda.medicoDisponible(medico, fechaHora);
+	}
+
+
+	
+	//Citas
+	
+	public Cita buscarCita(String codigoCita) {
+	    for (Cita cita : this.citas) {
+	        if (cita.getCodigo_cita().equals(codigoCita)) {
+	            return cita;
+	        }
+	    }
+	    return null;
 	}
 
 
