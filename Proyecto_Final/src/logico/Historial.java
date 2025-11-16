@@ -2,7 +2,6 @@ package logico;
 
 import java.util.ArrayList;
 
-
 public class Historial {
 
 	private String codigo_Hist;
@@ -46,7 +45,7 @@ public class Historial {
 
 	public String generarResumen() {
 
-		String resumen = ""; 
+		String resumen = "";
 
 		resumen += "================== RESUMEN DE HISTORIAL CLÍNICO ====================\n";
 		resumen += "--------------------------------------------------------------------\n\n";
@@ -91,7 +90,8 @@ public class Historial {
 						resumen += "Especialidad: " + especStr + "\n";
 
 						resumen += "Síntomas: " + (cons.getSintomas() != null ? cons.getSintomas() : "") + "\n";
-						resumen += "Diagnóstico: " + (cons.getDiagnostico() != null ? cons.getDiagnostico() : "") + "\n";
+						resumen += "Diagnóstico: " + (cons.getDiagnostico() != null ? cons.getDiagnostico() : "")
+								+ "\n";
 						resumen += "\n";
 					}
 				}
@@ -105,6 +105,19 @@ public class Historial {
 		resumen += "====================== FIN DEL RESUMEN ======================\n";
 
 		return resumen;
+	}
+
+	public void agregarConsulta(Consulta nuevaConsulta) {
+
+		if (nuevaConsulta == null) {
+			return;
+		}
+
+		if (this.consultas == null) {
+			this.consultas = new ArrayList<>();
+		}
+
+		this.consultas.add(nuevaConsulta);
 	}
 
 }
