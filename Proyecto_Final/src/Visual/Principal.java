@@ -3,21 +3,23 @@ package Visual;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
+import javax.swing.SwingConstants;
 import logico.User;
 
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+
 import java.awt.Color;
-import javax.swing.border.TitledBorder;
 import java.awt.Font;;
 
 public class Principal extends JFrame {
@@ -31,6 +33,7 @@ public class Principal extends JFrame {
 	private JMenu menuConsulta;
 	private JMenu menuAdministracion;
 	private JLabel labelUsuario;
+	private JLabel lblFondoIcon;
 
 	/**
 	 * Launch the application.
@@ -65,6 +68,11 @@ public class Principal extends JFrame {
 		menuBar.add(menuCitas);
 		JMenuItem itemCrearCita = new JMenuItem("Crear/Modificar Cita");
 		itemCrearCita.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		itemCrearCita.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				abrirDialogoDeCitas(); 
+			}
+		});
 		menuCitas.add(itemCrearCita);
 
 		/* MENU DE PACIENTES
@@ -111,14 +119,10 @@ public class Principal extends JFrame {
 		labelUsuario.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		contentPane.add(labelUsuario, BorderLayout.SOUTH);
 
-		JPanel panelCentro = new JPanel(); 
-		panelCentro.setLayout(null);
-		contentPane.add(panelCentro, BorderLayout.CENTER);
-
-		JLabel lblFondoIcon = new JLabel("");
+		lblFondoIcon = new JLabel("");
 		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/icons/logo.png")));
-		lblFondoIcon.setBounds(12, 0, 1878, 961);
-		panelCentro.add(lblFondoIcon);
+		lblFondoIcon.setHorizontalAlignment(SwingConstants.CENTER); 
+		contentPane.add(lblFondoIcon, BorderLayout.CENTER);
 
 	}
 
@@ -156,6 +160,15 @@ public class Principal extends JFrame {
 			System.exit(0);
 			break;
 		}
+	}
+
+	private void abrirDialogoDeCitas() {
+		JDialog dialogCitas = new JDialog(Principal.this, "Gestión de Citas", true);
+		GestionCitas panel = new GestionCitas();
+		dialogCitas.getContentPane().add(panel);
+		dialogCitas.setSize(900, 650);
+		dialogCitas.setLocationRelativeTo(Principal.this);
+		dialogCitas.setVisible(true);
 	}
 }
 
