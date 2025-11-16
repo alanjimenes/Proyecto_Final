@@ -297,5 +297,49 @@ public class Clinica {
 
 		return true;
 	}
+	
+	//Entidades
+	
+	public boolean agregarMedico(Medico medico) {
+	    if (medico == null) return false;
+
+	    for (Medico m : medicos) {
+	        if (m.getCedula().equals(medico.getCedula())) {
+	            return false; 
+	        }
+	    }
+	    medicos.add(medico);
+
+	    return true;
+	}
+	
+	public boolean agregarEnfermedad(Enfermedad enfermedad) {
+	    if (enfermedad == null) return false;
+
+	    for (Enfermedad e : enfermedades) {
+	        if (e.getCodigo_sick().equalsIgnoreCase(enfermedad.getCodigo_sick())) {
+	            return false;
+	        }
+	    }
+
+	    enfermedades.add(enfermedad);
+	    return true;
+	}
+	
+	public boolean agregarVacunaMaestra(Vacuna vacuna) {
+	    if (vacuna == null) return false;
+
+	    for (Vacuna v : vacunas) {
+	        if (v.getCodigo_vacun().equalsIgnoreCase(vacuna.getCodigo_vacun())) {
+	            return false;
+	        }
+	    }
+
+	    vacunas.add(vacuna);
+	    return true;
+	}
+
+
+
 
 }
