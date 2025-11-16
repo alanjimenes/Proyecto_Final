@@ -300,6 +300,9 @@ public class Clinica {
 	
 	//Entidades
 	
+	
+	//Medico
+	
 	public boolean agregarMedico(Medico medico) {
 	    if (medico == null) return false;
 
@@ -312,6 +315,9 @@ public class Clinica {
 
 	    return true;
 	}
+	
+	
+	//Enfermedad
 	
 	public boolean agregarEnfermedad(Enfermedad enfermedad) {
 	    if (enfermedad == null) return false;
@@ -326,7 +332,41 @@ public class Clinica {
 	    return true;
 	}
 	
-	public boolean agregarVacunaMaestra(Vacuna vacuna) {
+	public void generarReporteEnfermedades() {
+
+	    ArrayList<Enfermedad> enfermedades = new ArrayList<>();
+	    ArrayList<Integer> cantidades = new ArrayList<>();
+
+	    for (Cliente c : clientes) {
+	        Historial h = c.getHistorial();
+	        if (h == null) continue;
+
+	        for (Consulta cons : h.getConsultas()) {
+	            if (cons == null || cons.getEnfermedadesDiag() == null) continue;
+
+	            for (Enfermedad e : cons.getEnfermedadesDiag()) {
+
+	                int index = enfermedades.indexOf(e);
+
+	                if (index == -1) {
+	                    enfermedades.add(e);
+	                    cantidades.add(1);
+	                } else {
+	                    
+	                    cantidades.set(index, cantidades.get(index) + 1);
+	                }
+	            }
+	        }
+	    }
+
+	    System.out.println("=== REPORTE DE ENFERMEDADES ===");
+	    for (int i = 0; i < enfermedades.size(); i++) {
+	        System.out.println(enfermedades.get(i).getNombre() + ": " + cantidades.get(i));
+	    }
+	}
+	
+	//Vacuna
+	public boolean agregarVacuna(Vacuna vacuna) {
 	    if (vacuna == null) return false;
 
 	    for (Vacuna v : vacunas) {
@@ -338,8 +378,27 @@ public class Clinica {
 	    vacunas.add(vacuna);
 	    return true;
 	}
+	
+	public boolean aplicarVacunaCliente(Cliente cliente, Vacuna vacuna, Medico medico) {
 
+	    if (cliente == null || vacuna == null || medico == null) {
+	        return false;
+	    }
+	    RegistroVacunacion reg = new RegistroVacunacion(
+	            cliente,
+	            vacuna,
+	            LocalDate.now(),
+	            true
+	    );
 
+	    reg.setCodigo_reg("REG-VAC-" + vacuna.getCodigo_vacun() + "-" + cliente.getCedula());
+	    cliente.getRegVacunas().add(reg);
 
+	    Consulta consulta = new Consulta("CONS-VAC-" + vacuna.getCodigo_vacun(), LocalDate.now(), "Aplicación de vacuna: " + vacuna.getNombre(), "Vacuna aplicada correctamente al cliente", medico, cliente);
+	    consulta.setMedico(medico);
+	    cliente.getHistorial().agregarConsulta(consulta);
+
+	    return true;
+	}
 
 }
