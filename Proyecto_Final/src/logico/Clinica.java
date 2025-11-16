@@ -186,19 +186,7 @@ public class Clinica {
 	    }
 	    }
 	    
-	public Medico buscarMedicoCedula(String cedula) {
-		for (Medico med : this.medicos) {
-			if (med.getCedula().equals(cedula)) {
-				return med;
-			}
-		}
-		return null;
-	}
-
-	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora) {
-		return this.agenda.medicoDisponible(medico, fechaHora);
-	}
-
+	
 	
 	
 	// Citas
@@ -360,6 +348,19 @@ public class Clinica {
 	    return true;
 	}
 	
+	public Medico buscarMedicoCedula(String cedula) {
+		for (Medico med : this.medicos) {
+			if (med.getCedula().equals(cedula)) {
+				return med;
+			}
+		}
+		return null;
+	}
+
+	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora) {
+		return this.agenda.medicoDisponible(medico, fechaHora);
+	}
+
 	
 	//Enfermedad
 	
