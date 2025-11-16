@@ -25,14 +25,17 @@ import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import javax.swing.JPasswordField;
+import java.awt.Toolkit;
 
 public class RegUser extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JPasswordField passField_1;
+	private JPasswordField passField_2;
 	private JComboBox comboBox;
+
 
 	/**
 	 * Launch the application.
@@ -51,6 +54,7 @@ public class RegUser extends JDialog {
 	 * Create the dialog.
 	 */
 	public RegUser() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegUser.class.getResource("/icons/icon.png")));
 		setBounds(100, 100, 636, 412);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -66,7 +70,7 @@ public class RegUser extends JDialog {
 
 		textField = new JTextField();
 		textField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		textField.setBounds(20, 65, 127, 20); // y=49
+		textField.setBounds(20, 65, 127, 20); 
 		contentPanel.add(textField);
 		textField.setColumns(10);
 
@@ -76,11 +80,11 @@ public class RegUser extends JDialog {
 		lblPassword.setBounds(20, 147, 97, 14);
 		contentPanel.add(lblPassword);
 
-		textField_1 = new JTextField();
-		textField_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		textField_1.setColumns(10);
-		textField_1.setBounds(20, 199, 147, 20); 
-		contentPanel.add(textField_1);
+		passField_1 = new JPasswordField();
+		passField_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		passField_1.setColumns(10);
+		passField_1.setBounds(20, 199, 147, 20); 
+		contentPanel.add(passField_1);
 
 		JLabel lblTipo = new JLabel("Tipo:");
 		lblTipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -91,7 +95,7 @@ public class RegUser extends JDialog {
 		comboBox = new JComboBox();
 		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"<Seleccione>", "Administrador", "Asistente", "Medico"}));
-		comboBox.setBounds(216, 65, 127, 20); // y=113
+		comboBox.setBounds(216, 65, 127, 20);
 		contentPanel.add(comboBox);
 
 		JLabel lblConfirmarPassword = new JLabel("Confirmar Password:");
@@ -100,11 +104,11 @@ public class RegUser extends JDialog {
 		lblConfirmarPassword.setBounds(214, 147, 167, 14);
 		contentPanel.add(lblConfirmarPassword);
 
-		textField_2 = new JTextField();
-		textField_2.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		textField_2.setColumns(10);
-		textField_2.setBounds(216, 199, 147, 20);
-		contentPanel.add(textField_2);
+		passField_2 = new JPasswordField(); 
+		passField_2.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		passField_2.setColumns(10);
+		passField_2.setBounds(216, 199, 147, 20);
+		contentPanel.add(passField_2);
 
 		JLabel lblFondoIcon = new JLabel("");
 		lblFondoIcon.setVerticalAlignment(SwingConstants.TOP);
@@ -122,11 +126,14 @@ public class RegUser extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if (!textField_1.getText().equals(textField_2.getText())) {
+						String pass1 = new String(passField_1.getPassword());
+						String pass2 = new String(passField_2.getPassword());
+
+						if (!pass1.equals(pass2)) {
 							JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
 							return;
-						}				        
-						User user = new User(comboBox.getSelectedItem().toString(), textField.getText(), textField_1.getText());
+						}
+						User user = new User(comboBox.getSelectedItem().toString(), textField.getText(), pass1);
 						Control.getInstance().regUser(user);
 						try {
 							FileOutputStream empresa2 = new FileOutputStream("empresa.dat");

@@ -26,7 +26,7 @@ public class Principal extends JFrame {
 
 	private JPanel contentPane;
 	private Dimension dim;
-	private static User usuarioActual;
+	private User usuarioActual;
 	private JMenuBar menuBar;
 	private JMenu menuCitas;
 	private JMenu menuPacientes;
@@ -70,7 +70,7 @@ public class Principal extends JFrame {
 		itemCrearCita.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		itemCrearCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				abrirDialogoDeCitas(); 
+				GestionarCitas(); 
 			}
 		});
 		menuCitas.add(itemCrearCita);
@@ -162,7 +162,7 @@ public class Principal extends JFrame {
 		}
 	}
 
-	private void abrirDialogoDeCitas() {
+	private void GestionarCitas() {
 		JDialog dialogCitas = new JDialog(Principal.this, "Gestión de Citas", true);
 		GestionCitas panel = new GestionCitas();
 		dialogCitas.getContentPane().add(panel);

@@ -26,12 +26,13 @@ import java.awt.Color;
 import javax.swing.ImageIcon;
 import java.awt.Font;
 import java.awt.Toolkit;
+import javax.swing.JPasswordField;
 
 public class Login extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
-	private JTextField textField_1;
+	private JPasswordField passwordField;
 
 	/**
 	 * Launch the application.
@@ -92,7 +93,6 @@ public class Login extends JFrame {
 		setResizable(false);
 		setLocationRelativeTo(null); 
 
-
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -114,14 +114,15 @@ public class Login extends JFrame {
 		panel.add(lblContrasea);
 
 		textField = new JTextField();
+		textField.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		textField.setBounds(160, 213, 298, 36); 
 		panel.add(textField);
 		textField.setColumns(10);
 
-		textField_1 = new JTextField();
-		textField_1.setBounds(160, 292, 298, 44); 
-		panel.add(textField_1);
-		textField_1.setColumns(10);
+		passwordField = new JPasswordField(); 
+		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		passwordField.setBounds(160, 292, 298, 44); 
+		panel.add(passwordField);
 
 		JButton btnLogin = new JButton("Login");
 		btnLogin.setBackground(Color.WHITE);
@@ -129,7 +130,9 @@ public class Login extends JFrame {
 		btnLogin.setForeground(Color.BLACK);
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (Control.getInstance().confirmLogin(textField.getText(), textField_1.getText())) {
+				String usuario = textField.getText();
+				String clave = new String(passwordField.getPassword());
+				if (Control.getInstance().confirmLogin(usuario, clave)) {
 					User usuarioLogueado = Control.getLoginUser(); 
 					Principal frame = new Principal(usuarioLogueado); 
 					dispose();
@@ -144,7 +147,7 @@ public class Login extends JFrame {
 
 		JLabel lblPrinIcon = new JLabel("");
 		lblPrinIcon.setIcon(new ImageIcon(getClass().getResource("/icons/logo.png")));
-		lblPrinIcon.setBounds(-193, -101, 893, 670);
+		lblPrinIcon.setBounds(-224, 13, 893, 670);
 		panel.add(lblPrinIcon);
 	}
 }
