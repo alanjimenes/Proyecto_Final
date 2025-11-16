@@ -127,6 +127,11 @@ public class Clinica {
 		this.genCodigoUser = genCodigoUser;
 	}
 
+	
+	
+	
+	
+	
 	public void insertarCliente(Cliente cli) {
 
 		cli.setNumExpediente("CLI-" + genCodigoCliente);
@@ -135,6 +140,8 @@ public class Clinica {
 		this.clientes.add(cli);
 	}
 
+	
+	
 	public Cliente buscarClientePorCodigo(String codigoExpediente) {
 		for (Cliente cli : this.clientes) {
 			if (cli.getNumExpediente().equals(codigoExpediente)) {
@@ -143,7 +150,40 @@ public class Clinica {
 		}
 		return null;
 	}
+	
+	
 
+	public int buscarIndiceClientePorCedula(String cedula) {
+	    boolean encontrado = false;
+	    int indice = 0; 
+	    while (encontrado == false && indice < this.clientes.size()) {
+	        if (this.clientes.get(indice).getCedula().equals(cedula)) {
+	            encontrado = true; 
+	        }
+	        else {
+	            indice++;
+	        }
+	    }  
+	    if (encontrado) {
+	        return indice; 
+	    } else {
+	        return -1; 
+	    }
+	}
+	
+	public void actualizarCliente(Cliente seleccionado) {
+		int indice = buscarIndiceClientePorCedula(seleccionado.getCedula());
+		if(indice != -1) {
+			clientes.set(indice,seleccionado);
+		}	
+	}
+	
+	public void desactivarCliente(Cliente desactivar) {
+	    if (desactivar != null) {
+	        desactivar.setActivo(false);
+	    }
+	    }
+	    
 	public Medico buscarMedicoCedula(String cedula) {
 		for (Medico med : this.medicos) {
 			if (med.getCedula().equals(cedula)) {
@@ -157,6 +197,8 @@ public class Clinica {
 		return this.agenda.medicoDisponible(medico, fechaHora);
 	}
 
+	
+	
 	// Citas
 
 	public Cita buscarCita(String codigoCita) {

@@ -9,6 +9,7 @@ public class Cliente extends Persona {
 	private Historial historial;
 	private boolean enfermo;
 	private ArrayList<RegistroVacunacion> regVacunas;
+	private boolean activo;
 
 	public Cliente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
 			String direccion) {
@@ -18,7 +19,7 @@ public class Cliente extends Persona {
 		this.enfermo = false;
 		this.historial = new Historial("HIST-" + cedula);
 		this.regVacunas = new ArrayList<>();
-
+		this.activo = true;
 	}
 
 	public String getNumExpediente() {
@@ -51,5 +52,13 @@ public class Cliente extends Persona {
 
 	public void setRegVacunas(ArrayList<RegistroVacunacion> regVacunas) {
 		this.regVacunas = regVacunas;
+	}
+
+	public boolean isActivo() {
+		return activo;
+	}
+
+	public void setActivo(boolean activo) {
+		this.activo = activo;
 	}
 }
