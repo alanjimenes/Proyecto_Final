@@ -18,7 +18,7 @@ public class Clinica {
 	private ArrayList<Cita> citas;
 	private Agenda agenda;
 	private ArrayList<User> users;
-	private static Clinica instancia;
+	private static Clinica instancia = null;
 
 	public Clinica() {
 		this.clientes = new ArrayList<>();
@@ -31,8 +31,10 @@ public class Clinica {
 	}
 
 	public static Clinica getInstancia() {
+		if(instancia == null) {
+			instancia = new Clinica();
+		}
 		return instancia;
-
 	}
 
 	public static void setInstancia(Clinica instancia) {
