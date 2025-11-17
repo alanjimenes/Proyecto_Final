@@ -35,7 +35,7 @@ public class Clinica {
 	}
 
 	public static Clinica getInstancia() {
-		if(instancia == null) {
+		if (instancia == null) {
 			instancia = new Clinica();
 		}
 		return instancia;
@@ -133,11 +133,14 @@ public class Clinica {
 		this.genCodigoUser = genCodigoUser;
 	}
 
-	
-	
-	
-	
-	
+	public boolean registrarNuevoCliente(Cliente cliente) {
+		if (cliente == null)
+			return false;
+
+		insertarCliente(cliente);
+		return true;
+	}
+
 	public void insertarCliente(Cliente cli) {
 
 		cli.setNumExpediente("CLI-" + genCodigoCliente);
@@ -146,8 +149,6 @@ public class Clinica {
 		this.clientes.add(cli);
 	}
 
-	
-	
 	public Cliente buscarClientePorCodigo(String codigoExpediente) {
 		for (Cliente cli : this.clientes) {
 			if (cli.getNumExpediente().equals(codigoExpediente)) {
@@ -156,43 +157,37 @@ public class Clinica {
 		}
 		return null;
 	}
-	
-	
 
 	public int buscarIndiceClientePorCedula(String cedula) {
-	    boolean encontrado = false;
-	    int indice = 0; 
-	    while (encontrado == false && indice < this.clientes.size()) {
-	        if (this.clientes.get(indice).getCedula().equals(cedula)) {
-	            encontrado = true; 
-	        }
-	        else {
-	            indice++;
-	        }
-	    }  
-	    if (encontrado) {
-	        return indice; 
-	    } else {
-	        return -1; 
-	    }
+		boolean encontrado = false;
+		int indice = 0;
+		while (encontrado == false && indice < this.clientes.size()) {
+			if (this.clientes.get(indice).getCedula().equals(cedula)) {
+				encontrado = true;
+			} else {
+				indice++;
+			}
+		}
+		if (encontrado) {
+			return indice;
+		} else {
+			return -1;
+		}
 	}
-	
+
 	public void actualizarCliente(Cliente seleccionado) {
 		int indice = buscarIndiceClientePorCedula(seleccionado.getCedula());
-		if(indice != -1) {
-			clientes.set(indice,seleccionado);
-		}	
+		if (indice != -1) {
+			clientes.set(indice, seleccionado);
+		}
 	}
-	
+
 	public void desactivarCliente(Cliente desactivar) {
-	    if (desactivar != null) {
-	        desactivar.setActivo(false);
-	    }
-	    }
-	    
-	
-	
-	
+		if (desactivar != null) {
+			desactivar.setActivo(false);
+		}
+	}
+
 	// Citas
 
 	public Cita buscarCita(String codigoCita) {
@@ -276,6 +271,10 @@ public class Clinica {
 
 	}
 
+	public boolean agendarCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente) {
+		return crearCita(fechaHora, cedulaMedico, codigoCliente);
+	}
+
 	// Consultas
 
 	public boolean iniciarConsulta(Cita cita, String sintomasIniciales, String diagnosticoInicial) {
@@ -333,25 +332,25 @@ public class Clinica {
 
 		return true;
 	}
-	
-	//Entidades
-	
-	
-	//Medico
-	
+
+	// Entidades
+
+	// Medico
+
 	public boolean agregarMedico(Medico medico) {
-	    if (medico == null) return false;
+		if (medico == null)
+			return false;
 
-	    for (Medico m : medicos) {
-	        if (m.getCedula().equals(medico.getCedula())) {
-	            return false; 
-	        }
-	    }
-	    medicos.add(medico);
+		for (Medico m : medicos) {
+			if (m.getCedula().equals(medico.getCedula())) {
+				return false;
+			}
+		}
+		medicos.add(medico);
 
-	    return true;
+		return true;
 	}
-	
+
 	public Medico buscarMedicoCedula(String cedula) {
 		for (Medico med : this.medicos) {
 			if (med.getCedula().equals(cedula)) {
@@ -365,125 +364,153 @@ public class Clinica {
 		return this.agenda.medicoDisponible(medico, fechaHora);
 	}
 
-	
-	//Enfermedad
-	
+	// Enfermedad
+
 	public boolean agregarEnfermedad(Enfermedad enfermedad) {
-	    if (enfermedad == null) return false;
+		if (enfermedad == null)
+			return false;
 
-	    for (Enfermedad e : enfermedades) {
-	        if (e.getCodigo_sick().equalsIgnoreCase(enfermedad.getCodigo_sick())) {
-	            return false;
-	        }
-	    }
+		for (Enfermedad e : enfermedades) {
+			if (e.getCodigo_sick().equalsIgnoreCase(enfermedad.getCodigo_sick())) {
+				return false;
+			}
+		}
 
-	    enfermedades.add(enfermedad);
-	    return true;
+		enfermedades.add(enfermedad);
+		return true;
 	}
-	
+
 	public void generarReporteEnfermedades() {
 
-	    ArrayList<Enfermedad> enfermedades = new ArrayList<>();
-	    ArrayList<Integer> cantidades = new ArrayList<>();
+		ArrayList<Enfermedad> enfermedades = new ArrayList<>();
+		ArrayList<Integer> cantidades = new ArrayList<>();
 
-	    for (Cliente c : clientes) {
-	        Historial h = c.getHistorial();
-	        if (h == null) continue;
+		for (Cliente c : clientes) {
+			Historial h = c.getHistorial();
+			if (h == null)
+				continue;
 
-	        for (Consulta cons : h.getConsultas()) {
-	            if (cons == null || cons.getEnfermedadesDiag() == null) continue;
+			for (Consulta cons : h.getConsultas()) {
+				if (cons == null || cons.getEnfermedadesDiag() == null)
+					continue;
 
-	            for (Enfermedad e : cons.getEnfermedadesDiag()) {
+				for (Enfermedad e : cons.getEnfermedadesDiag()) {
 
-	                int index = enfermedades.indexOf(e);
+					int index = enfermedades.indexOf(e);
 
-	                if (index == -1) {
-	                    enfermedades.add(e);
-	                    cantidades.add(1);
-	                } else {
-	                    
-	                    cantidades.set(index, cantidades.get(index) + 1);
-	                }
-	            }
-	        }
-	    }
+					if (index == -1) {
+						enfermedades.add(e);
+						cantidades.add(1);
+					} else {
 
-	    System.out.println("=== REPORTE DE ENFERMEDADES ===");
-	    for (int i = 0; i < enfermedades.size(); i++) {
-	        System.out.println(enfermedades.get(i).getNombre() + ": " + cantidades.get(i));
-	    }
+						cantidades.set(index, cantidades.get(index) + 1);
+					}
+				}
+			}
+		}
+
+		System.out.println("=== REPORTE DE ENFERMEDADES ===");
+		for (int i = 0; i < enfermedades.size(); i++) {
+			System.out.println(enfermedades.get(i).getNombre() + ": " + cantidades.get(i));
+		}
 	}
-	
-	//Vacuna
+
+	// Vacuna
 	public boolean agregarVacuna(Vacuna vacuna) {
-	    if (vacuna == null) return false;
+		if (vacuna == null)
+			return false;
 
-	    for (Vacuna v : vacunas) {
-	        if (v.getCodigo_vacun().equalsIgnoreCase(vacuna.getCodigo_vacun())) {
-	            return false;
-	        }
-	    }
+		for (Vacuna v : vacunas) {
+			if (v.getCodigo_vacun().equalsIgnoreCase(vacuna.getCodigo_vacun())) {
+				return false;
+			}
+		}
 
-	    vacunas.add(vacuna);
-	    return true;
+		vacunas.add(vacuna);
+		return true;
 	}
-	
+
 	public boolean aplicarVacunaCliente(Cliente cliente, Vacuna vacuna, Medico medico) {
 
-	    if (cliente == null || vacuna == null || medico == null) {
-	        return false;
-	    }
-	    RegistroVacunacion reg = new RegistroVacunacion(
-	            cliente,
-	            vacuna,
-	            LocalDate.now(),
-	            true
-	    );
+		if (cliente == null || vacuna == null || medico == null) {
+			return false;
+		}
+		RegistroVacunacion reg = new RegistroVacunacion(cliente, vacuna, LocalDate.now(), true);
 
-	    reg.setCodigo_reg("REG-VAC-" + vacuna.getCodigo_vacun() + "-" + cliente.getCedula());
-	    cliente.getRegVacunas().add(reg);
+		reg.setCodigo_reg("REG-VAC-" + vacuna.getCodigo_vacun() + "-" + cliente.getCedula());
+		cliente.getRegVacunas().add(reg);
 
-	    Consulta consulta = new Consulta("CONS-VAC-" + vacuna.getCodigo_vacun(), LocalDate.now(), "Aplicación de vacuna: " + vacuna.getNombre(), "Vacuna aplicada correctamente al cliente", medico, cliente);
-	    consulta.setMedico(medico);
-	    cliente.getHistorial().agregarConsulta(consulta);
+		Consulta consulta = new Consulta("CONS-VAC-" + vacuna.getCodigo_vacun(), LocalDate.now(),
+				"Aplicación de vacuna: " + vacuna.getNombre(), "Vacuna aplicada correctamente al cliente", medico,
+				cliente);
+		consulta.setMedico(medico);
+		cliente.getHistorial().agregarConsulta(consulta);
 
-	    return true;
+		return true;
 	}
-	
-	//Manejo de datos
-	
+
+	// Manejo de datos
+
 	public void guardarDatosClinica() {
 		try {
 			FileOutputStream fos = new FileOutputStream("clinic.dat");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			
+
 			oos.close();
 			fos.close();
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	public void cargarDatosClinica() {
+
+	public boolean cargarDatosClinica() {
 		try {
 			FileInputStream fis = new FileInputStream("clinica.dat");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 
-			instancia = (Clinica)ois.readObject();
-			
+			instancia = (Clinica) ois.readObject();
+
 			ois.close();
 			fis.close();
-		}catch (Exception e) {
-			
+
+			return true;
+		} catch (Exception e) {
+			return false;
 		}
-		
-		
+
+	}
+
+	public void guardarUsuarios() {
+		try {
+			FileOutputStream fos = new FileOutputStream("usuarios.dat");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+			oos.writeObject(users);
+
+			oos.close();
+			fos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
-	
-	
+
+	@SuppressWarnings("unchecked") // Para quitar el warning de user = ....
+	public void cargarUsuarios() {
+		try {
+			FileInputStream fis = new FileInputStream("usuarios.dat");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+
+			users = (ArrayList<User>) ois.readObject();
+
+			ois.close();
+			fis.close();
+		} catch (Exception e) {
+			users = new ArrayList<>();
+		}
+	}
+
+	// Asistente
+
 }
-
-
