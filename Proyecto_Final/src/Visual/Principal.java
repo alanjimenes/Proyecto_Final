@@ -39,7 +39,7 @@ public class Principal extends JFrame {
 	 * Launch the application.
 	 */
 	public Principal(User usuarioLogueado) {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/icons/icon.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("src/icons/icon.png")));
 		this.usuarioActual = usuarioLogueado;
 		iniciarTodo(); 
 		configurarAccesosPorRol(); 
@@ -120,7 +120,7 @@ public class Principal extends JFrame {
 		contentPane.add(labelUsuario, BorderLayout.SOUTH);
 
 		lblFondoIcon = new JLabel("");
-		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/icons/logo.png")));
+		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("src/icons/logo.png")));
 		lblFondoIcon.setHorizontalAlignment(SwingConstants.CENTER); 
 		contentPane.add(lblFondoIcon, BorderLayout.CENTER);
 

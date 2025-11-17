@@ -86,7 +86,7 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/icon.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("src/icons/icon.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		setSize(620, 562); 
@@ -146,7 +146,7 @@ public class Login extends JFrame {
 		panel.add(btnLogin);
 
 		JLabel lblPrinIcon = new JLabel("");
-		lblPrinIcon.setIcon(new ImageIcon(getClass().getResource("/icons/logo.png")));
+		lblPrinIcon.setIcon(new ImageIcon(getClass().getResource("src/icons/logo.png")));
 		lblPrinIcon.setBounds(-224, 13, 893, 670);
 		panel.add(lblPrinIcon);
 	}

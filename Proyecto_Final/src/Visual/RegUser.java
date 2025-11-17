@@ -54,7 +54,7 @@ public class RegUser extends JDialog {
 	 * Create the dialog.
 	 */
 	public RegUser() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(RegUser.class.getResource("/icons/icon.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegUser.class.getResource("src/icons/icon.png")));
 		setBounds(100, 100, 636, 412);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -114,7 +114,7 @@ public class RegUser extends JDialog {
 		lblFondoIcon.setVerticalAlignment(SwingConstants.TOP);
 		lblFondoIcon.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		lblFondoIcon.setBackground(Color.WHITE);
-		lblFondoIcon.setIcon(new ImageIcon(RegUser.class.getResource("/icons/logo.png")));
+		lblFondoIcon.setIcon(new ImageIcon(RegUser.class.getResource("src/icons/logo.png")));
 		lblFondoIcon.setBounds(-181, -160, 778, 533);
 		contentPanel.add(lblFondoIcon);
 
