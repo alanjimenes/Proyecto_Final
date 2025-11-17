@@ -27,6 +27,8 @@ import javax.swing.ImageIcon;
 import java.awt.Font;
 import java.awt.Toolkit;
 import javax.swing.JPasswordField;
+import javax.swing.SwingConstants;
+import javax.swing.JSeparator;
 
 public class Login extends JFrame {
 
@@ -86,31 +88,37 @@ public class Login extends JFrame {
 	 * Create the frame./aaa
 	 */
 	public Login() {
+		setTitle("Login");
+		setBackground(new Color(60, 70, 123));
 		setIconImage(Toolkit.getDefaultToolkit().getImage("icons/seguro-de-salud.png"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		setSize(1006, 562); 
 		setResizable(false);
 		setLocationRelativeTo(null); 
-
+	
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
+		contentPane.setBackground(new Color(54, 63, 105));
 		setContentPane(contentPane);
 
 		JPanel panel = new JPanel();
-		panel.setBackground(Color.WHITE);
+		panel.setForeground(Color.WHITE);
+		panel.setBackground(new Color(60, 70, 123));
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 
 		JLabel lblUsuario = new JLabel("Usuario:");
-		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblUsuario.setForeground(Color.WHITE);
+		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		lblUsuario.setBounds(102, 171, 146, 36); 
 		panel.add(lblUsuario);
 
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
-		lblContrasea.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblContrasea.setBounds(102, 274, 123, 14); 
+		lblContrasea.setForeground(Color.WHITE);
+		lblContrasea.setFont(new Font("Bahnschrift", Font.BOLD, 20));
+		lblContrasea.setBounds(102, 265, 123, 23); 
 		panel.add(lblContrasea);
 
 		textField = new JTextField();
@@ -121,7 +129,7 @@ public class Login extends JFrame {
 
 		passwordField = new JPasswordField(); 
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		passwordField.setBounds(102, 299, 298, 44); 
+		passwordField.setBounds(102, 299, 298, 36); 
 		panel.add(passwordField);
 
 		JButton btnLogin = new JButton("Login");
@@ -144,10 +152,24 @@ public class Login extends JFrame {
 		});
 		btnLogin.setBounds(190, 370, 117, 44); 
 		panel.add(btnLogin);
-
-		JLabel lblPrinIcon = new JLabel("");
-		lblPrinIcon.setIcon(new ImageIcon("icons/logo_adaptado.png"));
-		lblPrinIcon.setBounds(480, 0, 510, 510);
-		panel.add(lblPrinIcon);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(Color.WHITE);
+		panel_1.setBounds(473, -34, 527, 580);
+		panel.add(panel_1);
+		panel_1.setBorder(null);
+				JLabel lblPrinIcon = new JLabel("");
+				panel_1.add(lblPrinIcon);
+				lblPrinIcon.setIcon(new ImageIcon("icons/logo_adaptado.png"));
+				
+				JLabel labelTitulo = new JLabel("Iniciar Sesion");
+				labelTitulo.setForeground(Color.WHITE);
+				labelTitulo.setFont(new Font("Monospaced", Font.BOLD, 32));
+				labelTitulo.setBounds(102, 58, 270, 55);
+				panel.add(labelTitulo);
+				
+				JSeparator separator = new JSeparator();
+				separator.setBounds(102, 121, 264, 2);
+				panel.add(separator);
 	}
 }
