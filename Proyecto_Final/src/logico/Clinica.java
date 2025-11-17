@@ -1,5 +1,9 @@
 package logico;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -445,5 +449,41 @@ public class Clinica {
 
 	    return true;
 	}
+	
+	//Manejo de datos
+	
+	public void guardarDatosClinica() {
+		try {
+			FileOutputStream fos = new FileOutputStream("clinic.dat");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			
+			oos.close();
+			fos.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void cargarDatosClinica() {
+		try {
+			FileInputStream fis = new FileInputStream("clinica.dat");
+			ObjectInputStream ois = new ObjectInputStream(fis);
 
+			instancia = (Clinica)ois.readObject();
+			
+			ois.close();
+			fis.close();
+		}catch (Exception e) {
+			
+		}
+		
+		
+		}
+	}
+	
+	
 }
+
+
