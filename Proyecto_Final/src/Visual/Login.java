@@ -83,13 +83,13 @@ public class Login extends JFrame {
 	}
 
 	/**
-	 * Create the frame.
+	 * Create the frame./aaa
 	 */
 	public Login() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("src/icons/icon.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\alanj\\Downloads\\seguro-de-salud.png"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		setSize(620, 562); 
+		setSize(1006, 562); 
 		setResizable(false);
 		setLocationRelativeTo(null); 
 
@@ -105,23 +105,23 @@ public class Login extends JFrame {
 
 		JLabel lblUsuario = new JLabel("Usuario:");
 		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblUsuario.setBounds(160, 171, 146, 36); 
+		lblUsuario.setBounds(102, 171, 146, 36); 
 		panel.add(lblUsuario);
 
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
 		lblContrasea.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblContrasea.setBounds(160, 265, 123, 14); 
+		lblContrasea.setBounds(102, 274, 123, 14); 
 		panel.add(lblContrasea);
 
 		textField = new JTextField();
 		textField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		textField.setBounds(160, 213, 298, 36); 
+		textField.setBounds(102, 218, 298, 36); 
 		panel.add(textField);
 		textField.setColumns(10);
 
 		passwordField = new JPasswordField(); 
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		passwordField.setBounds(160, 292, 298, 44); 
+		passwordField.setBounds(102, 299, 298, 44); 
 		panel.add(passwordField);
 
 		JButton btnLogin = new JButton("Login");
@@ -142,12 +142,12 @@ public class Login extends JFrame {
 				}
 			}
 		});
-		btnLogin.setBounds(252, 371, 117, 44); 
+		btnLogin.setBounds(190, 370, 117, 44); 
 		panel.add(btnLogin);
 
 		JLabel lblPrinIcon = new JLabel("");
-		lblPrinIcon.setIcon(new ImageIcon(getClass().getResource("src/icons/logo.png")));
-		lblPrinIcon.setBounds(-224, 13, 893, 670);
+		lblPrinIcon.setIcon(new ImageIcon("C:\\Users\\alanj\\Downloads\\logo_adaptado.png"));
+		lblPrinIcon.setBounds(480, 0, 510, 510);
 		panel.add(lblPrinIcon);
 	}
 }
