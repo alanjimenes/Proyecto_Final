@@ -91,7 +91,7 @@ public class Login extends JFrame {
 	public Login() {
 		setTitle("Login");
 		setBackground(new Color(60, 70, 123));
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/icons/seguro-de-salud.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/img/seguro-de-salud.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		setSize(1006, 562); 
@@ -163,7 +163,7 @@ public class Login extends JFrame {
 		panel_1.setBorder(null);
 				JLabel lblPrinIcon = new JLabel("");
 				panel_1.add(lblPrinIcon);
-				lblPrinIcon.setIcon(new ImageIcon(Login.class.getResource("/icons/logo_adaptado.png")));
+				lblPrinIcon.setIcon(new ImageIcon(Login.class.getResource("/img/logo_adaptado.png")));
 				
 				JLabel labelTitulo = new JLabel("Iniciar Sesion");
 				labelTitulo.setForeground(Color.WHITE);

@@ -54,7 +54,7 @@ public class RegUser extends JDialog {
 	 * Create the dialog.
 	 */
 	public RegUser() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage("/C:/Users/alanj/git/Proyecto_Final/Proyecto_Final/icons/seguro-de-salud.png"));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("/img/seguro-de-salud.png"));
 		setBounds(100, 100, 636, 412);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -114,7 +114,7 @@ public class RegUser extends JDialog {
 		lblFondoIcon.setVerticalAlignment(SwingConstants.TOP);
 		lblFondoIcon.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		lblFondoIcon.setBackground(Color.WHITE);
-		lblFondoIcon.setIcon(new ImageIcon("/C:/Users/alanj/git/Proyecto_Final/Proyecto_Final/icons/logo.png"));
+		lblFondoIcon.setIcon(new ImageIcon("/img/logo.png"));
 		lblFondoIcon.setBounds(-191, -142, 801, 533);
 		contentPanel.add(lblFondoIcon);
 

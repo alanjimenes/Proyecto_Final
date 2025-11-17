@@ -41,22 +41,22 @@ public class Principal extends JFrame {
 	 * Launch the application.
 	 */
 	public Principal(User usuarioLogueado) {
-	    
-	    setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/icons/seguro-de-salud.png")));
-	    this.usuarioActual = usuarioLogueado;
-	    
-	    iniciarTodo(); 
-	    configurarAccesosPorRol(); 
-	    panel_1 = new Panel();
-	    panel_1.setBackground(new Color(60, 70, 123));
-	    contentPane.add(panel_1, BorderLayout.SOUTH);
-	    lblUsuario = new JLabel("");
-	    lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/icons/hospital.png")));
-	    lblUsuario.setForeground(Color.WHITE);
-	    lblUsuario.setText("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
-	    lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 32));
-	    panel_1.add(lblUsuario);
-	    	}
+
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
+		this.usuarioActual = usuarioLogueado;
+
+		iniciarTodo(); 
+		configurarAccesosPorRol(); 
+		panel_1 = new Panel();
+		panel_1.setBackground(new Color(60, 70, 123));
+		contentPane.add(panel_1, BorderLayout.SOUTH);
+		lblUsuario = new JLabel("");
+		lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/hospital.png")));
+		lblUsuario.setForeground(Color.WHITE);
+		lblUsuario.setText("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
+		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 32));
+		panel_1.add(lblUsuario);
+	}
 	/**
 	 * Create the frame.
 	 */
@@ -76,7 +76,7 @@ public class Principal extends JFrame {
 		/* MENU DE CITAS */
 		menuCitas = new JMenu("  Gesti\u00F3n Citas  ");
 		menuCitas.setForeground(Color.WHITE);
-		menuCitas.setIcon(new ImageIcon(Principal.class.getResource("/icons/cita.png")));
+		menuCitas.setIcon(new ImageIcon(Principal.class.getResource("/img/cita.png")));
 		menuCitas.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuCitas);
 		JMenuItem itemCrearCita = new JMenuItem("Crear/Modificar Cita");
@@ -91,7 +91,7 @@ public class Principal extends JFrame {
 		/* MENU DE PACIENTES*/
 		menuPacientes = new JMenu("  Gesti\u00F3n Pacientes");
 		menuPacientes.setForeground(Color.WHITE);
-		menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/icons/gestion-de-clientes.png")));
+		menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/img/gestion-de-clientes.png")));
 		menuPacientes.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuPacientes);
 		JMenuItem itemRegPaciente = new JMenuItem("Registrar Paciente");
@@ -101,7 +101,7 @@ public class Principal extends JFrame {
 		/* MENU DE CONSULTAS	*/
 		menuConsulta = new JMenu("  Consultas  ");
 		menuConsulta.setForeground(Color.WHITE);
-		menuConsulta.setIcon(new ImageIcon(Principal.class.getResource("/icons/dato-de-registro.png")));
+		menuConsulta.setIcon(new ImageIcon(Principal.class.getResource("/img/dato-de-registro.png")));
 		menuConsulta.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuConsulta);
 		JMenuItem itemVerMisCitas = new JMenuItem("Ver Citas de Hoy");
@@ -111,7 +111,7 @@ public class Principal extends JFrame {
 		/* MENU DE ADMINISTRACION*/
 		menuAdministracion = new JMenu("  Administraci\u00F3n");
 		menuAdministracion.setForeground(Color.WHITE);
-		menuAdministracion.setIcon(new ImageIcon(Principal.class.getResource("/icons/doctor.png")));
+		menuAdministracion.setIcon(new ImageIcon(Principal.class.getResource("/img/doctor.png")));
 		menuAdministracion.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuAdministracion);
 		JMenuItem itemGestionarUser = new JMenuItem("Gestionar Usuarios");
@@ -130,7 +130,7 @@ public class Principal extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		lblFondoIcon = new JLabel("");
-		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/icons/logo.png")));
+		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/img/logo.png")));
 		lblFondoIcon.setHorizontalAlignment(SwingConstants.CENTER); 
 		contentPane.add(lblFondoIcon, BorderLayout.CENTER);
 
