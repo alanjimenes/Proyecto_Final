@@ -363,6 +363,11 @@ public class Clinica {
 	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora) {
 		return this.agenda.medicoDisponible(medico, fechaHora);
 	}
+	
+	public boolean verificarDisponibilidad(Medico medico, LocalDateTime fechaHora) {
+	    return medicoDisponible(medico, fechaHora);
+	}
+
 
 	// Enfermedad
 
