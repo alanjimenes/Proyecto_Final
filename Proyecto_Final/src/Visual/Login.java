@@ -86,7 +86,7 @@ public class Login extends JFrame {
 	 * Create the frame./aaa
 	 */
 	public Login() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\alanj\\Downloads\\seguro-de-salud.png"));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("icons/seguro-de-salud.png"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		setSize(1006, 562); 
@@ -146,7 +146,7 @@ public class Login extends JFrame {
 		panel.add(btnLogin);
 
 		JLabel lblPrinIcon = new JLabel("");
-		lblPrinIcon.setIcon(new ImageIcon("C:\\Users\\alanj\\Downloads\\logo_adaptado.png"));
+		lblPrinIcon.setIcon(new ImageIcon("icons/logo_adaptado.png"));
 		lblPrinIcon.setBounds(480, 0, 510, 510);
 		panel.add(lblPrinIcon);
 	}
