@@ -346,8 +346,8 @@ public class Clinica {
 				return false;
 			}
 		}
-		medicos.add(medico);
 
+		medicos.add(medico);
 		return true;
 	}
 
@@ -413,6 +413,7 @@ public class Clinica {
 			}
 		}
 
+		//Para probarlo en la consola
 		System.out.println("=== REPORTE DE ENFERMEDADES ===");
 		for (int i = 0; i < enfermedades.size(); i++) {
 			System.out.println(enfermedades.get(i).getNombre() + ": " + cantidades.get(i));
@@ -457,16 +458,16 @@ public class Clinica {
 
 	public void guardarDatosClinica() {
 		try {
-			FileOutputStream fos = new FileOutputStream("clinic.dat");
+			FileOutputStream fos = new FileOutputStream("clinica.dat");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+			oos.writeObject(instancia);
 
 			oos.close();
 			fos.close();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public boolean cargarDatosClinica() {
