@@ -29,6 +29,7 @@ import java.awt.Toolkit;
 import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
 import javax.swing.JSeparator;
+import java.awt.FlowLayout;
 
 public class Login extends JFrame {
 
@@ -90,7 +91,7 @@ public class Login extends JFrame {
 	public Login() {
 		setTitle("Login");
 		setBackground(new Color(60, 70, 123));
-		setIconImage(Toolkit.getDefaultToolkit().getImage("res/icons/seguro-de-salud.png"));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/icons/seguro-de-salud.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		setSize(1006, 562); 
@@ -100,7 +101,7 @@ public class Login extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
-		contentPane.setBackground(new Color(54, 63, 105));
+		contentPane.setBackground(new Color(60, 70, 123));
 		setContentPane(contentPane);
 
 		JPanel panel = new JPanel();
@@ -154,13 +155,15 @@ public class Login extends JFrame {
 		panel.add(btnLogin);
 		
 		JPanel panel_1 = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
 		panel_1.setBackground(Color.WHITE);
-		panel_1.setBounds(473, -34, 527, 580);
+		panel_1.setBounds(463, -42, 527, 580);
 		panel.add(panel_1);
 		panel_1.setBorder(null);
 				JLabel lblPrinIcon = new JLabel("");
 				panel_1.add(lblPrinIcon);
-				lblPrinIcon.setIcon(new ImageIcon("res/icons/logo_adaptado.png"));
+				lblPrinIcon.setIcon(new ImageIcon(Login.class.getResource("/icons/logo_adaptado.png")));
 				
 				JLabel labelTitulo = new JLabel("Iniciar Sesion");
 				labelTitulo.setForeground(Color.WHITE);

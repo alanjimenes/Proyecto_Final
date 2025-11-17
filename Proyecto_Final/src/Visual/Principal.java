@@ -33,38 +33,30 @@ public class Principal extends JFrame {
 	private JMenu menuPacientes;
 	private JMenu menuConsulta;
 	private JMenu menuAdministracion;
-	private JLabel labelUsuario;
 	private JLabel lblFondoIcon;
 	private Panel panel_1;
-	private JLabel lblNewLabel;
+	private JLabel lblUsuario;
 
 	/**
 	 * Launch the application.
 	 */
 	public Principal(User usuarioLogueado) {
-		
-		// --- INICIO DEL DIAGNÓSTICO ---
-		System.out.println("--- DIAGNÓSTICO ---");
-		System.out.println("1. ¿Dónde estoy?: " + Principal.class.getResource(""));
-		System.out.println("2. Buscando sin barra: " + Principal.class.getResource("icons/icon.png"));
-		System.out.println("3. Buscando con barra: " + Principal.class.getResource("res/icons/icon.png"));
-		System.out.println("-------------------");
-		// --- FIN DEL DIAGNÓSTICO ---
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/icons/seguro-de-salud.png")));
-		this.usuarioActual = usuarioLogueado;
-		iniciarTodo(); 
-		configurarAccesosPorRol(); 
-		labelUsuario.setText("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
-		
-		panel_1 = new Panel();
-		panel_1.setBackground(new Color(60, 70, 123));
-		contentPane.add(panel_1, BorderLayout.NORTH);
-		
-		lblNewLabel = new JLabel("New label");
-		panel_1.add(lblNewLabel);
-		
-	}
-
+	    
+	    setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/icons/seguro-de-salud.png")));
+	    this.usuarioActual = usuarioLogueado;
+	    
+	    iniciarTodo(); 
+	    configurarAccesosPorRol(); 
+	    panel_1 = new Panel();
+	    panel_1.setBackground(new Color(60, 70, 123));
+	    contentPane.add(panel_1, BorderLayout.SOUTH);
+	    lblUsuario = new JLabel("");
+	    lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/icons/hospital.png")));
+	    lblUsuario.setForeground(Color.WHITE);
+	    lblUsuario.setText("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
+	    lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 32));
+	    panel_1.add(lblUsuario);
+	    	}
 	/**
 	 * Create the frame.
 	 */
@@ -77,13 +69,15 @@ public class Principal extends JFrame {
 		setLocationRelativeTo(null);
 
 		menuBar = new JMenuBar();
+		menuBar.setForeground(Color.WHITE);
+		menuBar.setBackground(new Color(60, 70, 123));
 		setJMenuBar(menuBar);
 
-		/* MENU DE CITAS
-		 * AGREGAR LAS COSAS DE CITAS AQUI
-		 */
-		menuCitas = new JMenu("Gestión Citas");
-		menuCitas.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		/* MENU DE CITAS */
+		menuCitas = new JMenu("  Gesti\u00F3n Citas  ");
+		menuCitas.setForeground(Color.WHITE);
+		menuCitas.setIcon(new ImageIcon(Principal.class.getResource("/icons/cita.png")));
+		menuCitas.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuCitas);
 		JMenuItem itemCrearCita = new JMenuItem("Crear/Modificar Cita");
 		itemCrearCita.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -94,31 +88,31 @@ public class Principal extends JFrame {
 		});
 		menuCitas.add(itemCrearCita);
 
-		/* MENU DE PACIENTES
-		 * AGREGAR LAS COSAS DE PACIENTES AQUI
-		 */
-		menuPacientes = new JMenu("Gestión Pacientes");
-		menuPacientes.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		/* MENU DE PACIENTES*/
+		menuPacientes = new JMenu("  Gesti\u00F3n Pacientes");
+		menuPacientes.setForeground(Color.WHITE);
+		menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/icons/gestion-de-clientes.png")));
+		menuPacientes.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuPacientes);
 		JMenuItem itemRegPaciente = new JMenuItem("Registrar Paciente");
 		itemRegPaciente.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuPacientes.add(itemRegPaciente);
 
-		/* MENU DE CONSULTAS
-		 * AGREGAR LAS COSAS DE CONSULTAS AQUI
-		 */
-		menuConsulta = new JMenu("Consultas");
-		menuConsulta.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		/* MENU DE CONSULTAS	*/
+		menuConsulta = new JMenu("  Consultas  ");
+		menuConsulta.setForeground(Color.WHITE);
+		menuConsulta.setIcon(new ImageIcon(Principal.class.getResource("/icons/dato-de-registro.png")));
+		menuConsulta.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuConsulta);
 		JMenuItem itemVerMisCitas = new JMenuItem("Ver Citas de Hoy");
 		itemVerMisCitas.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuConsulta.add(itemVerMisCitas);
 
-		/* MENU DE ADMINISTRACION
-		 * AGREGAR LAS COSAS DE ADMINISTRACION AQUI
-		 */
-		menuAdministracion = new JMenu("Administración");
-		menuAdministracion.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		/* MENU DE ADMINISTRACION*/
+		menuAdministracion = new JMenu("  Administraci\u00F3n");
+		menuAdministracion.setForeground(Color.WHITE);
+		menuAdministracion.setIcon(new ImageIcon(Principal.class.getResource("/icons/doctor.png")));
+		menuAdministracion.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuAdministracion);
 		JMenuItem itemGestionarUser = new JMenuItem("Gestionar Usuarios");
 		itemGestionarUser.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -135,12 +129,8 @@ public class Principal extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 
-		labelUsuario = new JLabel("Cargando...");
-		labelUsuario.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		contentPane.add(labelUsuario, BorderLayout.SOUTH);
-
 		lblFondoIcon = new JLabel("");
-		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/icons/logo_adaptado.png")));
+		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/icons/logo.png")));
 		lblFondoIcon.setHorizontalAlignment(SwingConstants.CENTER); 
 		contentPane.add(lblFondoIcon, BorderLayout.CENTER);
 
