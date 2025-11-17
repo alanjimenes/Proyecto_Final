@@ -20,7 +20,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 
 import java.awt.Color;
-import java.awt.Font;;
+import java.awt.Font;
+import java.awt.Panel;;
 
 public class Principal extends JFrame {
 
@@ -34,16 +35,34 @@ public class Principal extends JFrame {
 	private JMenu menuAdministracion;
 	private JLabel labelUsuario;
 	private JLabel lblFondoIcon;
+	private Panel panel_1;
+	private JLabel lblNewLabel;
 
 	/**
 	 * Launch the application.
 	 */
 	public Principal(User usuarioLogueado) {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("src/icons/icon.png")));
+		
+		// --- INICIO DEL DIAGNÓSTICO ---
+		System.out.println("--- DIAGNÓSTICO ---");
+		System.out.println("1. ¿Dónde estoy?: " + Principal.class.getResource(""));
+		System.out.println("2. Buscando sin barra: " + Principal.class.getResource("icons/icon.png"));
+		System.out.println("3. Buscando con barra: " + Principal.class.getResource("res/icons/icon.png"));
+		System.out.println("-------------------");
+		// --- FIN DEL DIAGNÓSTICO ---
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/icons/seguro-de-salud.png")));
 		this.usuarioActual = usuarioLogueado;
 		iniciarTodo(); 
 		configurarAccesosPorRol(); 
 		labelUsuario.setText("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
+		
+		panel_1 = new Panel();
+		panel_1.setBackground(new Color(60, 70, 123));
+		contentPane.add(panel_1, BorderLayout.NORTH);
+		
+		lblNewLabel = new JLabel("New label");
+		panel_1.add(lblNewLabel);
+		
 	}
 
 	/**
@@ -110,6 +129,7 @@ public class Principal extends JFrame {
 
 
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
 		contentPane.setForeground(Color.WHITE);
 		contentPane.setBorder(null);
 		setContentPane(contentPane);
@@ -120,7 +140,7 @@ public class Principal extends JFrame {
 		contentPane.add(labelUsuario, BorderLayout.SOUTH);
 
 		lblFondoIcon = new JLabel("");
-		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("src/icons/logo.png")));
+		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/icons/logo_adaptado.png")));
 		lblFondoIcon.setHorizontalAlignment(SwingConstants.CENTER); 
 		contentPane.add(lblFondoIcon, BorderLayout.CENTER);
 
