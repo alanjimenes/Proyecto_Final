@@ -171,5 +171,3 @@ public class Principal extends JFrame {
 		dialogCitas.setVisible(true);
 	}
 }
-
-
