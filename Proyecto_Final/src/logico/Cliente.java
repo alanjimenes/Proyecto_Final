@@ -9,17 +9,16 @@ public class Cliente extends Persona {
 	private Historial historial;
 	private boolean enfermo;
 	private ArrayList<RegistroVacunacion> regVacunas;
-	private boolean activo;
 
 	public Cliente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			String direccion) {
-
-		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion);
-
-		this.enfermo = false;
-		this.historial = new Historial("HIST-" + cedula);
-		this.regVacunas = new ArrayList<>();
-		this.activo = true;
+			String direccion, boolean activo, String numExpediente, Historial historial, boolean enfermo,
+			ArrayList<RegistroVacunacion> regVacunas, boolean activo2) {
+		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion, activo);
+		this.numExpediente = numExpediente;
+		this.historial = historial;
+		this.enfermo = enfermo;
+		this.regVacunas = regVacunas;
+		activo = activo2;
 	}
 
 	public String getNumExpediente() {

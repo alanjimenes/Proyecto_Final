@@ -11,9 +11,10 @@ public abstract class Persona {
 	protected LocalDate fechaNacimiento;
 	protected String telefono;
 	protected String direccion;
+	protected boolean activo;
 
 	public Persona(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			String direccion) {
+			String direccion, boolean activo) {
 		super();
 		this.cedula = cedula;
 		this.nombre = nombre;
@@ -21,6 +22,7 @@ public abstract class Persona {
 		this.fechaNacimiento = fechaNacimiento;
 		this.telefono = telefono;
 		this.direccion = direccion;
+		this.activo = true;
 	}
 
 	public String getCedula() {
@@ -69,6 +71,13 @@ public abstract class Persona {
 
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
-	} 
+	}
 
+	public boolean isActivo() {
+		return activo;
+	}
+
+	public void setActivo(boolean activo) {
+		this.activo = activo;
+	} 
 }

@@ -15,8 +15,9 @@ public class Medico extends Persona implements Serializable {
 	private ArrayList<Cita> citasAsignadas;
 
 	public Medico(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
-			String direccion, Especialidad especialidad, int maxCitasPorDia) {
-		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion);
+			String direccion, boolean activo, Especialidad especialidad, int maxCitasPorDia,
+			ArrayList<Consulta> consultasRealizadas, ArrayList<Cita> citasAsignadas) {
+		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion, activo);
 		this.especialidad = especialidad;
 		this.maxCitasPorDia = maxCitasPorDia;
 		this.consultasRealizadas = new ArrayList<>();
@@ -76,7 +77,7 @@ public class Medico extends Persona implements Serializable {
 	public void marcarParaResumen(Consulta consulta) {
 		if (consulta == null)
 			return;
-		
+
 		if (!this.consultasRealizadas.contains(consulta)) {
 			this.consultasRealizadas.add(consulta);
 		}
