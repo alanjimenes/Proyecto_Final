@@ -96,7 +96,28 @@ public class Principal extends JFrame {
 		menuBar.add(menuPacientes);
 		JMenuItem itemRegPaciente = new JMenuItem("Registrar Paciente");
 		itemRegPaciente.setFont(new Font("Tahoma", Font.PLAIN, 16));
+
+		JMenuItem itemRegCliente = new JMenuItem("Registrar Paciente");
+		itemRegPaciente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegClientes reg = new RegClientes();
+				reg.setModal(true);
+				reg.setVisible(true);
+			}
+		});
 		menuPacientes.add(itemRegPaciente);
+
+		JMenuItem itemListarPacientes = new JMenuItem("Listar Pacientes");
+		itemListarPacientes.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		itemListarPacientes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConsultarClientes consulta = new ConsultarClientes();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
+		});
+		menuPacientes.add(itemListarPacientes);
+
 
 		/* MENU DE CONSULTAS	*/
 		menuConsulta = new JMenu("  Consultas  ");
@@ -133,6 +154,7 @@ public class Principal extends JFrame {
 			}
 		});
 		menuGestionMedicos.add(itemRegEspecialidad);
+
 		JMenuItem itemRegMedico = new JMenuItem("Registrar Médico");
 		itemRegMedico.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		itemRegMedico.addActionListener(new ActionListener() {
@@ -143,6 +165,7 @@ public class Principal extends JFrame {
 			}
 		});
 		menuGestionMedicos.add(itemRegMedico);
+
 		JMenuItem itemListarMedicos = new JMenuItem("Listar Médicos");
 		itemListarMedicos.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		itemListarMedicos.addActionListener(new ActionListener() {
@@ -152,7 +175,8 @@ public class Principal extends JFrame {
 				consulta.setVisible(true);
 			}
 		});
-		menuAdministracion.add(itemListarMedicos);
+		menuGestionMedicos.add(itemListarMedicos);
+
 		menuAdministracion.add(menuGestionMedicos);
 
 
