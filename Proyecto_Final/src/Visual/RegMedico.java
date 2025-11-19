@@ -36,8 +36,37 @@ public class RegMedico extends JDialog {
 	private JComboBox<String> cbxEspecialidad;
 	private JDateChooser dateChooser;
 	private JSpinner spnMaxCitas;
+	private JButton okButton;
+	private Medico medicoActual = null; 
 
 	public RegMedico() {
+		initComponents();
+		this.medicoActual = null;
+	}
+
+	public RegMedico(Medico medicoEditar) {
+		initComponents(); 
+		this.medicoActual = medicoEditar;
+		setTitle("Modificar Médico");
+		okButton.setText("Actualizar");
+
+		txtCedula.setText(medicoEditar.getCedula());
+		txtCedula.setEditable(false); 
+		txtNombre.setText(medicoEditar.getNombre());
+		txtApellido.setText(medicoEditar.getApellido());
+		txtTelefono.setText(medicoEditar.getTelefono());
+		txtDireccion.setText(medicoEditar.getDireccion());
+
+		if(medicoEditar.getEspecialidad() != null) {
+			cbxEspecialidad.setSelectedItem(medicoEditar.getEspecialidad().getNombre());
+		}
+		spnMaxCitas.setValue(medicoEditar.getMaxCitasPorDia());
+		if(medicoEditar.getFechaNacimiento() != null) {
+			Date fecha = Date.from(medicoEditar.getFechaNacimiento().atStartOfDay(ZoneId.systemDefault()).toInstant());
+			dateChooser.setDate(fecha);
+		}
+	}
+	private void initComponents() {
 		setTitle("Registrar Médico");
 		setBounds(100, 100, 550, 450);
 		setLocationRelativeTo(null);
@@ -99,6 +128,7 @@ public class RegMedico extends JDialog {
 		dateChooser.setBounds(100, 147, 150, 20);
 		contentPanel.add(dateChooser);
 
+
 		JLabel lblEspecialidad = new JLabel("Especialidad:");
 		lblEspecialidad.setBounds(20, 210, 100, 14);
 		contentPanel.add(lblEspecialidad);
@@ -107,7 +137,7 @@ public class RegMedico extends JDialog {
 		cbxEspecialidad.setBounds(120, 207, 200, 20);
 		contentPanel.add(cbxEspecialidad);
 
-		//BOTON PARA ACCEDER A CREAR ESPECIALIDAD DESDE AHI MISMO
+		// BOTON EXTRA PARA ESPECIALIDAD
 		JButton btnAddEsp = new JButton("+");
 		btnAddEsp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -125,10 +155,10 @@ public class RegMedico extends JDialog {
 		contentPanel.add(lblMaxCitas);
 
 		spnMaxCitas = new JSpinner();
-		//MAXCITAS: Valor inicial 5, Min 5, Max 50
-		spnMaxCitas.setModel(new SpinnerNumberModel(10, 1, 50, 1)); 
+		spnMaxCitas.setModel(new SpinnerNumberModel(10, 1, 100, 1)); 
 		spnMaxCitas.setBounds(120, 247, 60, 20);
 		contentPanel.add(spnMaxCitas);
+
 		cargarEspecialidades();
 
 		{
@@ -136,10 +166,10 @@ public class RegMedico extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("Registrar");
+				okButton = new JButton("Registrar");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						registrarMedico();
+						gestionMedico();
 					}
 				});
 				okButton.setActionCommand("OK");
@@ -167,34 +197,52 @@ public class RegMedico extends JDialog {
 		}
 	}
 
-	private void registrarMedico() {
-		if (txtCedula.getText().isEmpty() || txtNombre.getText().isEmpty() || 
-				dateChooser.getDate() == null || cbxEspecialidad.getSelectedIndex() <= 0) {
-			JOptionPane.showMessageDialog(null, "Por favor llene todos los campos requeridos.");
-			return;
-		}
-		if (Clinica.getInstancia().buscarMedicoCedula(txtCedula.getText()) != null) {
-			JOptionPane.showMessageDialog(null, "Ya existe un médico con esa cédula.");
+	private void gestionMedico() {
+		if (txtNombre.getText().isEmpty() || dateChooser.getDate() == null || cbxEspecialidad.getSelectedIndex() <= 0) {
+			JOptionPane.showMessageDialog(null, "Por favor llene los campos obligatorios.");
 			return;
 		}
 		String nombreEsp = (String) cbxEspecialidad.getSelectedItem();
 		Especialidad espSeleccionada = Clinica.getInstancia().buscarEspecialidadPorNombre(nombreEsp);
 		Date date = dateChooser.getDate();
 		LocalDate fechaNac = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		Medico nuevoMedico = new Medico(
-				txtCedula.getText(),
-				txtNombre.getText(),
-				txtApellido.getText(),
-				fechaNac,
-				txtTelefono.getText(),
-				txtDireccion.getText(),
-				true, 
-				espSeleccionada,
-				(int) spnMaxCitas.getValue(), null, null);
 
-		Clinica.getInstancia().agregarMedico(nuevoMedico);
-		Clinica.getInstancia().guardarDatosClinica();
-		JOptionPane.showMessageDialog(null, "Médico registrado correctamente.");
+		if (medicoActual == null) {
+			if (txtCedula.getText().isEmpty()) {
+				JOptionPane.showMessageDialog(null, "La cédula es obligatoria.");
+				return;
+			}
+			if (Clinica.getInstancia().buscarMedicoCedula(txtCedula.getText()) != null) {
+				JOptionPane.showMessageDialog(null, "Ya existe un médico con esa cédula.");
+				return;
+			}
+
+			Medico nuevoMedico = new Medico(
+					txtCedula.getText(),
+					txtNombre.getText(),
+					txtApellido.getText(),
+					fechaNac,
+					txtTelefono.getText(),
+					txtDireccion.getText(),
+					true,
+					espSeleccionada,
+					(int) spnMaxCitas.getValue(),null, null);
+
+			Clinica.getInstancia().agregarMedico(nuevoMedico);
+			JOptionPane.showMessageDialog(null, "Médico registrado correctamente.");
+
+		} else {
+			medicoActual.setNombre(txtNombre.getText());
+			medicoActual.setApellido(txtApellido.getText());
+			medicoActual.setTelefono(txtTelefono.getText());
+			medicoActual.setDireccion(txtDireccion.getText());
+			medicoActual.setFechaNacimiento(fechaNac);
+			medicoActual.setEspecialidad(espSeleccionada);
+			medicoActual.setMaxCitasPorDia((int) spnMaxCitas.getValue());
+
+			JOptionPane.showMessageDialog(null, "Médico actualizado correctamente.");
+		}
+		Clinica.getInstancia().guardarDatosClinica(); 
 		dispose();
 	}
 }

@@ -114,10 +114,13 @@ public class Principal extends JFrame {
 		menuAdministracion.setIcon(new ImageIcon(Principal.class.getResource("/img/doctor.png")));
 		menuAdministracion.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuAdministracion);
+
+		//USUARIOS
 		JMenuItem itemGestionarUser = new JMenuItem("Gestionar Usuarios");
 		itemGestionarUser.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuAdministracion.add(itemGestionarUser);
 
+		//MEDICOS
 		JMenu menuGestionMedicos = new JMenu("Gestionar Médicos");
 		menuGestionMedicos.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		JMenuItem itemRegEspecialidad = new JMenuItem("Registrar Especialidad");
@@ -139,7 +142,17 @@ public class Principal extends JFrame {
 				regMedico.setVisible(true);
 			}
 		});
-		menuGestionMedicos.add(itemRegMedico); 
+		menuGestionMedicos.add(itemRegMedico);
+		JMenuItem itemListarMedicos = new JMenuItem("Listar Médicos");
+		itemListarMedicos.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		itemListarMedicos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConsultarMedicos consulta = new ConsultarMedicos();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
+		});
+		menuAdministracion.add(itemListarMedicos);
 		menuAdministracion.add(menuGestionMedicos);
 
 
