@@ -1,9 +1,12 @@
 package logico;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Agenda {
+public class Agenda implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora) {
 		if (medico.getCitasAsignadas() == null) {

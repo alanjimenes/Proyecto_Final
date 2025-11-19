@@ -1,10 +1,12 @@
 package logico;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Cliente extends Persona {
+public class Cliente extends Persona implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private String numExpediente;
 	private Historial historial;
 	private boolean enfermo;

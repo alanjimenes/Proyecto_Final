@@ -8,7 +8,6 @@ import java.util.Objects;
 public class Medico extends Persona implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
 	private Especialidad especialidad;
 	private int maxCitasPorDia;
 	private ArrayList<Consulta> consultasRealizadas;

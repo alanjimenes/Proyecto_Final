@@ -1,6 +1,10 @@
 package logico;
 
-public class Especialidad {
+import java.io.Serializable;
+
+public class Especialidad implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	private String codigo_espe;
 	private String nombre;
 
@@ -12,7 +16,7 @@ public class Especialidad {
 	public void setCodigo_espe(String codigo_espe) {
 		this.codigo_espe = codigo_espe;
 	}
-	
+
 	public String getNombre() {
 		return nombre;
 	}
@@ -24,5 +28,5 @@ public class Especialidad {
 	public String getCodigo_espe() {
 		return codigo_espe;
 	}
-	
+
 }

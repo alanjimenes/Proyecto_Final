@@ -4,12 +4,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class Clinica {
+public class Clinica implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private int genCodigoCliente = 1;
 	private int genCodigoCita = 1;
 	private int genCodigoConsulta = 1;
@@ -539,5 +541,37 @@ public class Clinica {
 			}
 		}
 		return null;
+	}
+
+	/*
+	 * OJO AQUI: LEER BIEN ANTES DE DAR ENTER
+	 * 
+	 * O J O 
+	 * 
+	 * DEJAR ESTOS METODOS AL FINAL :)
+	 * 
+	 */
+	public void guardarDatos() {
+		try {
+			FileOutputStream archivo = new FileOutputStream("clinica.dat");
+			ObjectOutputStream escritor = new ObjectOutputStream(archivo);
+			escritor.writeObject(instancia);
+			escritor.close();
+			archivo.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void cargarDatos() {
+		try {
+			FileInputStream archivo = new FileInputStream("clinica.dat");
+			ObjectInputStream lector = new ObjectInputStream(archivo);
+			instancia = (Clinica) lector.readObject();
+			lector.close();
+			archivo.close();
+		} catch (Exception e) {
+			System.out.println("No se encontró archivo de datos clínicos. Iniciando vacío.");
+		}
 	}
 }

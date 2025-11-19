@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import logico.Clinica;
 import logico.Control;
 import logico.User;
 
@@ -47,6 +48,9 @@ public class Main {
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
+
+				Clinica.cargarDatos();
+
 				try {
 					Login frame = new Login();
 					frame.setVisible(true);

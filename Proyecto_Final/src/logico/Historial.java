@@ -1,9 +1,11 @@
 package logico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Historial {
+public class Historial implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private String codigo_Hist;
 	private ArrayList<Consulta> consultas;
 
