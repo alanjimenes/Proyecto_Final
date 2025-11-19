@@ -23,9 +23,11 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 import logico.Cliente;
 import logico.Clinica;
+import java.awt.Toolkit;
 
 public class ConsultarClientes extends JDialog {
 
@@ -39,7 +41,8 @@ public class ConsultarClientes extends JDialog {
 	private JTextField txtFiltro;
 
 	public ConsultarClientes() {
-		setTitle("LISTADO DE PACIENTES");
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarClientes.class.getResource("/img/seguro-de-salud.png")));
+		setTitle("Gestion de Clientes");
 		setBounds(100, 100, 1000, 600);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -81,16 +84,26 @@ public class ConsultarClientes extends JDialog {
 				String[] headers = { "Expediente", "Cédula", "Nombre", "Apellido", "Teléfono", "Estado Salud" };
 				modelo.setColumnIdentifiers(headers);
 				table.setModel(modelo);
+			
+                JTableHeader header = table.getTableHeader(); 
+                header.setBackground(new Color(60, 70, 123)); 
+                header.setForeground(Color.WHITE); 
+                header.setFont(new Font("Tahoma", Font.BOLD, 12)); 
+                header.setOpaque(true);
+
+                header.setReorderingAllowed(false);
 				scrollPane.setViewportView(table);
+				
 			}
 		}
 
 		JPanel panelNorte = new JPanel();
-		panelNorte.setBackground(Color.WHITE);
+		panelNorte.setBackground(new Color(60, 70, 123));
 		contentPanel.add(panelNorte, BorderLayout.NORTH);
 		{
 			JLabel lblFiltro = new JLabel("Filtrar por Nombre:");
-			lblFiltro.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			lblFiltro.setForeground(Color.WHITE);
+			lblFiltro.setFont(new Font("Bahnschrift", Font.BOLD, 18));
 			panelNorte.add(lblFiltro);
 		}
 		{
