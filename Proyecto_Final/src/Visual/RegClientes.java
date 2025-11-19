@@ -1,6 +1,7 @@
 package Visual;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +24,11 @@ import logico.Cliente;
 import logico.Clinica;
 import logico.Historial;
 import logico.RegistroVacunacion;
+import java.awt.SystemColor;
+import java.awt.Font;
+import javax.swing.SwingConstants;
+import java.awt.Toolkit;
+import javax.swing.ImageIcon;
 
 public class RegClientes extends JDialog {
 
@@ -38,6 +44,7 @@ public class RegClientes extends JDialog {
 
 
 	public RegClientes() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegClientes.class.getResource("/img/seguro-de-salud.png")));
 		initComponents();
 		this.clienteActual = null;
 	}
@@ -62,92 +69,143 @@ public class RegClientes extends JDialog {
 	}
 
 	private void initComponents() {
-		setTitle("Registrar Paciente");
-		setBounds(100, 100, 520, 350);
+		setTitle("Registrar Cliente");
+		setBounds(100, 100, 763, 431);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(60, 70, 123));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
 		JLabel lblCedula = new JLabel("Cédula:");
-		lblCedula.setBounds(20, 30, 80, 14);
+		lblCedula.setForeground(Color.WHITE);
+		lblCedula.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblCedula.setBounds(10, 29, 81, 14);
 		contentPanel.add(lblCedula);
 
 		txtCedula = new JTextField();
-		txtCedula.setBounds(100, 27, 150, 20);
+		txtCedula.setBounds(112, 27, 200, 20);
 		contentPanel.add(txtCedula);
 		txtCedula.setColumns(10);
 
 		JLabel lblNombre = new JLabel("Nombre:");
-		lblNombre.setBounds(20, 70, 80, 14);
+		lblNombre.setForeground(Color.WHITE);
+		lblNombre.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblNombre.setBounds(10, 83, 81, 14);
 		contentPanel.add(lblNombre);
 
 		txtNombre = new JTextField();
-		txtNombre.setBounds(100, 67, 150, 20);
+		txtNombre.setBounds(112, 81, 200, 20);
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 
 		JLabel lblApellido = new JLabel("Apellido:");
-		lblApellido.setBounds(270, 70, 60, 14);
+		lblApellido.setForeground(Color.WHITE);
+		lblApellido.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblApellido.setBounds(10, 134, 104, 14);
 		contentPanel.add(lblApellido);
 
 		txtApellido = new JTextField();
-		txtApellido.setBounds(330, 67, 150, 20);
+		txtApellido.setBounds(112, 132, 200, 20);
 		contentPanel.add(txtApellido);
 		txtApellido.setColumns(10);
 
 		JLabel lblTelefono = new JLabel("Teléfono:");
-		lblTelefono.setBounds(20, 110, 80, 14);
+		lblTelefono.setForeground(Color.WHITE);
+		lblTelefono.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblTelefono.setBounds(10, 190, 81, 14);
 		contentPanel.add(lblTelefono);
 
 		txtTelefono = new JTextField();
-		txtTelefono.setBounds(100, 107, 150, 20);
+		txtTelefono.setBounds(112, 188, 200, 20);
 		contentPanel.add(txtTelefono);
 		txtTelefono.setColumns(10);
 
 		JLabel lblDireccion = new JLabel("Dirección:");
-		lblDireccion.setBounds(270, 110, 80, 14);
+		lblDireccion.setForeground(Color.WHITE);
+		lblDireccion.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblDireccion.setBounds(10, 253, 93, 14);
 		contentPanel.add(lblDireccion);
 
 		txtDireccion = new JTextField();
-		txtDireccion.setBounds(330, 107, 150, 20);
+		txtDireccion.setBounds(112, 251, 200, 20);
 		contentPanel.add(txtDireccion);
 		txtDireccion.setColumns(10);
 
 		JLabel lblFecha = new JLabel("Fecha Nac:");
-		lblFecha.setBounds(20, 150, 80, 14);
+		lblFecha.setForeground(Color.WHITE);
+		lblFecha.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblFecha.setBounds(10, 322, 98, 14);
 		contentPanel.add(lblFecha);
 
 		dateChooser = new JDateChooser();
-		dateChooser.setBounds(100, 147, 150, 20);
+		dateChooser.setBounds(112, 322, 200, 20);
 		contentPanel.add(dateChooser);
-
-		// BOTONES 
-		JPanel buttonPane = new JPanel();
-		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		{
 			okButton = new JButton("Registrar");
+			okButton.setBackground(new Color (110, 140, 251));
+			okButton.setForeground(Color.GREEN);
+			okButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+			okButton.setBounds(346, 353, 94, 27);
+			contentPanel.add(okButton);
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					registrarCliente();
 				}
 			});
 			okButton.setActionCommand("OK");
-			buttonPane.add(okButton);
 			getRootPane().setDefaultButton(okButton);
 		}
 		{
 			JButton cancelButton = new JButton("Cancelar");
+			cancelButton.setBackground(new Color(110, 140, 251));
+			cancelButton.setForeground(Color.RED);
+			cancelButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+			cancelButton.setBounds(631, 353, 94, 27);
+			contentPanel.add(cancelButton);
 			cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					dispose();
 				}
 			});
 			cancelButton.setActionCommand("Cancel");
-			buttonPane.add(cancelButton);
 		}
+		
+		JButton btnLimpiar = new JButton("Limpiar");
+		btnLimpiar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				txtCedula.setText("");
+				txtNombre.setText("");
+				txtApellido.setText("");
+				txtTelefono.setText("");
+				txtDireccion.setText("");
+				dateChooser.setDate(null);
+				
+				
+				
+			}
+		});
+		btnLimpiar.setBackground(new Color(110, 140, 251));
+		btnLimpiar.setForeground(Color.WHITE);
+		btnLimpiar.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+		btnLimpiar.setActionCommand("OK");
+		btnLimpiar.setBounds(492, 354, 94, 27);
+		contentPanel.add(btnLimpiar);
+		
+		JLabel lblBienvenido = new JLabel("Registrar Cliente");
+		lblBienvenido.setForeground(Color.WHITE);
+		lblBienvenido.setFont(new Font("Bahnschrift", Font.BOLD, 22));
+		lblBienvenido.setBounds(444, -16, 281, 100);
+		contentPanel.add(lblBienvenido);
+		
+		JLabel label = new JLabel("");
+		label.setIcon(new ImageIcon(RegClientes.class.getResource("/img/familia.png")));
+		label.setForeground(Color.WHITE);
+		label.setFont(new Font("Bahnschrift", Font.BOLD, 22));
+		label.setBounds(419, 62, 256, 273);
+		contentPanel.add(label);
 	}
 
 	private void registrarCliente() {
@@ -177,6 +235,12 @@ public class RegClientes extends JDialog {
 
 			Clinica.getInstancia().insertarCliente(nuevoCliente);
 			JOptionPane.showMessageDialog(null, "Paciente registrado con éxito.");
+			txtCedula.setText("");
+			txtNombre.setText("");
+			txtApellido.setText("");
+			txtTelefono.setText("");
+			txtDireccion.setText("");
+			dateChooser.setDate(null);
 
 		} else {
 			clienteActual.setNombre(txtNombre.getText());
