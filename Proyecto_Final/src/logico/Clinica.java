@@ -23,6 +23,7 @@ public class Clinica {
 	private Agenda agenda;
 	private ArrayList<User> users;
 	private static Clinica instancia = null;
+	private ArrayList<Especialidad> especialidades;
 
 	public Clinica() {
 		this.clientes = new ArrayList<>();
@@ -32,6 +33,7 @@ public class Clinica {
 		this.citas = new ArrayList<>();
 		this.agenda = new Agenda();
 		this.users = new ArrayList<>();
+		this.especialidades = new ArrayList<>();
 	}
 
 	public static Clinica getInstancia() {
@@ -131,6 +133,14 @@ public class Clinica {
 
 	public void setGenCodigoUser(int genCodigoUser) {
 		this.genCodigoUser = genCodigoUser;
+	}
+
+	public ArrayList<Especialidad> getEspecialidades() {
+		return especialidades;
+	}
+
+	public void setEspecialidades(ArrayList<Especialidad> especialidades) {
+		this.especialidades = especialidades;
 	}
 
 	public boolean registrarNuevoCliente(Cliente cliente) {
@@ -516,6 +526,18 @@ public class Clinica {
 		}
 	}
 
-	// Asistente
+	// Especialidades
 
+	public void agregarEspecialidad(Especialidad esp) {
+		this.especialidades.add(esp);
+	}
+
+	public Especialidad buscarEspecialidadPorNombre(String nombre) {
+		for (Especialidad esp : especialidades) {
+			if (esp.getNombre().equalsIgnoreCase(nombre)) {
+				return esp;
+			}
+		}
+		return null;
+	}
 }
