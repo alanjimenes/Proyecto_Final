@@ -18,8 +18,10 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
@@ -133,20 +135,32 @@ public class RegUser extends JDialog {
 							JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
 							return;
 						}
+						FileInputStream empresa = null;
+						ObjectInputStream empresaRead = null;
+						try {
+							empresa = new FileInputStream("empresa.dat");
+							empresaRead = new ObjectInputStream(empresa);
+							Control temp = (Control) empresaRead.readObject();
+							Control.setControl(temp); 
+							empresa.close();
+							empresaRead.close();
+						} catch (Exception ex) {
+							// Si falla (ej. el archivo no existe porque es el primer usuario), 
+						}
 						User user = new User(comboBox.getSelectedItem().toString(), textField.getText(), pass1);
-						Control.getInstance().regUser(user);
+						Control.getInstance().regUser(user); 
 						try {
 							FileOutputStream empresa2 = new FileOutputStream("empresa.dat");
 							ObjectOutputStream empresaWrite = new ObjectOutputStream(empresa2);
-							empresaWrite.writeObject(Control.getInstance());
+							empresaWrite.writeObject(Control.getInstance()); 
 							empresa2.close();
-							empresaWrite.close();				            
-							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado con éxito!");				            
+							empresaWrite.close();
+							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado con éxito!");
 						} catch (IOException e1) {
 							e1.printStackTrace();
 							JOptionPane.showMessageDialog(contentPanel, "Error: No se pudo guardar el usuario en el fichero.", "Error de Fichero", JOptionPane.ERROR_MESSAGE);
 						}
-						dispose(); 
+						dispose();
 					}
 				});
 				okButton.setActionCommand("OK");
