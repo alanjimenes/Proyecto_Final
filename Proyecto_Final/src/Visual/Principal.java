@@ -117,9 +117,30 @@ public class Principal extends JFrame {
 		JMenuItem itemGestionarUser = new JMenuItem("Gestionar Usuarios");
 		itemGestionarUser.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuAdministracion.add(itemGestionarUser);
-		JMenuItem itemGestionarMedicos = new JMenuItem("Gestionar Médicos");
-		itemGestionarMedicos.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		menuAdministracion.add(itemGestionarMedicos);
+
+		JMenu menuGestionMedicos = new JMenu("Gestionar Médicos");
+		menuGestionMedicos.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		JMenuItem itemRegEspecialidad = new JMenuItem("Registrar Especialidad");
+		itemRegEspecialidad.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		itemRegEspecialidad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegEspecialidad regEsp = new RegEspecialidad();
+				regEsp.setModal(true);
+				regEsp.setVisible(true);
+			}
+		});
+		menuGestionMedicos.add(itemRegEspecialidad);
+		JMenuItem itemRegMedico = new JMenuItem("Registrar Médico");
+		itemRegMedico.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		itemRegMedico.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegMedico regMedico = new RegMedico();
+				regMedico.setModal(true);
+				regMedico.setVisible(true);
+			}
+		});
+		menuGestionMedicos.add(itemRegMedico); 
+		menuAdministracion.add(menuGestionMedicos);
 
 
 		contentPane = new JPanel();
