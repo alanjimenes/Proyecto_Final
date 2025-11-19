@@ -87,11 +87,11 @@ public class ConsultarClientes extends JDialog {
 			
                 JTableHeader header = table.getTableHeader(); 
                 header.setBackground(new Color(60, 70, 123)); 
-                header.setForeground(Color.WHITE); 
-                header.setFont(new Font("Tahoma", Font.BOLD, 12)); 
+                header.setForeground(Color.WHITE);      
                 header.setOpaque(true);
 
                 header.setReorderingAllowed(false);
+                
 				scrollPane.setViewportView(table);
 				
 			}

@@ -86,7 +86,7 @@ public class Login extends JFrame {
 	}
 
 	/**
-	 * Create the frame./aaa
+	 * Create the frame.
 	 */
 	public Login() {
 		setTitle("Login");
