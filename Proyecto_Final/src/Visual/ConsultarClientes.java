@@ -23,11 +23,9 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 
 import logico.Cliente;
 import logico.Clinica;
-import java.awt.Toolkit;
 
 public class ConsultarClientes extends JDialog {
 
@@ -41,8 +39,7 @@ public class ConsultarClientes extends JDialog {
 	private JTextField txtFiltro;
 
 	public ConsultarClientes() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarClientes.class.getResource("/img/seguro-de-salud.png")));
-		setTitle("Manejo de Clientes");
+		setTitle("LISTADO DE PACIENTES");
 		setBounds(100, 100, 1000, 600);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -61,7 +58,6 @@ public class ConsultarClientes extends JDialog {
 			panel.add(scrollPane, BorderLayout.CENTER);
 			{
 				table = new JTable();
-				table.setBackground(Color.GRAY);
 				table.setFont(new Font("Tahoma", Font.PLAIN, 15));
 				table.addMouseListener(new MouseAdapter() {
 					@Override
@@ -82,29 +78,19 @@ public class ConsultarClientes extends JDialog {
 						return false;
 					}
 				};
-				
 				String[] headers = { "Expediente", "Cédula", "Nombre", "Apellido", "Teléfono", "Estado Salud" };
 				modelo.setColumnIdentifiers(headers);
 				table.setModel(modelo);
-				JTableHeader header = table.getTableHeader(); 
-                header.setBackground(new Color (60, 70, 123)); 
-                header.setForeground(Color.WHITE); 
-                header.setFont(new Font("Tahoma", Font.BOLD, 12)); 
-                header.setOpaque(true);
-
-                
-                header.setReorderingAllowed(false);
 				scrollPane.setViewportView(table);
 			}
 		}
 
 		JPanel panelNorte = new JPanel();
-		panelNorte.setBackground(new Color (60, 70, 123));
+		panelNorte.setBackground(Color.WHITE);
 		contentPanel.add(panelNorte, BorderLayout.NORTH);
 		{
 			JLabel lblFiltro = new JLabel("Filtrar por Nombre:");
-			lblFiltro.setForeground(Color.WHITE);
-			lblFiltro.setFont(new Font("Bahnschrift", Font.BOLD, 18));
+			lblFiltro.setFont(new Font("Tahoma", Font.PLAIN, 16));
 			panelNorte.add(lblFiltro);
 		}
 		{
