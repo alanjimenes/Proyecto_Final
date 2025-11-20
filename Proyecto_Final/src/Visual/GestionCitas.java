@@ -262,31 +262,76 @@ public class GestionCitas extends JPanel {
 						lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre());
 						lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre());	
 						dateChooser.setDate(Date.from(citaSeleccionada.getFechaHora().atZone(ZoneId.systemDefault()).toInstant())); 
-						cbxHora.setSelectedItem(String.format("%02d:%02d", citaSeleccionada.getFechaHora().getHour(), citaSeleccionada.getFechaHora().getMinute())); 
+						int h24 = citaSeleccionada.getFechaHora().getHour();
+						int minuto = citaSeleccionada.getFechaHora().getMinute();
+
+						String ampm = (h24 < 12) ? "AM" : "PM";
+						int h12 = (h24 == 0) ? 12 : (h24 > 12 ? h24 - 12 : h24);
+
+						String formatoCombo = String.format("%02d:%02d %s", h12, minuto, ampm);
+
+						cbxHora.setSelectedItem(formatoCombo);
+
 					}
 				}
 			}
 		});
 
 		btnModificarCita.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(citaSeleccionada == null) {
-					JOptionPane.showMessageDialog(null, "Debe seleccionar una cita de la tabla primero.");
-					return;
-				}
-				LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				String[] horaMinuto = cbxHora.getSelectedItem().toString().split(":");
-				LocalTime hora = LocalTime.of(Integer.parseInt(horaMinuto[0]), Integer.parseInt(horaMinuto[1]));
-				LocalDateTime nuevaFechaHora = LocalDateTime.of(fecha, hora);
-				boolean exito = Clinica.getInstancia().editCita(citaSeleccionada, nuevaFechaHora); 
-				if(exito) {
-					JOptionPane.showMessageDialog(null, "¡Cita modificada!");
-					cargarTablaCitas();
-					limpiarCampos();
-				} else {
-					JOptionPane.showMessageDialog(null, "Error: No se pudo modificar. El médico no está disponible a esa nueva hora o la cita ya pasó.");
-				}
-			}
+		    public void actionPerformed(ActionEvent e) {
+		        if (citaSeleccionada == null) {
+		            JOptionPane.showMessageDialog(null, "Debe seleccionar una cita de la tabla primero.");
+		            return;
+		        }
+		        if (dateChooser.getDate() == null) {
+		            JOptionPane.showMessageDialog(null, "Seleccione una fecha.");
+		            return;
+		        }
+		        if (medicoSeleccionado == null) {
+		            JOptionPane.showMessageDialog(null, "Debe seleccionar un médico.");
+		            return;
+		        }
+
+		        LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		        String seleccion = cbxHora.getSelectedItem().toString();
+		        if (seleccion.length() < 7) {
+		            JOptionPane.showMessageDialog(null, "Formato de hora inválido.");
+		            return;
+		        }
+		        String horaStr = seleccion.substring(0, 2);
+		        String minStr  = seleccion.substring(3, 5);
+		        String ampm    = seleccion.substring(6).trim().toUpperCase();
+
+		        int hora;
+		        try {
+		            hora = Integer.parseInt(horaStr);
+		        } catch (NumberFormatException ex) {
+		            JOptionPane.showMessageDialog(null, "Hora inválida.");
+		            return;
+		        }
+
+		        if (ampm.equals("PM") && hora != 12) hora += 12;
+		        if (ampm.equals("AM") && hora == 12) hora = 0;
+
+		        LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
+		        LocalDateTime nuevaFechaHora = LocalDateTime.of(fecha, horaConvertida);
+
+		        if (nuevaFechaHora.isBefore(LocalDateTime.now())) {
+		            JOptionPane.showMessageDialog(null, "No puede establecer una cita en una fecha/hora pasadas.");
+		            return;
+		        }
+
+		        boolean exito = Clinica.getInstancia().editCita(citaSeleccionada, nuevaFechaHora, medicoSeleccionado);
+
+		        if (exito) {
+		            JOptionPane.showMessageDialog(null, "¡Cita modificada!");
+		            cargarTablaCitas();
+		            limpiarCampos();
+		        } else {
+		            JOptionPane.showMessageDialog(null, "Error: No se pudo modificar. El médico no está disponible o excede su límite diario.");
+		        }
+		    }
 		});
 
 		btnCancelarCita.addActionListener(new ActionListener() {
@@ -295,8 +340,7 @@ public class GestionCitas extends JPanel {
 					JOptionPane.showMessageDialog(null, "Debe seleccionar una cita de la tabla.");
 					return;
 				}
-				int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea cancelar la cita " + citaSeleccionada.getCodigo_cita() 
-				+ "?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION);
+				int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea cancelar la cita " + citaSeleccionada.getCodigo_cita() + "?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION);
 				if (confirm == JOptionPane.YES_OPTION) {
 					boolean exito = Clinica.getInstancia().cancelCita(citaSeleccionada); 
 

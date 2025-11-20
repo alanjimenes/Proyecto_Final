@@ -51,25 +51,17 @@ public class Principal extends JFrame {
 	    iniciarTodo();
 	    configurarAccesosPorRol();
 
-	    // -----------------------------------------
-	    //  PANEL INFERIOR DE USUARIO + RELOJ
-	    // -----------------------------------------
 	    panel_1 = new Panel();
 	    panel_1.setBackground(new Color(60, 70, 123));
 	    panel_1.setLayout(new BorderLayout());
 	    contentPane.add(panel_1, BorderLayout.SOUTH);
 
-	    // Usuario (Izquierda)
-	    lblUsuario = new JLabel(
-	            "Usuario: " + usuarioActual.getUsuario() +
-	                    " (Rol: " + usuarioActual.getRol() + ")"
-	    );
+	    lblUsuario = new JLabel("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
 	    lblUsuario.setForeground(Color.WHITE);
 	    lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 28));
 	    lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/hospital.png")));
 	    panel_1.add(lblUsuario, BorderLayout.WEST);
 
-	    // Reloj (Derecha)
 	    lblReloj = new JLabel("00:00:00");
 	    lblReloj.setForeground(Color.WHITE);
 	    lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 28));
@@ -262,14 +254,18 @@ public class Principal extends JFrame {
 	
 	
 	private void iniciarReloj() {
-	    javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
-	            String hora = java.time.LocalDateTime.now()
-	                    .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+	    javax.swing.Timer timer = new javax.swing.Timer(1000, e -> {
+	        String hora = java.time.LocalDateTime.now()
+	                .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+
+	        javax.swing.SwingUtilities.invokeLater(() -> {
 	            lblReloj.setText(hora);
-	        }
+	        });
 	    });
+
+	    timer.setRepeats(true);
 	    timer.start();
 	}
+
 
 }

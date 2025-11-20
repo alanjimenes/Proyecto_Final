@@ -225,18 +225,47 @@ public class Clinica implements Serializable {
 		return true;
 	}
 
-	public boolean editCita(Cita cita, LocalDateTime nuevaFechaHora) {
-		if (cita.getFechaHora().toLocalDate().isBefore(LocalDate.now())) {
-			return false;
-		}
+	public boolean editCita(Cita citaOriginal, LocalDateTime nuevaFechaHora, Medico nuevoMedico) {
+	    if (citaOriginal == null || nuevoMedico == null || nuevaFechaHora == null) 
+	    	return false;
+	    
+	    for (Cita c : citas) {
+	        if (c == citaOriginal) 
+	        	continue; 
+	        if (c.getMedico() != null && c.getMedico().equals(nuevoMedico)
+	                && c.getFechaHora().equals(nuevaFechaHora)) {
+	            return false; 
+	        }
+	    }
 
-		if (!medicoDisponible(cita.getMedico(), nuevaFechaHora)) {
-			return false;
-		}
+	    int contador = 0;
+		for (Cita c : nuevoMedico.getCitasAsignadas()) {
+	        if (c == citaOriginal) continue;
+	        if (c.getFechaHora().toLocalDate().equals(nuevaFechaHora.toLocalDate())) {
+	            contador++;
+	        }
+	    }
+	    if (contador >= nuevoMedico.getMaxCitasPorDia()) {
+	        return false;
+	    }
 
-		cita.setFechaHora(nuevaFechaHora);
-		return true;
+	    Medico medicoAnterior = citaOriginal.getMedico();
+	    if (medicoAnterior != null && medicoAnterior != nuevoMedico) {
+	        medicoAnterior.getCitasAsignadas().remove(citaOriginal);
+	    }
+
+	    if (!nuevoMedico.getCitasAsignadas().contains(citaOriginal)) {
+	        nuevoMedico.getCitasAsignadas().add(citaOriginal);
+	    }
+
+	    citaOriginal.setFechaHora(nuevaFechaHora);
+	    citaOriginal.setMedico(nuevoMedico);
+
+	    guardarDatos();
+
+	    return true;
 	}
+
 
 	private int contarCitasPorDia(Medico medico, LocalDate fecha) {
 		int contador = 0;
