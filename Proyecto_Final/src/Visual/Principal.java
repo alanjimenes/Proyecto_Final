@@ -45,33 +45,39 @@ public class Principal extends JFrame {
 	 */
 	public Principal(User usuarioLogueado) {
 
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
-		this.usuarioActual = usuarioLogueado;
+	    setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
+	    this.usuarioActual = usuarioLogueado;
 
-		iniciarTodo(); 
-		configurarAccesosPorRol(); 
-		
-		panel_1 = new Panel();
-		panel_1.setBackground(new Color(60, 70, 123));
-		panel_1.setLayout(new BorderLayout());
-		contentPane.add(panel_1, BorderLayout.SOUTH);
+	    iniciarTodo();
+	    configurarAccesosPorRol();
 
-		lblUsuario = new JLabel("");
-		lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/hospital.png")));
-		lblUsuario.setForeground(Color.WHITE);
-		lblUsuario.setText("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
-		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 32));
-		panel_1.add(lblUsuario, BorderLayout.WEST);
-		
-		lblReloj = new JLabel("00:00:00");
-		lblReloj.setForeground(Color.WHITE);
-		lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 32));
-		panel_1.add(lblReloj, BorderLayout.EAST);
+	    // -----------------------------------------
+	    //  PANEL INFERIOR DE USUARIO + RELOJ
+	    // -----------------------------------------
+	    panel_1 = new Panel();
+	    panel_1.setBackground(new Color(60, 70, 123));
+	    panel_1.setLayout(new BorderLayout());
+	    contentPane.add(panel_1, BorderLayout.SOUTH);
 
-		iniciarReloj();
+	    // Usuario (Izquierda)
+	    lblUsuario = new JLabel(
+	            "Usuario: " + usuarioActual.getUsuario() +
+	                    " (Rol: " + usuarioActual.getRol() + ")"
+	    );
+	    lblUsuario.setForeground(Color.WHITE);
+	    lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 28));
+	    lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/hospital.png")));
+	    panel_1.add(lblUsuario, BorderLayout.WEST);
 
-		
+	    // Reloj (Derecha)
+	    lblReloj = new JLabel("00:00:00");
+	    lblReloj.setForeground(Color.WHITE);
+	    lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 28));
+	    panel_1.add(lblReloj, BorderLayout.EAST);
+
+	    iniciarReloj();
 	}
+
 	/**
 	 * Create the frame.
 	 */
@@ -257,11 +263,10 @@ public class Principal extends JFrame {
 	
 	private void iniciarReloj() {
 	    javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
-	        @Override
 	        public void actionPerformed(ActionEvent e) {
-	            java.time.LocalDateTime now = java.time.LocalDateTime.now();
-	            String hora = now.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
-	            lblReloj.setText(" | Hora: " + hora);
+	            String hora = java.time.LocalDateTime.now()
+	                    .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+	            lblReloj.setText(hora);
 	        }
 	    });
 	    timer.start();

@@ -150,11 +150,11 @@ public class RegUser extends JDialog {
 						User user = new User(comboBox.getSelectedItem().toString(), textField.getText(), pass1);
 						Control.getInstance().regUser(user); 
 						try {
-							FileOutputStream empresa2 = new FileOutputStream("empresa.dat");
-							ObjectOutputStream empresaWrite = new ObjectOutputStream(empresa2);
-							empresaWrite.writeObject(Control.getInstance()); 
-							empresa2.close();
-							empresaWrite.close();
+							FileOutputStream usuarios2 = new FileOutputStream("Usuarios.dat");
+							ObjectOutputStream usuariosWrite = new ObjectOutputStream(usuarios2);
+							usuariosWrite.writeObject(Control.getInstance()); 
+							usuarios2.close();
+							usuariosWrite.close();
 							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado con éxito!");
 						} catch (IOException e1) {
 							e1.printStackTrace();
