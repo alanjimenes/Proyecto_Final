@@ -135,15 +135,15 @@ public class RegUser extends JDialog {
 							JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
 							return;
 						}
-						FileInputStream empresa = null;
-						ObjectInputStream empresaRead = null;
+						FileInputStream usuarios = null;
+						ObjectInputStream usuariosRead = null;
 						try {
-							empresa = new FileInputStream("empresa.dat");
-							empresaRead = new ObjectInputStream(empresa);
-							Control temp = (Control) empresaRead.readObject();
+							usuarios = new FileInputStream("Usuarios.dat");
+							usuariosRead = new ObjectInputStream(usuarios);
+							Control temp = (Control) usuariosRead.readObject();
 							Control.setControl(temp); 
-							empresa.close();
-							empresaRead.close();
+							usuarios.close();
+							usuariosRead.close();
 						} catch (Exception ex) {
 							// Si falla (ej. el archivo no existe porque es el primer usuario), 
 						}
