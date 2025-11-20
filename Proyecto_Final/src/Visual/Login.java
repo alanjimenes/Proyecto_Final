@@ -48,15 +48,15 @@ public class Login extends JFrame {
 				ObjectInputStream usuariosRead;
 				ObjectOutputStream usuariosWrite;
 				try {
-					usuarios = new FileInputStream ("Usuarios.dat");
+					usuarios = new FileInputStream("Usuarios.dat");
 					usuariosRead = new ObjectInputStream(usuarios);
-					Control temp = (Control)usuariosRead.readObject();
+					Control temp = (Control) usuariosRead.readObject();
 					Control.setControl(temp);
 					usuarios.close();
 					usuariosRead.close();
 				} catch (FileNotFoundException e) {
 					try {
-						usuarios2 = new FileOutputStream("Usuarios.dat"); 
+						usuarios2 = new FileOutputStream("Usuarios.dat");
 						usuariosWrite = new ObjectOutputStream(usuarios2);
 						User aux = new User("Administrador", "Admin", "Admin");
 						Control.getInstance().regUser(aux);
@@ -68,7 +68,6 @@ public class Login extends JFrame {
 						// TODO Auto-generated catch block
 					}
 				} catch (IOException e) {
-
 
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -94,10 +93,10 @@ public class Login extends JFrame {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/img/seguro-de-salud.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		setSize(1006, 562); 
+		setSize(1006, 562);
 		setResizable(false);
-		setLocationRelativeTo(null); 
-	
+		setLocationRelativeTo(null);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -113,25 +112,39 @@ public class Login extends JFrame {
 		JLabel lblUsuario = new JLabel("Usuario:");
 		lblUsuario.setForeground(Color.WHITE);
 		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 20));
-		lblUsuario.setBounds(102, 171, 146, 36); 
+		lblUsuario.setBounds(102, 171, 146, 36);
 		panel.add(lblUsuario);
 
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
 		lblContrasea.setForeground(Color.WHITE);
 		lblContrasea.setFont(new Font("Bahnschrift", Font.BOLD, 20));
-		lblContrasea.setBounds(102, 265, 123, 23); 
+		lblContrasea.setBounds(102, 265, 123, 23);
 		panel.add(lblContrasea);
 
 		textField = new JTextField();
 		textField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		textField.setBounds(102, 218, 298, 36); 
+		textField.setBounds(102, 218, 298, 36);
 		panel.add(textField);
 		textField.setColumns(10);
 
-		passwordField = new JPasswordField(); 
+		passwordField = new JPasswordField();
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		passwordField.setBounds(102, 299, 298, 36); 
+		passwordField.setBounds(102, 299, 298, 36);
 		panel.add(passwordField);
+
+		textField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				intentarLogin();
+			}
+		});
+
+		passwordField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				intentarLogin();
+			}
+		});
 
 		JButton btnLogin = new JButton("Login");
 		btnLogin.setBackground(Color.WHITE);
@@ -139,21 +152,13 @@ public class Login extends JFrame {
 		btnLogin.setForeground(Color.BLACK);
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String usuario = textField.getText();
-				String clave = new String(passwordField.getPassword());
-				if (Control.getInstance().confirmLogin(usuario, clave)) {
-					User usuarioLogueado = Control.getLoginUser(); 
-					Principal frame = new Principal(usuarioLogueado); 
-					dispose();
-					frame.setVisible(true);
-				} else {
-					JOptionPane.showMessageDialog(contentPane, "Usuario o clave incorrecta.", "Error", JOptionPane.ERROR_MESSAGE);
-				}
+				intentarLogin();
 			}
 		});
-		btnLogin.setBounds(190, 370, 117, 44); 
+
+		btnLogin.setBounds(190, 370, 117, 44);
 		panel.add(btnLogin);
-		
+
 		JPanel panel_1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
@@ -161,18 +166,33 @@ public class Login extends JFrame {
 		panel_1.setBounds(463, -42, 527, 580);
 		panel.add(panel_1);
 		panel_1.setBorder(null);
-				JLabel lblPrinIcon = new JLabel("");
-				panel_1.add(lblPrinIcon);
-				lblPrinIcon.setIcon(new ImageIcon(Login.class.getResource("/img/logo_adaptado.png")));
-				
-				JLabel labelTitulo = new JLabel("Iniciar Sesion");
-				labelTitulo.setForeground(Color.WHITE);
-				labelTitulo.setFont(new Font("Monospaced", Font.BOLD, 32));
-				labelTitulo.setBounds(102, 58, 270, 55);
-				panel.add(labelTitulo);
-				
-				JSeparator separator = new JSeparator();
-				separator.setBounds(102, 121, 264, 2);
-				panel.add(separator);
+		JLabel lblPrinIcon = new JLabel("");
+		panel_1.add(lblPrinIcon);
+		lblPrinIcon.setIcon(new ImageIcon(Login.class.getResource("/img/logo_adaptado.png")));
+
+		JLabel labelTitulo = new JLabel("Iniciar Sesion");
+		labelTitulo.setForeground(Color.WHITE);
+		labelTitulo.setFont(new Font("Monospaced", Font.BOLD, 32));
+		labelTitulo.setBounds(102, 58, 270, 55);
+		panel.add(labelTitulo);
+
+		JSeparator separator = new JSeparator();
+		separator.setBounds(102, 121, 264, 2);
+		panel.add(separator);
 	}
+
+	private void intentarLogin() {
+		String usuario = textField.getText();
+		String clave = new String(passwordField.getPassword());
+		if (Control.getInstance().confirmLogin(usuario, clave)) {
+			User usuarioLogueado = Control.getLoginUser();
+			Principal frame = new Principal(usuarioLogueado);
+			dispose();
+			frame.setVisible(true);
+		} else {
+			JOptionPane.showMessageDialog(contentPane, "Usuario o clave incorrecta.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
 }

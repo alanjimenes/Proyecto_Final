@@ -42,7 +42,6 @@ public class RegClientes extends JDialog {
 	private Cliente clienteActual = null;
 	private JButton okButton;
 
-
 	public RegClientes() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegClientes.class.getResource("/img/seguro-de-salud.png")));
 		initComponents();
@@ -144,7 +143,7 @@ public class RegClientes extends JDialog {
 		contentPanel.add(dateChooser);
 		{
 			okButton = new JButton("Registrar");
-			okButton.setBackground(new Color (110, 140, 251));
+			okButton.setBackground(new Color(110, 140, 251));
 			okButton.setForeground(Color.GREEN);
 			okButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 			okButton.setBounds(346, 353, 94, 27);
@@ -171,20 +170,18 @@ public class RegClientes extends JDialog {
 			});
 			cancelButton.setActionCommand("Cancel");
 		}
-		
+
 		JButton btnLimpiar = new JButton("Limpiar");
 		btnLimpiar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				txtCedula.setText("");
 				txtNombre.setText("");
 				txtApellido.setText("");
 				txtTelefono.setText("");
 				txtDireccion.setText("");
 				dateChooser.setDate(null);
-				
-				
-				
+
 			}
 		});
 		btnLimpiar.setBackground(new Color(110, 140, 251));
@@ -193,13 +190,13 @@ public class RegClientes extends JDialog {
 		btnLimpiar.setActionCommand("OK");
 		btnLimpiar.setBounds(492, 354, 94, 27);
 		contentPanel.add(btnLimpiar);
-		
+
 		JLabel lblBienvenido = new JLabel("Registrar Cliente");
 		lblBienvenido.setForeground(Color.WHITE);
 		lblBienvenido.setFont(new Font("Bahnschrift", Font.BOLD, 22));
 		lblBienvenido.setBounds(444, -16, 281, 100);
 		contentPanel.add(lblBienvenido);
-		
+
 		JLabel label = new JLabel("");
 		label.setIcon(new ImageIcon(RegClientes.class.getResource("/img/familia.png")));
 		label.setForeground(Color.WHITE);
@@ -209,8 +206,10 @@ public class RegClientes extends JDialog {
 	}
 
 	private void registrarCliente() {
-		if (txtCedula.getText().isEmpty() || txtNombre.getText().isEmpty() || txtTelefono.getText().isEmpty() || dateChooser.getDate() == null) {
-			JOptionPane.showMessageDialog(null, "Por favor llene los campos obligatorios (Cédula, Nombre, Teléfono, Fecha).");
+		if (txtCedula.getText().isEmpty() || txtNombre.getText().isEmpty() || txtTelefono.getText().isEmpty()
+				|| dateChooser.getDate() == null) {
+			JOptionPane.showMessageDialog(null,
+					"Por favor llene los campos obligatorios (Cédula, Nombre, Teléfono, Fecha).");
 			return;
 		}
 
@@ -225,13 +224,9 @@ public class RegClientes extends JDialog {
 			Historial nuevoHistorial = new Historial("HIST-" + txtCedula.getText());
 			ArrayList<RegistroVacunacion> vacunasVacias = new ArrayList<>();
 
-			Cliente nuevoCliente = new Cliente(
-					txtCedula.getText(), 
-					txtNombre.getText(), 
-					txtApellido.getText(), 
-					fechaNac, 
-					txtTelefono.getText(), 
-					txtDireccion.getText(),true,null,nuevoHistorial,false,vacunasVacias,true);
+			Cliente nuevoCliente = new Cliente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(),
+					fechaNac, txtTelefono.getText(), txtDireccion.getText(), true, null, nuevoHistorial, false,
+					vacunasVacias, true);
 
 			Clinica.getInstancia().insertarCliente(nuevoCliente);
 			JOptionPane.showMessageDialog(null, "Paciente registrado con éxito.");

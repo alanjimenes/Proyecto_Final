@@ -37,7 +37,7 @@ public class RegMedico extends JDialog {
 	private JDateChooser dateChooser;
 	private JSpinner spnMaxCitas;
 	private JButton okButton;
-	private Medico medicoActual = null; 
+	private Medico medicoActual = null;
 
 	public RegMedico() {
 		initComponents();
@@ -45,27 +45,28 @@ public class RegMedico extends JDialog {
 	}
 
 	public RegMedico(Medico medicoEditar) {
-		initComponents(); 
+		initComponents();
 		this.medicoActual = medicoEditar;
 		setTitle("Modificar Médico");
 		okButton.setText("Actualizar");
 
 		txtCedula.setText(medicoEditar.getCedula());
-		txtCedula.setEditable(false); 
+		txtCedula.setEditable(false);
 		txtNombre.setText(medicoEditar.getNombre());
 		txtApellido.setText(medicoEditar.getApellido());
 		txtTelefono.setText(medicoEditar.getTelefono());
 		txtDireccion.setText(medicoEditar.getDireccion());
 
-		if(medicoEditar.getEspecialidad() != null) {
+		if (medicoEditar.getEspecialidad() != null) {
 			cbxEspecialidad.setSelectedItem(medicoEditar.getEspecialidad().getNombre());
 		}
 		spnMaxCitas.setValue(medicoEditar.getMaxCitasPorDia());
-		if(medicoEditar.getFechaNacimiento() != null) {
+		if (medicoEditar.getFechaNacimiento() != null) {
 			Date fecha = Date.from(medicoEditar.getFechaNacimiento().atStartOfDay(ZoneId.systemDefault()).toInstant());
 			dateChooser.setDate(fecha);
 		}
 	}
+
 	private void initComponents() {
 		setTitle("Registrar Médico");
 		setBounds(100, 100, 550, 450);
@@ -128,7 +129,6 @@ public class RegMedico extends JDialog {
 		dateChooser.setBounds(100, 147, 150, 20);
 		contentPanel.add(dateChooser);
 
-
 		JLabel lblEspecialidad = new JLabel("Especialidad:");
 		lblEspecialidad.setBounds(20, 210, 100, 14);
 		contentPanel.add(lblEspecialidad);
@@ -155,7 +155,7 @@ public class RegMedico extends JDialog {
 		contentPanel.add(lblMaxCitas);
 
 		spnMaxCitas = new JSpinner();
-		spnMaxCitas.setModel(new SpinnerNumberModel(10, 1, 100, 1)); 
+		spnMaxCitas.setModel(new SpinnerNumberModel(10, 1, 100, 1));
 		spnMaxCitas.setBounds(120, 247, 60, 20);
 		contentPanel.add(spnMaxCitas);
 
@@ -217,16 +217,9 @@ public class RegMedico extends JDialog {
 				return;
 			}
 
-			Medico nuevoMedico = new Medico(
-					txtCedula.getText(),
-					txtNombre.getText(),
-					txtApellido.getText(),
-					fechaNac,
-					txtTelefono.getText(),
-					txtDireccion.getText(),
-					true,
-					espSeleccionada,
-					(int) spnMaxCitas.getValue(),null, null);
+			Medico nuevoMedico = new Medico(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), fechaNac,
+					txtTelefono.getText(), txtDireccion.getText(), true, espSeleccionada, (int) spnMaxCitas.getValue(),
+					null, null);
 
 			Clinica.getInstancia().agregarMedico(nuevoMedico);
 			JOptionPane.showMessageDialog(null, "Médico registrado correctamente.");
@@ -242,7 +235,7 @@ public class RegMedico extends JDialog {
 
 			JOptionPane.showMessageDialog(null, "Médico actualizado correctamente.");
 		}
-		Clinica.getInstancia().guardarDatosClinica(); 
+		Clinica.getInstancia().guardarDatosClinica();
 		dispose();
 	}
 }

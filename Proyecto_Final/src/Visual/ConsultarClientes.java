@@ -41,7 +41,8 @@ public class ConsultarClientes extends JDialog {
 	private JTextField txtFiltro;
 
 	public ConsultarClientes() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarClientes.class.getResource("/img/seguro-de-salud.png")));
+		setIconImage(
+				Toolkit.getDefaultToolkit().getImage(ConsultarClientes.class.getResource("/img/seguro-de-salud.png")));
 		setTitle("Gestion de Clientes");
 		setBounds(100, 100, 1000, 600);
 		setResizable(false);
@@ -84,28 +85,28 @@ public class ConsultarClientes extends JDialog {
 				String[] headers = { "Expediente", "Cédula", "Nombre", "Apellido", "Teléfono", "Estado Salud" };
 				modelo.setColumnIdentifiers(headers);
 				table.setModel(modelo);
-			
-                JTableHeader header = table.getTableHeader(); 
-                header.setBackground(new Color(60, 70, 123)); 
-                header.setForeground(Color.WHITE);      
-                header.setOpaque(true);
 
-                header.setReorderingAllowed(false);
-                
+				JTableHeader header = table.getTableHeader();
+				header.setBackground(new Color(60, 70, 123));
+				header.setForeground(Color.WHITE);
+				header.setOpaque(true);
+
+				header.setReorderingAllowed(false);
+
 				scrollPane.setViewportView(table);
-				
+
 			}
-			
+
 			table.addMouseListener(new java.awt.event.MouseAdapter() {
-			    @Override
-			    public void mouseClicked(java.awt.event.MouseEvent e) {
-			        if (e.getClickCount() == 2) {
-			            int fila = table.getSelectedRow();
-			            if (fila >= 0) {
-			                dispose();
-			            }
-			        }
-			    }
+				@Override
+				public void mouseClicked(java.awt.event.MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						int fila = table.getSelectedRow();
+						if (fila >= 0) {
+							dispose();
+						}
+					}
+				}
 			});
 
 		}
@@ -162,7 +163,7 @@ public class ConsultarClientes extends JDialog {
 			btnDelete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (seleccionado != null) {
-						int option = JOptionPane.showConfirmDialog(null, 
+						int option = JOptionPane.showConfirmDialog(null,
 								"¿Seguro que desea desactivar al paciente " + seleccionado.getNombre() + "?",
 								"Confirmar", JOptionPane.YES_NO_OPTION);
 
@@ -202,7 +203,7 @@ public class ConsultarClientes extends JDialog {
 				row[2] = cli.getNombre();
 				row[3] = cli.getApellido();
 				row[4] = cli.getTelefono();
-				row[5] = cli.isEnfermo() ? "Enfermo" : "Sano"; 
+				row[5] = cli.isEnfermo() ? "Enfermo" : "Sano";
 				modelo.addRow(row);
 			}
 		}

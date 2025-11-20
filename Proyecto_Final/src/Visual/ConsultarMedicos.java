@@ -38,7 +38,7 @@ public class ConsultarMedicos extends JDialog {
 		}
 	};
 	public static Object[] row;
-	private Medico seleccionado = null; 
+	private Medico seleccionado = null;
 	private JButton btnUpdate;
 	private JButton btnDelete;
 	private JButton btnVerDetalles;
@@ -72,7 +72,7 @@ public class ConsultarMedicos extends JDialog {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							int index = table.getSelectedRow();
-							if(index >= 0) {
+							if (index >= 0) {
 								String cedula = table.getValueAt(index, 0).toString();
 								seleccionado = Clinica.getInstancia().buscarMedicoCedula(cedula);
 
@@ -82,22 +82,22 @@ public class ConsultarMedicos extends JDialog {
 							}
 						}
 					});
-					String [] headers = {"Cédula", "Nombre", "Apellido", "Especialidad", "Teléfono", "Citas Máx. Día"};
+					String[] headers = { "Cédula", "Nombre", "Apellido", "Especialidad", "Teléfono", "Citas Máx. Día" };
 					modelo.setColumnIdentifiers(headers);
 					table.setModel(modelo);
 					scrollPane.setViewportView(table);
 				}
 			}
 			table.addMouseListener(new java.awt.event.MouseAdapter() {
-			    @Override
-			    public void mouseClicked(java.awt.event.MouseEvent e) {
-			        if (e.getClickCount() == 2) {
-			            int fila = table.getSelectedRow();
-			            if (fila >= 0) {
-			                dispose();
-			            }
-			        }
-			    }
+				@Override
+				public void mouseClicked(java.awt.event.MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						int fila = table.getSelectedRow();
+						if (fila >= 0) {
+							dispose();
+						}
+					}
+				}
 			});
 
 		}
@@ -135,7 +135,7 @@ public class ConsultarMedicos extends JDialog {
 				btnUpdate.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if (seleccionado != null) {
-							RegMedico registro = new RegMedico(seleccionado); 
+							RegMedico registro = new RegMedico(seleccionado);
 							registro.setModal(true);
 							registro.setVisible(true);
 
@@ -161,14 +161,12 @@ public class ConsultarMedicos extends JDialog {
 								int consultasHechas = seleccionado.getConsultasRealizadas().size();
 								int citasPendientes = seleccionado.getCitasAsignadas().size();
 
-								String mensaje = "Detalle para Dr/a. " + seleccionado.getNombre() + " " + seleccionado.getApellido() + "\n\n" +
-										"Especialidad: \t" + seleccionado.getEspecialidad().getNombre() + "\n" +
-										"Consultas Realizadas: \t" + consultasHechas + "\n" +
-										"Citas Asignadas (Pendientes): \t" + citasPendientes;
+								String mensaje = "Detalle para Dr/a. " + seleccionado.getNombre() + " "
+										+ seleccionado.getApellido() + "\n\n" + "Especialidad: \t"
+										+ seleccionado.getEspecialidad().getNombre() + "\n" + "Consultas Realizadas: \t"
+										+ consultasHechas + "\n" + "Citas Asignadas (Pendientes): \t" + citasPendientes;
 
-								JOptionPane.showMessageDialog(null, 
-										mensaje, 
-										"Información del Médico", 
+								JOptionPane.showMessageDialog(null, mensaje, "Información del Médico",
 										JOptionPane.INFORMATION_MESSAGE);
 							}
 						}
@@ -187,12 +185,14 @@ public class ConsultarMedicos extends JDialog {
 				btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 16));
 				btnDelete.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(seleccionado != null) {
-							int option = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea eliminar al médico con Cédula: " 
-									+ seleccionado.getCedula() + "?", "Eliminar Médico", JOptionPane.WARNING_MESSAGE);
+						if (seleccionado != null) {
+							int option = JOptionPane.showConfirmDialog(
+									null, "¿Está seguro que desea eliminar al médico con Cédula: "
+											+ seleccionado.getCedula() + "?",
+									"Eliminar Médico", JOptionPane.WARNING_MESSAGE);
 
-							if(option == JOptionPane.OK_OPTION){
-								if(seleccionado.getCitasAsignadas().isEmpty()) {
+							if (option == JOptionPane.OK_OPTION) {
+								if (seleccionado.getCitasAsignadas().isEmpty()) {
 									Clinica.getInstancia().getMedicos().remove(seleccionado);
 									Clinica.getInstancia().guardarDatosClinica();
 									cargarMedicos();
@@ -202,10 +202,10 @@ public class ConsultarMedicos extends JDialog {
 									btnUpdate.setEnabled(false);
 									btnVerDetalles.setEnabled(false);
 									seleccionado = null;
-								}
-								else {
-									JOptionPane.showMessageDialog(null,"El médico no se puede eliminar porque tiene Citas Asignadas pendientes."
-											,"Advertencia",JOptionPane.WARNING_MESSAGE);
+								} else {
+									JOptionPane.showMessageDialog(null,
+											"El médico no se puede eliminar porque tiene Citas Asignadas pendientes.",
+											"Advertencia", JOptionPane.WARNING_MESSAGE);
 								}
 							}
 						}
@@ -237,7 +237,8 @@ public class ConsultarMedicos extends JDialog {
 		row = new Object[table.getColumnCount()];
 
 		for (Medico aux : Clinica.getInstancia().getMedicos()) {
-			if(aux.getNombre().toLowerCase().contains(txtFiltro.getText().toLowerCase()) || txtFiltro.getText().isEmpty()) {
+			if (aux.getNombre().toLowerCase().contains(txtFiltro.getText().toLowerCase())
+					|| txtFiltro.getText().isEmpty()) {
 				row[0] = aux.getCedula();
 				row[1] = aux.getNombre();
 				row[2] = aux.getApellido();
@@ -246,7 +247,7 @@ public class ConsultarMedicos extends JDialog {
 				row[5] = aux.getMaxCitasPorDia();
 				modelo.addRow(row);
 			}
-		}	
+		}
 
 		seleccionado = null;
 		btnDelete.setEnabled(false);
@@ -265,6 +266,6 @@ public class ConsultarMedicos extends JDialog {
 			row[4] = aux.getTelefono();
 			row[5] = aux.getMaxCitasPorDia();
 			modelo.addRow(row);
-		}	
+		}
 	}
 }

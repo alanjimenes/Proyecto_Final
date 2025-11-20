@@ -38,7 +38,6 @@ public class RegUser extends JDialog {
 	private JPasswordField passField_2;
 	private JComboBox comboBox;
 
-
 	/**
 	 * Launch the application.
 	 */
@@ -62,17 +61,17 @@ public class RegUser extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(null); 
+		contentPanel.setLayout(null);
 
 		JLabel lblNombreUsuario = new JLabel("Nombre Usuario:");
 		lblNombreUsuario.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblNombreUsuario.setForeground(Color.BLACK); 
+		lblNombreUsuario.setForeground(Color.BLACK);
 		lblNombreUsuario.setBounds(20, 26, 127, 14);
 		contentPanel.add(lblNombreUsuario);
 
 		textField = new JTextField();
 		textField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		textField.setBounds(20, 65, 127, 20); 
+		textField.setBounds(20, 65, 127, 20);
 		contentPanel.add(textField);
 		textField.setColumns(10);
 
@@ -85,7 +84,7 @@ public class RegUser extends JDialog {
 		passField_1 = new JPasswordField();
 		passField_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		passField_1.setColumns(10);
-		passField_1.setBounds(20, 199, 147, 20); 
+		passField_1.setBounds(20, 199, 147, 20);
 		contentPanel.add(passField_1);
 
 		JLabel lblTipo = new JLabel("Tipo:");
@@ -96,7 +95,8 @@ public class RegUser extends JDialog {
 
 		comboBox = new JComboBox();
 		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"<Seleccione>", "Administrador", "Asistente", "Medico"}));
+		comboBox.setModel(
+				new DefaultComboBoxModel(new String[] { "<Seleccione>", "Administrador", "Asistente", "Medico" }));
 		comboBox.setBounds(216, 65, 127, 20);
 		contentPanel.add(comboBox);
 
@@ -106,7 +106,7 @@ public class RegUser extends JDialog {
 		lblConfirmarPassword.setBounds(214, 147, 167, 14);
 		contentPanel.add(lblConfirmarPassword);
 
-		passField_2 = new JPasswordField(); 
+		passField_2 = new JPasswordField();
 		passField_2.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		passField_2.setColumns(10);
 		passField_2.setBounds(216, 199, 147, 20);
@@ -132,7 +132,8 @@ public class RegUser extends JDialog {
 						String pass2 = new String(passField_2.getPassword());
 
 						if (!pass1.equals(pass2)) {
-							JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error",
+									JOptionPane.ERROR_MESSAGE);
 							return;
 						}
 						FileInputStream usuarios = null;
@@ -141,24 +142,26 @@ public class RegUser extends JDialog {
 							usuarios = new FileInputStream("Usuarios.dat");
 							usuariosRead = new ObjectInputStream(usuarios);
 							Control temp = (Control) usuariosRead.readObject();
-							Control.setControl(temp); 
+							Control.setControl(temp);
 							usuarios.close();
 							usuariosRead.close();
 						} catch (Exception ex) {
-							// Si falla (ej. el archivo no existe porque es el primer usuario), 
+							// Si falla (ej. el archivo no existe porque es el primer usuario),
 						}
 						User user = new User(comboBox.getSelectedItem().toString(), textField.getText(), pass1);
-						Control.getInstance().regUser(user); 
+						Control.getInstance().regUser(user);
 						try {
 							FileOutputStream usuarios2 = new FileOutputStream("Usuarios.dat");
 							ObjectOutputStream usuariosWrite = new ObjectOutputStream(usuarios2);
-							usuariosWrite.writeObject(Control.getInstance()); 
+							usuariosWrite.writeObject(Control.getInstance());
 							usuarios2.close();
 							usuariosWrite.close();
 							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado con éxito!");
 						} catch (IOException e1) {
 							e1.printStackTrace();
-							JOptionPane.showMessageDialog(contentPanel, "Error: No se pudo guardar el usuario en el fichero.", "Error de Fichero", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(contentPanel,
+									"Error: No se pudo guardar el usuario en el fichero.", "Error de Fichero",
+									JOptionPane.ERROR_MESSAGE);
 						}
 						dispose();
 					}

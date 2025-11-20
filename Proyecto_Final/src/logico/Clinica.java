@@ -226,46 +226,45 @@ public class Clinica implements Serializable {
 	}
 
 	public boolean editCita(Cita citaOriginal, LocalDateTime nuevaFechaHora, Medico nuevoMedico) {
-	    if (citaOriginal == null || nuevoMedico == null || nuevaFechaHora == null) 
-	    	return false;
-	    
-	    for (Cita c : citas) {
-	        if (c == citaOriginal) 
-	        	continue; 
-	        if (c.getMedico() != null && c.getMedico().equals(nuevoMedico)
-	                && c.getFechaHora().equals(nuevaFechaHora)) {
-	            return false; 
-	        }
-	    }
+		if (citaOriginal == null || nuevoMedico == null || nuevaFechaHora == null)
+			return false;
 
-	    int contador = 0;
+		for (Cita c : citas) {
+			if (c == citaOriginal)
+				continue;
+			if (c.getMedico() != null && c.getMedico().equals(nuevoMedico) && c.getFechaHora().equals(nuevaFechaHora)) {
+				return false;
+			}
+		}
+
+		int contador = 0;
 		for (Cita c : nuevoMedico.getCitasAsignadas()) {
-	        if (c == citaOriginal) continue;
-	        if (c.getFechaHora().toLocalDate().equals(nuevaFechaHora.toLocalDate())) {
-	            contador++;
-	        }
-	    }
-	    if (contador >= nuevoMedico.getMaxCitasPorDia()) {
-	        return false;
-	    }
+			if (c == citaOriginal)
+				continue;
+			if (c.getFechaHora().toLocalDate().equals(nuevaFechaHora.toLocalDate())) {
+				contador++;
+			}
+		}
+		if (contador >= nuevoMedico.getMaxCitasPorDia()) {
+			return false;
+		}
 
-	    Medico medicoAnterior = citaOriginal.getMedico();
-	    if (medicoAnterior != null && medicoAnterior != nuevoMedico) {
-	        medicoAnterior.getCitasAsignadas().remove(citaOriginal);
-	    }
+		Medico medicoAnterior = citaOriginal.getMedico();
+		if (medicoAnterior != null && medicoAnterior != nuevoMedico) {
+			medicoAnterior.getCitasAsignadas().remove(citaOriginal);
+		}
 
-	    if (!nuevoMedico.getCitasAsignadas().contains(citaOriginal)) {
-	        nuevoMedico.getCitasAsignadas().add(citaOriginal);
-	    }
+		if (!nuevoMedico.getCitasAsignadas().contains(citaOriginal)) {
+			nuevoMedico.getCitasAsignadas().add(citaOriginal);
+		}
 
-	    citaOriginal.setFechaHora(nuevaFechaHora);
-	    citaOriginal.setMedico(nuevoMedico);
+		citaOriginal.setFechaHora(nuevaFechaHora);
+		citaOriginal.setMedico(nuevoMedico);
 
-	    guardarDatos();
+		guardarDatos();
 
-	    return true;
+		return true;
 	}
-
 
 	private int contarCitasPorDia(Medico medico, LocalDate fecha) {
 		int contador = 0;
@@ -280,35 +279,37 @@ public class Clinica implements Serializable {
 
 	public boolean crearCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente) {
 
-	    Medico medico = buscarMedicoCedula(cedulaMedico);
-	    if (medico == null) return false;
+		Medico medico = buscarMedicoCedula(cedulaMedico);
+		if (medico == null)
+			return false;
 
-	    Cliente cliente = buscarClientePorCodigo(codigoCliente);
-	    if (cliente == null) return false;
+		Cliente cliente = buscarClientePorCodigo(codigoCliente);
+		if (cliente == null)
+			return false;
 
-	    for (Cita c : medico.getCitasAsignadas()) {
-	        if (c.getFechaHora().equals(fechaHora)) {
-	            return false;
-	        }
-	    }
+		for (Cita c : medico.getCitasAsignadas()) {
+			if (c.getFechaHora().equals(fechaHora)) {
+				return false;
+			}
+		}
 
-	    int citasDia = contarCitasPorDia(medico, fechaHora.toLocalDate());
-	    if (citasDia >= medico.getMaxCitasPorDia()) {
-	        return false;
-	    }
+		int citasDia = contarCitasPorDia(medico, fechaHora.toLocalDate());
+		if (citasDia >= medico.getMaxCitasPorDia()) {
+			return false;
+		}
 
-	    Cita nuevaCita = new Cita(fechaHora, cliente, medico, "Pendiente");
+		Cita nuevaCita = new Cita(fechaHora, cliente, medico, "Pendiente");
 
-	    String codigo = "CIT-" + System.currentTimeMillis();
-	    nuevaCita.setCodigo_cita(codigo);
+		String codigo = "CIT-" + System.currentTimeMillis();
+		nuevaCita.setCodigo_cita(codigo);
 
-	    this.citas.add(nuevaCita);
+		this.citas.add(nuevaCita);
 
-	    medico.agregarCitaAsignada(nuevaCita);
+		medico.agregarCitaAsignada(nuevaCita);
 
-	    guardarDatos();
+		guardarDatos();
 
-	    return true;
+		return true;
 	}
 
 	public boolean agendarCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente) {
@@ -453,7 +454,7 @@ public class Clinica implements Serializable {
 			}
 		}
 
-		//Para probarlo en la consola
+		// Para probarlo en la consola
 		System.out.println("=== REPORTE DE ENFERMEDADES ===");
 		for (int i = 0; i < enfermedades.size(); i++) {
 			System.out.println(enfermedades.get(i).getNombre() + ": " + cantidades.get(i));
@@ -574,7 +575,7 @@ public class Clinica implements Serializable {
 	/*
 	 * OJO AQUI: LEER BIEN ANTES DE DAR ENTER
 	 * 
-	 * O J O 
+	 * O J O
 	 * 
 	 * DEJAR ESTOS METODOS AL FINAL :)
 	 * 
@@ -599,7 +600,7 @@ public class Clinica implements Serializable {
 			lector.close();
 			archivo.close();
 		} catch (Exception e) {
-			System.out.println("No se encontró archivo de datos clínicos. Iniciando vacío.");
+			System.out.println("No se encontro archivo de datos clínicos. Iniciando vacio.");
 		}
 	}
 }

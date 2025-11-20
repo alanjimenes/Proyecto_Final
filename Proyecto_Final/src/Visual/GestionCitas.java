@@ -60,7 +60,7 @@ public class GestionCitas extends JPanel {
 		panelFormulario.setLayout(null);
 		add(panelFormulario);
 
-		//CLIENTE
+		// CLIENTE
 		JLabel lblCodCliente = new JLabel("Cód. Cliente:");
 		lblCodCliente.setBounds(10, 15, 80, 14);
 		panelFormulario.add(lblCodCliente);
@@ -77,7 +77,7 @@ public class GestionCitas extends JPanel {
 		lblNombreCliente.setBounds(290, 15, 250, 14);
 		panelFormulario.add(lblNombreCliente);
 
-		//MEDICO
+		// MEDICO
 		JLabel lblCedMedico = new JLabel("Cédula Médico:");
 		lblCedMedico.setBounds(10, 45, 80, 14);
 		panelFormulario.add(lblCedMedico);
@@ -94,7 +94,7 @@ public class GestionCitas extends JPanel {
 		lblNombreMedico.setBounds(290, 45, 250, 14);
 		panelFormulario.add(lblNombreMedico);
 
-		//FECHA Y HORA
+		// FECHA Y HORA
 		JLabel lblFecha = new JLabel("Fecha:");
 		lblFecha.setBounds(10, 75, 80, 14);
 		panelFormulario.add(lblFecha);
@@ -110,15 +110,15 @@ public class GestionCitas extends JPanel {
 		cbxHora = new JComboBox<>();
 		cbxHora.setBounds(270, 72, 80, 20);
 		for (int h = 8; h <= 17; h++) {
-		    String ampm = (h < 12) ? "AM" : "PM";
-		    int hora12 = (h == 12) ? 12 : (h % 12);
+			String ampm = (h < 12) ? "AM" : "PM";
+			int hora12 = (h == 12) ? 12 : (h % 12);
 
-		    cbxHora.addItem(String.format("%02d:00 %s", hora12, ampm));
-		    cbxHora.addItem(String.format("%02d:30 %s", hora12, ampm));
+			cbxHora.addItem(String.format("%02d:00 %s", hora12, ampm));
+			cbxHora.addItem(String.format("%02d:30 %s", hora12, ampm));
 		}
 		panelFormulario.add(cbxHora);
 
-		//BOTONES
+		// BOTONES
 		btnCrearCita = new JButton("Crear Cita");
 		btnCrearCita.setBounds(10, 142, 138, 45);
 		panelFormulario.add(btnCrearCita);
@@ -135,9 +135,8 @@ public class GestionCitas extends JPanel {
 		btnLimpiar.setBounds(507, 142, 138, 45);
 		panelFormulario.add(btnLimpiar);
 
-
-		/*LO IMPORTANTE DEL CODIGO (LA TABLA DE CITAS)
-		 * CUIDAO AL TOPAR AQUI
+		/*
+		 * LO IMPORTANTE DEL CODIGO (LA TABLA DE CITAS) CUIDAO AL TOPAR AQUI
 		 */
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 220, 860, 67);
@@ -146,95 +145,93 @@ public class GestionCitas extends JPanel {
 		tablaCitas = new JTable();
 		tablaCitas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		model = new DefaultTableModel();
-		model.setColumnIdentifiers(new String[] {"Código", "Paciente", "Médico", "Fecha y Hora", "Estado"});
+		model.setColumnIdentifiers(new String[] { "Código", "Paciente", "Médico", "Fecha y Hora", "Estado" });
 		tablaCitas.setModel(model);
 		scrollPane.setViewportView(tablaCitas);
 		cargarTablaCitas();
 
 		btnBuscarCliente.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {
 
-		        ConsultarClientes dialog = new ConsultarClientes();
-		        dialog.setModal(true);
-		        dialog.setVisible(true);
-		        
-		        int fila = ConsultarClientes.table.getSelectedRow();
-		        if (fila >= 0) {
-		            String codigo = ConsultarClientes.table.getValueAt(fila, 0).toString();
-		            clienteSeleccionado = Clinica.getInstancia().buscarClientePorCodigo(codigo);
+				ConsultarClientes dialog = new ConsultarClientes();
+				dialog.setModal(true);
+				dialog.setVisible(true);
 
-		            if (clienteSeleccionado != null) {
-		                txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
-		                lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre() + " " + clienteSeleccionado.getApellido());
-		            }
-		        }
-		    }
+				int fila = ConsultarClientes.table.getSelectedRow();
+				if (fila >= 0) {
+					String codigo = ConsultarClientes.table.getValueAt(fila, 0).toString();
+					clienteSeleccionado = Clinica.getInstancia().buscarClientePorCodigo(codigo);
+
+					if (clienteSeleccionado != null) {
+						txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
+						lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre() + " "
+								+ clienteSeleccionado.getApellido());
+					}
+				}
+			}
 		});
 
 		btnBuscarMedico.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {
 
-		        ConsultarMedicos dialog = new ConsultarMedicos();
-		        dialog.setModal(true);
-		        dialog.setVisible(true);
+				ConsultarMedicos dialog = new ConsultarMedicos();
+				dialog.setModal(true);
+				dialog.setVisible(true);
 
-		        int fila = ConsultarMedicos.table.getSelectedRow();
-		        if (fila >= 0) {
-		            String cedula = ConsultarMedicos.table.getValueAt(fila, 0).toString();
-		            medicoSeleccionado = Clinica.getInstancia().buscarMedicoCedula(cedula);
+				int fila = ConsultarMedicos.table.getSelectedRow();
+				if (fila >= 0) {
+					String cedula = ConsultarMedicos.table.getValueAt(fila, 0).toString();
+					medicoSeleccionado = Clinica.getInstancia().buscarMedicoCedula(cedula);
 
-		            if (medicoSeleccionado != null) {
-		                txtCedulaMedico.setText(medicoSeleccionado.getCedula());
-		                lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre() + 
-		                   " (" + medicoSeleccionado.getEspecialidad().getNombre() + ")");
-		            }
-		        }
-		    }
+					if (medicoSeleccionado != null) {
+						txtCedulaMedico.setText(medicoSeleccionado.getCedula());
+						lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre() + " ("
+								+ medicoSeleccionado.getEspecialidad().getNombre() + ")");
+					}
+				}
+			}
 		});
-
 
 		btnCrearCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(clienteSeleccionado == null || medicoSeleccionado == null || dateChooser.getDate() == null) {
+				if (clienteSeleccionado == null || medicoSeleccionado == null || dateChooser.getDate() == null) {
 					JOptionPane.showMessageDialog(null, "Debe buscar un cliente, un médico y seleccionar una fecha.");
 					return;
 				}
 				LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-				String seleccion = cbxHora.getSelectedItem().toString();  // Ej: "02:30 PM"
+				String seleccion = cbxHora.getSelectedItem().toString(); // Ej: "02:30 PM"
 
 				String horaStr = seleccion.substring(0, 2);
-				String minStr  = seleccion.substring(3,5);
-				String ampm    = seleccion.substring(6);
+				String minStr = seleccion.substring(3, 5);
+				String ampm = seleccion.substring(6);
 
 				int hora = Integer.parseInt(horaStr);
 
-				if (ampm.equals("PM") && hora != 12) hora += 12;
-				if (ampm.equals("AM") && hora == 12) hora = 0;
+				if (ampm.equals("PM") && hora != 12)
+					hora += 12;
+				if (ampm.equals("AM") && hora == 12)
+					hora = 0;
 
 				LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
 
-
 				LocalDateTime fechaHora = LocalDateTime.of(fecha, horaConvertida);
 
-
 				if (fechaHora.isBefore(LocalDateTime.now())) {
-				    JOptionPane.showMessageDialog(null, "No puede crear una cita en una fecha y hora pasadas.");
-				    return;
+					JOptionPane.showMessageDialog(null, "No puede crear una cita en una fecha y hora pasadas.");
+					return;
 				}
 
-				boolean exito = Clinica.getInstancia().crearCita(
-				        fechaHora, 
-				        medicoSeleccionado.getCedula(), 
-				        clienteSeleccionado.getNumExpediente()
-				);
+				boolean exito = Clinica.getInstancia().crearCita(fechaHora, medicoSeleccionado.getCedula(),
+						clienteSeleccionado.getNumExpediente());
 
-				if(exito) {
+				if (exito) {
 					JOptionPane.showMessageDialog(null, "¡Cita creada con éxito!");
 					cargarTablaCitas();
 					limpiarCampos();
 				} else {
-					JOptionPane.showMessageDialog(null, "Error: El médico no está disponible a esa hora o ya alcanzó su límite diario.");
+					JOptionPane.showMessageDialog(null,
+							"Error: El médico no está disponible a esa hora o ya alcanzó su límite diario.");
 				}
 			}
 		});
@@ -245,23 +242,23 @@ public class GestionCitas extends JPanel {
 			}
 		});
 
-
 		tablaCitas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int filaSeleccionada = tablaCitas.getSelectedRow();
 				if (filaSeleccionada >= 0) {
 					String codigoCita = (String) model.getValueAt(filaSeleccionada, 0);
-					citaSeleccionada = Clinica.getInstancia().buscarCita(codigoCita); 
+					citaSeleccionada = Clinica.getInstancia().buscarCita(codigoCita);
 
 					if (citaSeleccionada != null) {
-						clienteSeleccionado = citaSeleccionada.getCliente(); 
-						medicoSeleccionado = citaSeleccionada.getMedico(); 
+						clienteSeleccionado = citaSeleccionada.getCliente();
+						medicoSeleccionado = citaSeleccionada.getMedico();
 						txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
 						txtCedulaMedico.setText(medicoSeleccionado.getCedula());
 						lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre());
-						lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre());	
-						dateChooser.setDate(Date.from(citaSeleccionada.getFechaHora().atZone(ZoneId.systemDefault()).toInstant())); 
+						lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre());
+						dateChooser.setDate(
+								Date.from(citaSeleccionada.getFechaHora().atZone(ZoneId.systemDefault()).toInstant()));
 						int h24 = citaSeleccionada.getFechaHora().getHour();
 						int minuto = citaSeleccionada.getFechaHora().getMinute();
 
@@ -278,73 +275,78 @@ public class GestionCitas extends JPanel {
 		});
 
 		btnModificarCita.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        if (citaSeleccionada == null) {
-		            JOptionPane.showMessageDialog(null, "Debe seleccionar una cita de la tabla primero.");
-		            return;
-		        }
-		        if (dateChooser.getDate() == null) {
-		            JOptionPane.showMessageDialog(null, "Seleccione una fecha.");
-		            return;
-		        }
-		        if (medicoSeleccionado == null) {
-		            JOptionPane.showMessageDialog(null, "Debe seleccionar un médico.");
-		            return;
-		        }
+			public void actionPerformed(ActionEvent e) {
+				if (citaSeleccionada == null) {
+					JOptionPane.showMessageDialog(null, "Debe seleccionar una cita de la tabla primero.");
+					return;
+				}
+				if (dateChooser.getDate() == null) {
+					JOptionPane.showMessageDialog(null, "Seleccione una fecha.");
+					return;
+				}
+				if (medicoSeleccionado == null) {
+					JOptionPane.showMessageDialog(null, "Debe seleccionar un médico.");
+					return;
+				}
 
-		        LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-		        String seleccion = cbxHora.getSelectedItem().toString();
-		        if (seleccion.length() < 7) {
-		            JOptionPane.showMessageDialog(null, "Formato de hora inválido.");
-		            return;
-		        }
-		        String horaStr = seleccion.substring(0, 2);
-		        String minStr  = seleccion.substring(3, 5);
-		        String ampm    = seleccion.substring(6).trim().toUpperCase();
+				String seleccion = cbxHora.getSelectedItem().toString();
+				if (seleccion.length() < 7) {
+					JOptionPane.showMessageDialog(null, "Formato de hora inválido.");
+					return;
+				}
+				String horaStr = seleccion.substring(0, 2);
+				String minStr = seleccion.substring(3, 5);
+				String ampm = seleccion.substring(6).trim().toUpperCase();
 
-		        int hora;
-		        try {
-		            hora = Integer.parseInt(horaStr);
-		        } catch (NumberFormatException ex) {
-		            JOptionPane.showMessageDialog(null, "Hora inválida.");
-		            return;
-		        }
+				int hora;
+				try {
+					hora = Integer.parseInt(horaStr);
+				} catch (NumberFormatException ex) {
+					JOptionPane.showMessageDialog(null, "Hora inválida.");
+					return;
+				}
 
-		        if (ampm.equals("PM") && hora != 12) hora += 12;
-		        if (ampm.equals("AM") && hora == 12) hora = 0;
+				if (ampm.equals("PM") && hora != 12)
+					hora += 12;
+				if (ampm.equals("AM") && hora == 12)
+					hora = 0;
 
-		        LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
-		        LocalDateTime nuevaFechaHora = LocalDateTime.of(fecha, horaConvertida);
+				LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
+				LocalDateTime nuevaFechaHora = LocalDateTime.of(fecha, horaConvertida);
 
-		        if (nuevaFechaHora.isBefore(LocalDateTime.now())) {
-		            JOptionPane.showMessageDialog(null, "No puede establecer una cita en una fecha/hora pasadas.");
-		            return;
-		        }
+				if (nuevaFechaHora.isBefore(LocalDateTime.now())) {
+					JOptionPane.showMessageDialog(null, "No puede establecer una cita en una fecha/hora pasadas.");
+					return;
+				}
 
-		        boolean exito = Clinica.getInstancia().editCita(citaSeleccionada, nuevaFechaHora, medicoSeleccionado);
+				boolean exito = Clinica.getInstancia().editCita(citaSeleccionada, nuevaFechaHora, medicoSeleccionado);
 
-		        if (exito) {
-		            JOptionPane.showMessageDialog(null, "¡Cita modificada!");
-		            cargarTablaCitas();
-		            limpiarCampos();
-		        } else {
-		            JOptionPane.showMessageDialog(null, "Error: No se pudo modificar. El médico no está disponible o excede su límite diario.");
-		        }
-		    }
+				if (exito) {
+					JOptionPane.showMessageDialog(null, "¡Cita modificada!");
+					cargarTablaCitas();
+					limpiarCampos();
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Error: No se pudo modificar. El médico no está disponible o excede su límite diario.");
+				}
+			}
 		});
 
 		btnCancelarCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(citaSeleccionada == null) {
+				if (citaSeleccionada == null) {
 					JOptionPane.showMessageDialog(null, "Debe seleccionar una cita de la tabla.");
 					return;
 				}
-				int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea cancelar la cita " + citaSeleccionada.getCodigo_cita() + "?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION);
+				int confirm = JOptionPane.showConfirmDialog(null,
+						"¿Está seguro que desea cancelar la cita " + citaSeleccionada.getCodigo_cita() + "?",
+						"Confirmar cancelación", JOptionPane.YES_NO_OPTION);
 				if (confirm == JOptionPane.YES_OPTION) {
-					boolean exito = Clinica.getInstancia().cancelCita(citaSeleccionada); 
+					boolean exito = Clinica.getInstancia().cancelCita(citaSeleccionada);
 
-					if(exito) {
+					if (exito) {
 						JOptionPane.showMessageDialog(null, "¡Cita cancelada!");
 						cargarTablaCitas();
 						limpiarCampos();
@@ -357,9 +359,9 @@ public class GestionCitas extends JPanel {
 	}
 
 	private void cargarTablaCitas() {
-		model.setRowCount(0); 
-		ArrayList<Cita> citas = Clinica.getInstancia().getCitas(); 
-		for(Cita c : citas) {
+		model.setRowCount(0);
+		ArrayList<Cita> citas = Clinica.getInstancia().getCitas();
+		for (Cita c : citas) {
 			Object[] fila = new Object[5];
 			fila[0] = c.getCodigo_cita();
 			fila[1] = c.getCliente().getNombre() + " " + c.getCliente().getApellido();

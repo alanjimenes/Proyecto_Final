@@ -46,11 +46,11 @@ public class RegEspecialidad extends JDialog {
 				JButton okButton = new JButton("Registrar");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(!txtNombre.getText().isEmpty()) {
+						if (!txtNombre.getText().isEmpty()) {
 							String codigo = "ESP-" + Clinica.getInstancia().getEspecialidades().size();
 							Especialidad aux = new Especialidad(codigo, txtNombre.getText());
 							Clinica.getInstancia().agregarEspecialidad(aux);
-							Clinica.getInstancia().guardarDatosClinica();							
+							Clinica.getInstancia().guardarDatosClinica();
 							JOptionPane.showMessageDialog(null, "Especialidad creada con éxito.");
 							dispose();
 						} else {

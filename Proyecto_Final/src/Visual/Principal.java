@@ -39,35 +39,34 @@ public class Principal extends JFrame {
 	private JLabel lblUsuario;
 	private JLabel lblReloj;
 
-
 	/**
 	 * Launch the application.
 	 */
 	public Principal(User usuarioLogueado) {
 
-	    setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
-	    this.usuarioActual = usuarioLogueado;
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
+		this.usuarioActual = usuarioLogueado;
 
-	    iniciarTodo();
-	    configurarAccesosPorRol();
+		iniciarTodo();
+		configurarAccesosPorRol();
 
-	    panel_1 = new Panel();
-	    panel_1.setBackground(new Color(60, 70, 123));
-	    panel_1.setLayout(new BorderLayout());
-	    contentPane.add(panel_1, BorderLayout.SOUTH);
+		panel_1 = new Panel();
+		panel_1.setBackground(new Color(60, 70, 123));
+		panel_1.setLayout(new BorderLayout());
+		contentPane.add(panel_1, BorderLayout.SOUTH);
 
-	    lblUsuario = new JLabel("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
-	    lblUsuario.setForeground(Color.WHITE);
-	    lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 28));
-	    lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/hospital.png")));
-	    panel_1.add(lblUsuario, BorderLayout.WEST);
+		lblUsuario = new JLabel("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
+		lblUsuario.setForeground(Color.WHITE);
+		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 28));
+		lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/hospital.png")));
+		panel_1.add(lblUsuario, BorderLayout.WEST);
 
-	    lblReloj = new JLabel("00:00:00");
-	    lblReloj.setForeground(Color.WHITE);
-	    lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 28));
-	    panel_1.add(lblReloj, BorderLayout.EAST);
+		lblReloj = new JLabel("00:00:00");
+		lblReloj.setForeground(Color.WHITE);
+		lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 28));
+		panel_1.add(lblReloj, BorderLayout.EAST);
 
-	    iniciarReloj();
+		iniciarReloj();
 	}
 
 	/**
@@ -96,12 +95,12 @@ public class Principal extends JFrame {
 		itemCrearCita.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		itemCrearCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				GestionarCitas(); 
+				GestionarCitas();
 			}
 		});
 		menuCitas.add(itemCrearCita);
 
-		/* MENU DE PACIENTES*/
+		/* MENU DE PACIENTES */
 		menuPacientes = new JMenu("  Gesti\u00F3n de Clientes\r\n");
 		menuPacientes.setForeground(Color.WHITE);
 		menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/img/gestion-de-clientes.png")));
@@ -131,8 +130,7 @@ public class Principal extends JFrame {
 		});
 		menuPacientes.add(itemListarPacientes);
 
-
-		/* MENU DE CONSULTAS	*/
+		/* MENU DE CONSULTAS */
 		menuConsulta = new JMenu("  Consultas  ");
 		menuConsulta.setForeground(Color.WHITE);
 		menuConsulta.setIcon(new ImageIcon(Principal.class.getResource("/img/dato-de-registro.png")));
@@ -142,19 +140,19 @@ public class Principal extends JFrame {
 		itemVerMisCitas.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuConsulta.add(itemVerMisCitas);
 
-		/* MENU DE ADMINISTRACION*/
+		/* MENU DE ADMINISTRACION */
 		menuAdministracion = new JMenu("  Administraci\u00F3n");
 		menuAdministracion.setForeground(Color.WHITE);
 		menuAdministracion.setIcon(new ImageIcon(Principal.class.getResource("/img/doctor.png")));
 		menuAdministracion.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuAdministracion);
 
-		//USUARIOS
+		// USUARIOS
 		JMenuItem itemGestionarUser = new JMenuItem("Gestionar Usuarios");
 		itemGestionarUser.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		menuAdministracion.add(itemGestionarUser);
 
-		//MEDICOS
+		// MEDICOS
 		JMenu menuGestionMedicos = new JMenu("Gestionar Médicos");
 		menuGestionMedicos.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		JMenuItem itemRegEspecialidad = new JMenuItem("Registrar Especialidad");
@@ -192,7 +190,6 @@ public class Principal extends JFrame {
 
 		menuAdministracion.add(menuGestionMedicos);
 
-
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setForeground(Color.WHITE);
@@ -202,7 +199,7 @@ public class Principal extends JFrame {
 
 		lblFondoIcon = new JLabel("");
 		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/img/logo.png")));
-		lblFondoIcon.setHorizontalAlignment(SwingConstants.CENTER); 
+		lblFondoIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblFondoIcon, BorderLayout.CENTER);
 
 	}
@@ -227,7 +224,7 @@ public class Principal extends JFrame {
 			menuPacientes.setEnabled(true);
 			break;
 
-		case "Asistente": 
+		case "Asistente":
 			menuCitas.setEnabled(true);
 			menuPacientes.setEnabled(true);
 			break;
@@ -251,21 +248,19 @@ public class Principal extends JFrame {
 		dialogCitas.setLocationRelativeTo(Principal.this);
 		dialogCitas.setVisible(true);
 	}
-	
-	
+
 	private void iniciarReloj() {
-	    javax.swing.Timer timer = new javax.swing.Timer(1000, e -> {
-	        String hora = java.time.LocalDateTime.now()
-	                .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+		javax.swing.Timer timer = new javax.swing.Timer(1000, e -> {
+			String hora = java.time.LocalDateTime.now()
+					.format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
 
-	        javax.swing.SwingUtilities.invokeLater(() -> {
-	            lblReloj.setText(hora);
-	        });
-	    });
+			javax.swing.SwingUtilities.invokeLater(() -> {
+				lblReloj.setText(hora);
+			});
+		});
 
-	    timer.setRepeats(true);
-	    timer.start();
+		timer.setRepeats(true);
+		timer.start();
 	}
-
 
 }
