@@ -529,7 +529,7 @@ public class Clinica implements Serializable {
 
 	public void guardarUsuarios() {
 		try {
-			FileOutputStream fos = new FileOutputStream("usuarios.dat");
+			FileOutputStream fos = new FileOutputStream("Usuarios.dat");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 
 			oos.writeObject(users);
@@ -544,7 +544,7 @@ public class Clinica implements Serializable {
 	@SuppressWarnings("unchecked") // Para quitar el warning de user = ....
 	public void cargarUsuarios() {
 		try {
-			FileInputStream fis = new FileInputStream("usuarios.dat");
+			FileInputStream fis = new FileInputStream("Usuarios.dat");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 
 			users = (ArrayList<User>) ois.readObject();
