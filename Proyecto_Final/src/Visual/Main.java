@@ -32,7 +32,7 @@ public class Main {
 
 				} catch (FileNotFoundException e) {
 					try {
-						usuarios2 = new FileOutputStream("empresa.dat");
+						usuarios2 = new FileOutputStream("Usuarios.dat");
 						usuariosWrite = new ObjectOutputStream(usuarios2);
 						User aux = new User("Administrador", "Admin", "Admin");
 						Control.getInstance().regUser(aux);
