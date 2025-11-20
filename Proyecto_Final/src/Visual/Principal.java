@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -36,6 +37,8 @@ public class Principal extends JFrame {
 	private JLabel lblFondoIcon;
 	private Panel panel_1;
 	private JLabel lblUsuario;
+	private JLabel lblReloj;
+
 
 	/**
 	 * Launch the application.
@@ -47,15 +50,27 @@ public class Principal extends JFrame {
 
 		iniciarTodo(); 
 		configurarAccesosPorRol(); 
+		
 		panel_1 = new Panel();
 		panel_1.setBackground(new Color(60, 70, 123));
+		panel_1.setLayout(new BorderLayout());
 		contentPane.add(panel_1, BorderLayout.SOUTH);
+
 		lblUsuario = new JLabel("");
 		lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/hospital.png")));
 		lblUsuario.setForeground(Color.WHITE);
 		lblUsuario.setText("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
 		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 32));
-		panel_1.add(lblUsuario);
+		panel_1.add(lblUsuario, BorderLayout.WEST);
+		
+		lblReloj = new JLabel("00:00:00");
+		lblReloj.setForeground(Color.WHITE);
+		lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 32));
+		panel_1.add(lblReloj, BorderLayout.EAST);
+
+		iniciarReloj();
+
+		
 	}
 	/**
 	 * Create the frame.
@@ -89,7 +104,7 @@ public class Principal extends JFrame {
 		menuCitas.add(itemCrearCita);
 
 		/* MENU DE PACIENTES*/
-		menuPacientes = new JMenu("  Gesti\u00F3n Pacientes");
+		menuPacientes = new JMenu("  Gesti\u00F3n de Clientes\r\n");
 		menuPacientes.setForeground(Color.WHITE);
 		menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/img/gestion-de-clientes.png")));
 		menuPacientes.setFont(new Font("Bahnschrift", Font.BOLD, 20));
@@ -238,4 +253,18 @@ public class Principal extends JFrame {
 		dialogCitas.setLocationRelativeTo(Principal.this);
 		dialogCitas.setVisible(true);
 	}
+	
+	
+	private void iniciarReloj() {
+	    javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            java.time.LocalDateTime now = java.time.LocalDateTime.now();
+	            String hora = now.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
+	            lblReloj.setText(" | Hora: " + hora);
+	        }
+	    });
+	    timer.start();
+	}
+
 }
