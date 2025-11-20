@@ -109,9 +109,12 @@ public class GestionCitas extends JPanel {
 
 		cbxHora = new JComboBox<>();
 		cbxHora.setBounds(270, 72, 80, 20);
-		for(int h = 8; h <= 17; h++) {
-			cbxHora.addItem(String.format("%02d:00", h));
-			cbxHora.addItem(String.format("%02d:30", h));
+		for (int h = 8; h <= 17; h++) {
+		    String ampm = (h < 12) ? "AM" : "PM";
+		    int hora12 = (h == 12) ? 12 : (h % 12);
+
+		    cbxHora.addItem(String.format("%02d:00 %s", hora12, ampm));
+		    cbxHora.addItem(String.format("%02d:30 %s", hora12, ampm));
 		}
 		panelFormulario.add(cbxHora);
 
@@ -149,40 +152,46 @@ public class GestionCitas extends JPanel {
 		cargarTablaCitas();
 
 		btnBuscarCliente.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String cod = txtCodCliente.getText();
-				if(cod.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Escriba un código de cliente.");
-					return;
-				}
-				clienteSeleccionado = Clinica.getInstancia().buscarClientePorCodigo(cod); 
+		    public void actionPerformed(ActionEvent e) {
 
-				if(clienteSeleccionado != null) {
-					lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre() + " " + clienteSeleccionado.getApellido());
-				} else {
-					lblNombreCliente.setText("Paciente: (¡NO ENCONTRADO!)");
-					JOptionPane.showMessageDialog(null, "Cliente no encontrado.");
-				}
-			}
+		        ConsultarClientes dialog = new ConsultarClientes();
+		        dialog.setModal(true);
+		        dialog.setVisible(true);
+		        
+		        int fila = ConsultarClientes.table.getSelectedRow();
+		        if (fila >= 0) {
+		            String codigo = ConsultarClientes.table.getValueAt(fila, 0).toString();
+		            clienteSeleccionado = Clinica.getInstancia().buscarClientePorCodigo(codigo);
+
+		            if (clienteSeleccionado != null) {
+		                txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
+		                lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre() + " " + clienteSeleccionado.getApellido());
+		            }
+		        }
+		    }
 		});
 
 		btnBuscarMedico.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String cedula = txtCedulaMedico.getText();
-				if(cedula.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Escriba una cédula de médico.");
-					return;
-				}
-				medicoSeleccionado = Clinica.getInstancia().buscarMedicoCedula(cedula); 
+		    public void actionPerformed(ActionEvent e) {
 
-				if(medicoSeleccionado != null) {
-					lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre() + " (" + medicoSeleccionado.getEspecialidad().getNombre() + ")");
-				} else {
-					lblNombreMedico.setText("Médico: (¡NO ENCONTRADO!)");
-					JOptionPane.showMessageDialog(null, "Médico no encontrado.");
-				}
-			}
+		        ConsultarMedicos dialog = new ConsultarMedicos();
+		        dialog.setModal(true);
+		        dialog.setVisible(true);
+
+		        int fila = ConsultarMedicos.table.getSelectedRow();
+		        if (fila >= 0) {
+		            String cedula = ConsultarMedicos.table.getValueAt(fila, 0).toString();
+		            medicoSeleccionado = Clinica.getInstancia().buscarMedicoCedula(cedula);
+
+		            if (medicoSeleccionado != null) {
+		                txtCedulaMedico.setText(medicoSeleccionado.getCedula());
+		                lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre() + 
+		                   " (" + medicoSeleccionado.getEspecialidad().getNombre() + ")");
+		            }
+		        }
+		    }
 		});
+
 
 		btnCrearCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -191,14 +200,35 @@ public class GestionCitas extends JPanel {
 					return;
 				}
 				LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				String[] horaMinuto = cbxHora.getSelectedItem().toString().split(":");
-				LocalTime hora = LocalTime.of(Integer.parseInt(horaMinuto[0]), Integer.parseInt(horaMinuto[1]));
-				LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
+
+				String seleccion = cbxHora.getSelectedItem().toString();  // Ej: "02:30 PM"
+
+				String horaStr = seleccion.substring(0, 2);
+				String minStr  = seleccion.substring(3,5);
+				String ampm    = seleccion.substring(6);
+
+				int hora = Integer.parseInt(horaStr);
+
+				if (ampm.equals("PM") && hora != 12) hora += 12;
+				if (ampm.equals("AM") && hora == 12) hora = 0;
+
+				LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
+
+
+				LocalDateTime fechaHora = LocalDateTime.of(fecha, horaConvertida);
+
+
+				if (fechaHora.isBefore(LocalDateTime.now())) {
+				    JOptionPane.showMessageDialog(null, "No puede crear una cita en una fecha y hora pasadas.");
+				    return;
+				}
+
 				boolean exito = Clinica.getInstancia().crearCita(
-						fechaHora, 
-						medicoSeleccionado.getCedula(), 
-						clienteSeleccionado.getNumExpediente()
-						);
+				        fechaHora, 
+				        medicoSeleccionado.getCedula(), 
+				        clienteSeleccionado.getNumExpediente()
+				);
+
 				if(exito) {
 					JOptionPane.showMessageDialog(null, "¡Cita creada con éxito!");
 					cargarTablaCitas();

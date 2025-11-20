@@ -251,36 +251,35 @@ public class Clinica implements Serializable {
 
 	public boolean crearCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente) {
 
-		Medico medico = buscarMedicoCedula(cedulaMedico);
-		if (medico == null) {
-			return false;
-		}
+	    Medico medico = buscarMedicoCedula(cedulaMedico);
+	    if (medico == null) return false;
 
-		Cliente cliente = buscarClientePorCodigo(codigoCliente);
-		if (cliente == null) {
-			return false;
-		}
+	    Cliente cliente = buscarClientePorCodigo(codigoCliente);
+	    if (cliente == null) return false;
 
-		for (Cita c : medico.getCitasAsignadas()) {
-			if (c.getFechaHora().equals(fechaHora)) {
-				return false;
-			}
-		}
+	    for (Cita c : medico.getCitasAsignadas()) {
+	        if (c.getFechaHora().equals(fechaHora)) {
+	            return false;
+	        }
+	    }
 
-		int citasDia = contarCitasPorDia(medico, fechaHora.toLocalDate());
+	    int citasDia = contarCitasPorDia(medico, fechaHora.toLocalDate());
+	    if (citasDia >= medico.getMaxCitasPorDia()) {
+	        return false;
+	    }
 
-		if (citasDia >= medico.getMaxCitasPorDia()) {
-			return false;
-		}
+	    Cita nuevaCita = new Cita(fechaHora, cliente, medico, "Pendiente");
 
-		Cita nuevaCita = new Cita(fechaHora, cliente, medico, "Pendiente");
+	    String codigo = "CIT-" + System.currentTimeMillis();
+	    nuevaCita.setCodigo_cita(codigo);
 
-		String codigo = "CIT-" + System.currentTimeMillis();
-		nuevaCita.setCodigo_cita(codigo);
-		medico.agregarCitaAsignada(nuevaCita);
+	    this.citas.add(nuevaCita);
 
-		return true;
+	    medico.agregarCitaAsignada(nuevaCita);
 
+	    guardarDatos();
+
+	    return true;
 	}
 
 	public boolean agendarCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente) {
@@ -458,7 +457,7 @@ public class Clinica implements Serializable {
 		cliente.getRegVacunas().add(reg);
 
 		Consulta consulta = new Consulta("CONS-VAC-" + vacuna.getCodigo_vacun(), LocalDate.now(),
-				"Aplicación de vacuna: " + vacuna.getNombre(), "Vacuna aplicada correctamente al cliente", medico,
+				"AplicaciÃ³n de vacuna: " + vacuna.getNombre(), "Vacuna aplicada correctamente al cliente", medico,
 				cliente);
 		consulta.setMedico(medico);
 		cliente.getHistorial().agregarConsulta(consulta);
@@ -571,7 +570,7 @@ public class Clinica implements Serializable {
 			lector.close();
 			archivo.close();
 		} catch (Exception e) {
-			System.out.println("No se encontró archivo de datos clínicos. Iniciando vacío.");
+			System.out.println("No se encontrÃ³ archivo de datos clÃ­nicos. Iniciando vacÃ­o.");
 		}
 	}
 }

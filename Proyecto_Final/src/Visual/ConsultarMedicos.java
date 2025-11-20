@@ -88,6 +88,18 @@ public class ConsultarMedicos extends JDialog {
 					scrollPane.setViewportView(table);
 				}
 			}
+			table.addMouseListener(new java.awt.event.MouseAdapter() {
+			    @Override
+			    public void mouseClicked(java.awt.event.MouseEvent e) {
+			        if (e.getClickCount() == 2) {
+			            int fila = table.getSelectedRow();
+			            if (fila >= 0) {
+			                dispose();
+			            }
+			        }
+			    }
+			});
+
 		}
 		{
 			JPanel panel = new JPanel();
