@@ -17,28 +17,28 @@ public class Main {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				FileInputStream empresa;
-				FileOutputStream empresa2;
-				ObjectInputStream empresaRead;
-				ObjectOutputStream empresaWrite;
+				FileInputStream usuarios;
+				FileOutputStream usuarios2;
+				ObjectInputStream usuariosRead;
+				ObjectOutputStream usuariosWrite;
 
 				try {
-					empresa = new FileInputStream("empresa.dat");
-					empresaRead = new ObjectInputStream(empresa);
-					Control temp = (Control) empresaRead.readObject();
+					usuarios = new FileInputStream("Usuarios.dat");
+					usuariosRead = new ObjectInputStream(usuarios);
+					Control temp = (Control) usuariosRead.readObject();
 					Control.setControl(temp);
-					empresa.close();
-					empresaRead.close();
+					usuarios.close();
+					usuariosRead.close();
 
 				} catch (FileNotFoundException e) {
 					try {
-						empresa2 = new FileOutputStream("empresa.dat");
-						empresaWrite = new ObjectOutputStream(empresa2);
+						usuarios2 = new FileOutputStream("empresa.dat");
+						usuariosWrite = new ObjectOutputStream(usuarios2);
 						User aux = new User("Administrador", "Admin", "Admin");
 						Control.getInstance().regUser(aux);
-						empresaWrite.writeObject(Control.getInstance());
-						empresa2.close();
-						empresaWrite.close();
+						usuariosWrite.writeObject(Control.getInstance());
+						usuarios2.close();
+						usuariosWrite.close();
 
 					} catch (IOException e1) {
 						e1.printStackTrace();
