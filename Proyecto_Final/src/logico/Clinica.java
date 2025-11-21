@@ -226,6 +226,10 @@ public class Clinica implements Serializable {
 	}
 
 	public boolean editCita(Cita citaOriginal, LocalDateTime nuevaFechaHora, Medico nuevoMedico) {
+		if (citaOriginal.getFechaHora().isBefore(LocalDateTime.now())) {
+			return false;
+		}
+
 		if (citaOriginal == null || nuevoMedico == null || nuevaFechaHora == null)
 			return false;
 

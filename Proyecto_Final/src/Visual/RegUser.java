@@ -144,8 +144,7 @@ public class RegUser extends JDialog {
 						String pass2 = new String(passField_2.getPassword());
 
 						if (!pass1.equals(pass2)) {
-							JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error",
-									JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
 							return;
 						}
 						String tipo = comboBox.getSelectedItem().toString();
@@ -168,13 +167,13 @@ public class RegUser extends JDialog {
 							usuarios = new FileInputStream("Usuarios.dat");
 							usuariosRead = new ObjectInputStream(usuarios);
 							Control temp = (Control) usuariosRead.readObject();
-							Control.setControl(temp);
+							Control.setControl(temp); 
 							usuarios.close();
 							usuariosRead.close();
 						} catch (Exception ex) {
 						}
 						User user = new User(tipo, textField.getText(), pass1, cedulaLink);
-						Control.getInstance().regUser(user);
+						Control.getInstance().regUser(user); 
 						try {
 							FileOutputStream usuarios2 = new FileOutputStream("Usuarios.dat");
 							ObjectOutputStream usuariosWrite = new ObjectOutputStream(usuarios2);
@@ -184,9 +183,7 @@ public class RegUser extends JDialog {
 							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado con éxito!");
 						} catch (IOException e1) {
 							e1.printStackTrace();
-							JOptionPane.showMessageDialog(contentPanel,
-									"Error: No se pudo guardar el usuario en el fichero.", "Error de Fichero",
-									JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(contentPanel, "Error al guardar en disco.", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 						dispose();
 					}
