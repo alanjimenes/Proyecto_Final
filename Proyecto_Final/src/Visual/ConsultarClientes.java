@@ -138,6 +138,20 @@ public class ConsultarClientes extends JDialog {
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		{
+			JButton btnNuevo = new JButton("Nuevo");
+			btnNuevo.setForeground(new Color(0, 128, 0));
+			btnNuevo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			btnNuevo.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					RegClientes reg = new RegClientes();
+					reg.setModal(true);
+					reg.setVisible(true);
+					cargarClientes("");
+				}
+			});
+			buttonPane.add(btnNuevo);
+		}
+		{
 			btnUpdate = new JButton("Modificar");
 			btnUpdate.setForeground(Color.ORANGE);
 			btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 16));
