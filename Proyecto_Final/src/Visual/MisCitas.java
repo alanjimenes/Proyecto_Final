@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -38,7 +39,7 @@ public class MisCitas extends JDialog {
 	public MisCitas(User usuario) {
 		this.usuarioMedico = usuario;
 		setTitle("Mis Citas de Hoy");
-		setBounds(100, 100, 800, 500);
+		setBounds(100, 100, 900, 500);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -48,7 +49,16 @@ public class MisCitas extends JDialog {
 		JPanel panelNorte = new JPanel();
 		panelNorte.setBackground(new Color(60, 70, 123));
 		contentPanel.add(panelNorte, BorderLayout.NORTH);
-		JLabel lblTitulo = new JLabel("Pacientes en Espera (Hoy)");
+
+		String nombreMedico = "Desconocido";
+		if(usuario.getCedula() != null && !usuario.getCedula().isEmpty()) {
+			Medico m = Clinica.getInstancia().buscarMedicoCedula(usuario.getCedula());
+			if (m != null) {
+				nombreMedico = m.getNombre() + " " + m.getApellido();
+			}
+		}
+
+		JLabel lblTitulo = new JLabel("Pacientes de Hoy para Dr/a: " + nombreMedico);
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
 		panelNorte.add(lblTitulo);
@@ -68,8 +78,15 @@ public class MisCitas extends JDialog {
 				}
 			}
 		});
-		model = new DefaultTableModel();
-		String[] headers = {"Código", "Hora", "Paciente", "Médico", "Estado"};
+
+		model = new DefaultTableModel() {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+
+		String[] headers = {"Código", "Hora", "Paciente", "Cédula Paciente", "Estado"};
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 		scrollPane.setViewportView(table);
@@ -86,9 +103,9 @@ public class MisCitas extends JDialog {
 					RealizarConsulta consulta = new RealizarConsulta(citaSeleccionada);
 					consulta.setModal(true);
 					consulta.setVisible(true);
-
 					cargarCitasHoy();
 					btnAtender.setEnabled(false);
+					citaSeleccionada = null;
 				}
 			}
 		});
@@ -108,16 +125,24 @@ public class MisCitas extends JDialog {
 	private void cargarCitasHoy() {
 		model.setRowCount(0);
 		row = new Object[5];
+		String cedulaMedico = usuarioMedico.getCedula();
+		if(cedulaMedico == null || cedulaMedico.isEmpty()) {
+			return;
+		}
+		Medico medicoActual = Clinica.getInstancia().buscarMedicoCedula(cedulaMedico);
 
-		for (Cita cita : Clinica.getInstancia().getCitas()) {
+		if (medicoActual == null) {
+			return;
+		}
+
+		for (Cita cita : medicoActual.getCitasAsignadas()) {
 			boolean esHoy = cita.getFechaHora().toLocalDate().equals(LocalDate.now());
 			boolean esPendiente = cita.getEstado().equalsIgnoreCase("Pendiente");
-
 			if (esHoy && esPendiente) {
 				row[0] = cita.getCodigo_cita();
-				row[1] = cita.getFechaHora().toLocalTime();
+				row[1] = cita.getFechaHora().format(DateTimeFormatter.ofPattern("hh:mm a")); 
 				row[2] = cita.getCliente().getNombre() + " " + cita.getCliente().getApellido();
-				row[3] = cita.getMedico().getNombre();
+				row[3] = cita.getCliente().getCedula();
 				row[4] = cita.getEstado();
 				model.addRow(row);
 			}

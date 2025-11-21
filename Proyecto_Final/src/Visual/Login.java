@@ -58,7 +58,7 @@ public class Login extends JFrame {
 					try {
 						usuarios2 = new FileOutputStream("Usuarios.dat");
 						usuariosWrite = new ObjectOutputStream(usuarios2);
-						User aux = new User("Administrador", "Admin", "Admin");
+						User aux = new User("Administrador", "Admin", "Admin", "Admin");
 						Control.getInstance().regUser(aux);
 						usuariosWrite.writeObject(Control.getInstance());
 						usuarios2.close();

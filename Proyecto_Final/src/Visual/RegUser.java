@@ -9,6 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import logico.Clinica;
 import logico.Control;
 import logico.User;
 
@@ -37,6 +38,7 @@ public class RegUser extends JDialog {
 	private JPasswordField passField_1;
 	private JPasswordField passField_2;
 	private JComboBox comboBox;
+	private JTextField txtCedulaEnlace;
 
 	/**
 	 * Launch the application.
@@ -112,6 +114,16 @@ public class RegUser extends JDialog {
 		passField_2.setBounds(216, 199, 147, 20);
 		contentPanel.add(passField_2);
 
+		JLabel lblCedulaLink = new JLabel("Cédula (Solo Médicos):");
+		lblCedulaLink.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblCedulaLink.setBounds(20, 250, 180, 20);
+		contentPanel.add(lblCedulaLink);
+
+		txtCedulaEnlace = new JTextField();
+		txtCedulaEnlace.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		txtCedulaEnlace.setBounds(216, 250, 147, 20);
+		contentPanel.add(txtCedulaEnlace);
+
 		JLabel lblFondoIcon = new JLabel("");
 		lblFondoIcon.setVerticalAlignment(SwingConstants.TOP);
 		lblFondoIcon.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -136,6 +148,20 @@ public class RegUser extends JDialog {
 									JOptionPane.ERROR_MESSAGE);
 							return;
 						}
+						String tipo = comboBox.getSelectedItem().toString();
+						String cedulaLink = "";
+
+						if (tipo.equalsIgnoreCase("Medico")) {
+							cedulaLink = txtCedulaEnlace.getText();
+							if (cedulaLink.isEmpty()) {
+								JOptionPane.showMessageDialog(contentPanel, "Para un usuario Médico, la cédula es obligatoria.");
+								return;
+							}
+							if (Clinica.getInstancia().buscarMedicoCedula(cedulaLink) == null) {
+								JOptionPane.showMessageDialog(contentPanel, "No existe ningún médico registrado con esa cédula.");
+								return;
+							}
+						}
 						FileInputStream usuarios = null;
 						ObjectInputStream usuariosRead = null;
 						try {
@@ -146,9 +172,8 @@ public class RegUser extends JDialog {
 							usuarios.close();
 							usuariosRead.close();
 						} catch (Exception ex) {
-							// Si falla (ej. el archivo no existe porque es el primer usuario),
 						}
-						User user = new User(comboBox.getSelectedItem().toString(), textField.getText(), pass1);
+						User user = new User(tipo, textField.getText(), pass1, cedulaLink);
 						Control.getInstance().regUser(user);
 						try {
 							FileOutputStream usuarios2 = new FileOutputStream("Usuarios.dat");

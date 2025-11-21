@@ -8,12 +8,14 @@ public class User implements Serializable{
 	private String rol;
 	private String usuario;
 	private String password;
+	private String cedula;
 
-	public User(String rol, String usuario, String password) {
+	public User(String rol, String usuario, String password, String cedula) {
 		super();
 		this.rol = rol;
 		this.usuario = usuario;
 		this.password = password;
+		this.cedula = cedula;
 	}
 
 	public String getRol() {
@@ -40,7 +42,12 @@ public class User implements Serializable{
 		this.password = password;
 	}
 
+	public String getCedula() {
+		return cedula;
+	}
 
-
+	public void setCedula(String cedula) {
+		this.cedula = cedula;
+	}
 }
 
