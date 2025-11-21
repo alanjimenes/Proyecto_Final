@@ -138,6 +138,13 @@ public class Principal extends JFrame {
 		menuBar.add(menuConsulta);
 		JMenuItem itemVerMisCitas = new JMenuItem("Ver Citas de Hoy");
 		itemVerMisCitas.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		itemVerMisCitas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MisCitas misCitas = new MisCitas(usuarioActual);
+				misCitas.setModal(true);
+				misCitas.setVisible(true);
+			}
+		});
 		menuConsulta.add(itemVerMisCitas);
 
 		/* MENU DE ADMINISTRACION */
