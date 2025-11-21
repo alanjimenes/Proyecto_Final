@@ -18,6 +18,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -26,6 +27,7 @@ import javax.swing.border.TitledBorder;
 import logico.Cita;
 import logico.Clinica;
 import logico.Enfermedad;
+import logico.Historial;
 
 public class RealizarConsulta extends JDialog {
 
@@ -67,7 +69,6 @@ public class RealizarConsulta extends JDialog {
 		lblCedula.setBounds(350, 28, 200, 14);
 		panelInfo.add(lblCedula);
 
-		// --- DATOS CONSULTA ---
 		JLabel lblSintomas = new JLabel("Síntomas:");
 		lblSintomas.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblSintomas.setBounds(20, 92, 100, 14);
@@ -153,7 +154,7 @@ public class RealizarConsulta extends JDialog {
 
 		JButton btnTerminar = new JButton("Terminar Consulta");
 		btnTerminar.setBackground(new Color(60, 179, 113));
-		btnTerminar.setForeground(Color.WHITE);
+		btnTerminar.setForeground(Color.BLACK);
 		btnTerminar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				terminarConsulta();
@@ -168,6 +169,15 @@ public class RealizarConsulta extends JDialog {
 			}
 		});
 		buttonPane.add(btnCancelar);
+
+		JButton btnHistorial = new JButton("Ver Historial Previo");
+		btnHistorial.setForeground(Color.BLACK);
+		btnHistorial.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				verHistorialFiltrado();
+			}
+		});
+		buttonPane.add(btnHistorial);
 	}
 
 	private void cargarEnfermedades() {
@@ -226,5 +236,46 @@ public class RealizarConsulta extends JDialog {
 				JOptionPane.showMessageDialog(null, "Error al guardar la consulta.");
 			}
 		}
+	}
+
+	private void verHistorialFiltrado() {
+		logico.Historial historial = citaActual.getCliente().getHistorial();
+		ArrayList<logico.Consulta> consultasVisibles = historial.getConsultasVisibleMedico(citaActual.getMedico());
+
+		if (consultasVisibles.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "No hay consultas previas visibles para este médico.");
+			return;
+		}
+
+		JDialog dialogHistorial = new JDialog();
+		dialogHistorial.setTitle("Historial Clínico Filtrado - " + citaActual.getCliente().getNombre());
+		dialogHistorial.setSize(800, 400);
+		dialogHistorial.setLocationRelativeTo(this);
+		dialogHistorial.getContentPane().setLayout(new BorderLayout());
+
+		String[] headers = {"Fecha", "Síntomas", "Diagnóstico", "Médico"};
+		javax.swing.table.DefaultTableModel modelHist = new javax.swing.table.DefaultTableModel();
+		modelHist.setColumnIdentifiers(headers);
+
+		for (logico.Consulta c : consultasVisibles) {
+			Object[] row = new Object[4];
+			row[0] = c.getFechaConsulta().toString();
+			row[1] = c.getSintomas();
+			row[2] = c.getDiagnostico();
+			row[3] = c.getMedico().getNombre() + " (" + c.getMedico().getEspecialidad().getNombre() + ")";
+
+			if (c.bajoVigilancia()) {
+				row[2] = "[VIGILANCIA] " + row[2];
+			}
+			modelHist.addRow(row);
+		}
+
+		JTable tableHist = new JTable(modelHist);
+		tableHist.setEnabled(false);
+		JScrollPane scroll = new JScrollPane(tableHist);
+
+		dialogHistorial.getContentPane().add(scroll, BorderLayout.CENTER);
+		dialogHistorial.setModal(true);
+		dialogHistorial.setVisible(true);
 	}
 }
