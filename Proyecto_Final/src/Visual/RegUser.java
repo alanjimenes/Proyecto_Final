@@ -126,21 +126,21 @@ public class RegUser extends JDialog {
 		contentPanel.add(txtCedulaEnlace);
 
 		comboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String seleccionado = comboBox.getSelectedItem().toString();
-                
-                if (seleccionado.equalsIgnoreCase("Medico")) {
-                    txtCedulaEnlace.setEnabled(true);
-                } else {
-                   
-                    txtCedulaEnlace.setEnabled(false);
-                    txtCedulaEnlace.setText(""); 
-                }
-            }
-        });
-		
-		
-		
+			public void actionPerformed(ActionEvent e) {
+				String seleccionado = comboBox.getSelectedItem().toString();
+
+				if (seleccionado.equalsIgnoreCase("Medico")) {
+					txtCedulaEnlace.setEnabled(true);
+				} else {
+
+					txtCedulaEnlace.setEnabled(false);
+					txtCedulaEnlace.setText(""); 
+				}
+			}
+		});
+
+
+
 		JLabel lblFondoIcon = new JLabel("");
 		lblFondoIcon.setVerticalAlignment(SwingConstants.TOP);
 		lblFondoIcon.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -168,13 +168,19 @@ public class RegUser extends JDialog {
 						String cedulaLink = "";
 
 						if (tipo.equalsIgnoreCase("Medico")) {
-							cedulaLink = txtCedulaEnlace.getText();
+							//.trim() es para quitar los espacios alante y atras :)
+							cedulaLink = txtCedulaEnlace.getText().trim(); 
+
 							if (cedulaLink.isEmpty()) {
 								JOptionPane.showMessageDialog(contentPanel, "Para un usuario Médico, la cédula es obligatoria.");
 								return;
 							}
+							//Debug a ver que tal
+							System.out.println("Buscando cédula: '" + cedulaLink + "'");
+							System.out.println("Médicos cargados en memoria: " + Clinica.getInstancia().getMedicos().size());
+
 							if (Clinica.getInstancia().buscarMedicoCedula(cedulaLink) == null) {
-								JOptionPane.showMessageDialog(contentPanel, "No existe ningún médico registrado con esa cédula.");
+								JOptionPane.showMessageDialog(contentPanel, "No existe ningún médico registrado con esa cédula (" + cedulaLink + ").");
 								return;
 							}
 						}
