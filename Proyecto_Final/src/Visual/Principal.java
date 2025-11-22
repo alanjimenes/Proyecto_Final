@@ -157,6 +157,13 @@ public class Principal extends JFrame {
 		// USUARIOS
 		JMenuItem itemGestionarUser = new JMenuItem("Gestionar Usuarios");
 		itemGestionarUser.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		itemGestionarUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegUser reg = new RegUser();
+				reg.setModal(true); 
+				reg.setVisible(true);
+			}
+		});		
 		menuAdministracion.add(itemGestionarUser);
 
 		// MEDICOS
