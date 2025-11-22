@@ -72,7 +72,7 @@ public class RegClientes extends JDialog {
 
 	private void initComponents() {
 		setTitle("Registrar Cliente");
-		setBounds(100, 100, 763, 431);
+		setBounds(100, 100, 761, 431);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(new Color(60, 70, 123));
@@ -94,7 +94,7 @@ public class RegClientes extends JDialog {
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setForeground(Color.WHITE);
 		lblNombre.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		lblNombre.setBounds(10, 83, 81, 14);
+		lblNombre.setBounds(10, 84, 81, 14);
 		contentPanel.add(lblNombre);
 
 		txtNombre = new JTextField();
@@ -105,51 +105,51 @@ public class RegClientes extends JDialog {
 		JLabel lblApellido = new JLabel("Apellido:");
 		lblApellido.setForeground(Color.WHITE);
 		lblApellido.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		lblApellido.setBounds(10, 134, 104, 14);
+		lblApellido.setBounds(10, 137, 104, 14);
 		contentPanel.add(lblApellido);
 
 		txtApellido = new JTextField();
-		txtApellido.setBounds(112, 132, 200, 20);
+		txtApellido.setBounds(112, 135, 200, 20);
 		contentPanel.add(txtApellido);
 		txtApellido.setColumns(10);
 
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		lblTelefono.setBounds(10, 190, 81, 14);
+		lblTelefono.setBounds(10, 193, 81, 14);
 		contentPanel.add(lblTelefono);
 
 		txtTelefono = new JTextField();
-		txtTelefono.setBounds(112, 188, 200, 20);
+		txtTelefono.setBounds(112, 189, 200, 20);
 		contentPanel.add(txtTelefono);
 		txtTelefono.setColumns(10);
 
 		JLabel lblDireccion = new JLabel("Dirección:");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		lblDireccion.setBounds(10, 253, 93, 14);
+		lblDireccion.setBounds(10, 246, 93, 14);
 		contentPanel.add(lblDireccion);
 
 		txtDireccion = new JTextField();
-		txtDireccion.setBounds(112, 251, 200, 20);
+		txtDireccion.setBounds(112, 243, 200, 20);
 		contentPanel.add(txtDireccion);
 		txtDireccion.setColumns(10);
 
 		JLabel lblFecha = new JLabel("Fecha Nac:");
 		lblFecha.setForeground(Color.WHITE);
 		lblFecha.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		lblFecha.setBounds(10, 322, 98, 14);
+		lblFecha.setBounds(10, 300, 98, 14);
 		contentPanel.add(lblFecha);
 
 		dateChooser = new JDateChooser();
-		dateChooser.setBounds(112, 322, 200, 20);
+		dateChooser.setBounds(112, 297, 200, 20);
 		contentPanel.add(dateChooser);
 		{
             okButton = new JButton("Registrar");
             
             estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
             
-            okButton.setBounds(346, 353, 110, 35); 
+            okButton.setBounds(346, 340, 110, 35); 
             contentPanel.add(okButton);
             
             okButton.addActionListener(new ActionListener() {
@@ -165,7 +165,7 @@ public class RegClientes extends JDialog {
            
             estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
             
-            cancelButton.setBounds(631, 353, 110, 35);
+            cancelButton.setBounds(631, 340, 110, 35);
             contentPanel.add(cancelButton);
             
             cancelButton.addActionListener(new ActionListener() {
@@ -190,7 +190,7 @@ public class RegClientes extends JDialog {
 
 		estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
 
-		btnLimpiar.setBounds(492, 354, 110, 35);
+		btnLimpiar.setBounds(492, 340, 110, 35);
 		contentPanel.add(btnLimpiar);
 
 		JLabel lblBienvenido = new JLabel("Registrar Cliente");
@@ -203,7 +203,7 @@ public class RegClientes extends JDialog {
 		label.setIcon(new ImageIcon(RegClientes.class.getResource("/img/familia.png")));
 		label.setForeground(Color.WHITE);
 		label.setFont(new Font("Bahnschrift", Font.BOLD, 22));
-		label.setBounds(419, 62, 256, 273);
+		label.setBounds(427, 62, 256, 273);
 		contentPanel.add(label);
 	}
 
