@@ -101,6 +101,7 @@ public class GestionCitas extends JPanel {
 
 		dateChooser = new JDateChooser();
 		dateChooser.setBounds(90, 72, 130, 20);
+		dateChooser.getJCalendar().setMinSelectableDate(new Date()); //PARA QUE SOLO SEA ELEGIBLE DE HOY EN ADELANTE
 		panelFormulario.add(dateChooser);
 
 		JLabel lblHora = new JLabel("Hora:");
@@ -269,6 +270,13 @@ public class GestionCitas extends JPanel {
 
 						cbxHora.setSelectedItem(formatoCombo);
 
+						if (citaSeleccionada.getEstado().equalsIgnoreCase("Completada")) {
+							btnModificarCita.setEnabled(false);
+							btnCancelarCita.setEnabled(false);
+						} else {
+							btnModificarCita.setEnabled(true);
+							btnCancelarCita.setEnabled(true);
+						}
 					}
 				}
 			}

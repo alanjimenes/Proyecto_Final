@@ -28,6 +28,7 @@ import logico.Cita;
 import logico.Clinica;
 import logico.Enfermedad;
 import logico.Historial;
+import logico.Vacuna;
 
 public class RealizarConsulta extends JDialog {
 
@@ -178,6 +179,44 @@ public class RealizarConsulta extends JDialog {
 			}
 		});
 		buttonPane.add(btnHistorial);
+
+		JButton btnVacuna = new JButton("Aplicar Vacuna");
+		btnVacuna.setForeground(Color.BLACK);
+		btnVacuna.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<logico.Vacuna> vacunas = logico.Clinica.getInstancia().getVacunas();
+				if(vacunas.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "No hay vacunas en el sistema.");
+					return;
+				}
+				String[] nombresVacunas = new String[vacunas.size()];
+				for(int i=0; i<vacunas.size(); i++) {
+					nombresVacunas[i] = vacunas.get(i).getNombre();
+				}
+
+				String seleccion = (String) JOptionPane.showInputDialog(
+						null, 
+						"Seleccione la vacuna a aplicar:", 
+						"Vacunación", 
+						JOptionPane.QUESTION_MESSAGE, 
+						null, 
+						nombresVacunas, 
+						nombresVacunas[0]);
+
+				if(seleccion != null) {
+					logico.Vacuna vacunaObj = null;
+					for(logico.Vacuna v : vacunas) {
+						if(v.getNombre().equals(seleccion)) {
+							vacunaObj = v; break;
+						}
+					}
+					logico.Clinica.getInstancia().aplicarVacunaCliente(citaActual.getCliente(), vacunaObj, citaActual.getMedico());
+					logico.Clinica.getInstancia().guardarDatosClinica();
+					JOptionPane.showMessageDialog(null, "Vacuna " + seleccion + " aplicada y registrada.");
+				}
+			}
+		});
+		buttonPane.add(btnVacuna);
 	}
 
 	private void cargarEnfermedades() {
@@ -195,6 +234,15 @@ public class RealizarConsulta extends JDialog {
 			for (Enfermedad enf : Clinica.getInstancia().getEnfermedades()) {
 				if (enf.getNombre().equals(seleccion)) {
 					enfermedadesSeleccionadas.add(enf);
+					/* MEJORA IMPLEMENTADA
+					 * Si esta bajo vigilancia marca la casilla de resumen y avisa al medico
+					 */
+					if (enf.isVigilancia()) {
+						chkResumen.setSelected(true);
+						chkResumen.setEnabled(false); 
+						chkResumen.setText("Marcar para Resumen (OBLIGATORIO POR VIGILANCIA)");
+						chkResumen.setForeground(Color.RED);
+					}
 					break;
 				}
 			}
