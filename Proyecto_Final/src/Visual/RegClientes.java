@@ -29,6 +29,9 @@ import java.awt.Font;
 import javax.swing.SwingConstants;
 import java.awt.Toolkit;
 import javax.swing.ImageIcon;
+import java.awt.Cursor;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class RegClientes extends JDialog {
 
@@ -142,53 +145,52 @@ public class RegClientes extends JDialog {
 		dateChooser.setBounds(112, 322, 200, 20);
 		contentPanel.add(dateChooser);
 		{
-			okButton = new JButton("Registrar");
-			okButton.setBackground(new Color(110, 140, 251));
-			okButton.setForeground(Color.GREEN);
-			okButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-			okButton.setBounds(346, 353, 94, 27);
-			contentPanel.add(okButton);
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					registrarCliente();
-				}
-			});
-			okButton.setActionCommand("OK");
-			getRootPane().setDefaultButton(okButton);
-		}
+            okButton = new JButton("Registrar");
+            
+            estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+            
+            okButton.setBounds(346, 353, 110, 35); 
+            contentPanel.add(okButton);
+            
+            okButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    registrarCliente();
+                }
+            });
+            okButton.setActionCommand("OK");
+            getRootPane().setDefaultButton(okButton);
+        }
 		{
-			JButton cancelButton = new JButton("Cancelar");
-			cancelButton.setBackground(new Color(110, 140, 251));
-			cancelButton.setForeground(Color.RED);
-			cancelButton.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-			cancelButton.setBounds(631, 353, 94, 27);
-			contentPanel.add(cancelButton);
-			cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-				}
-			});
-			cancelButton.setActionCommand("Cancel");
-		}
-
+            JButton cancelButton = new JButton("Cancelar");
+           
+            estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
+            
+            cancelButton.setBounds(631, 353, 110, 35);
+            contentPanel.add(cancelButton);
+            
+            cancelButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                }
+            });
+            cancelButton.setActionCommand("Cancel");
+        }
 		JButton btnLimpiar = new JButton("Limpiar");
+
 		btnLimpiar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-
-				txtCedula.setText("");
-				txtNombre.setText("");
-				txtApellido.setText("");
-				txtTelefono.setText("");
-				txtDireccion.setText("");
-				dateChooser.setDate(null);
-
-			}
+		    public void actionPerformed(ActionEvent arg0) {
+		        txtCedula.setText("");
+		        txtNombre.setText("");
+		        txtApellido.setText("");
+		        txtTelefono.setText("");
+		        txtDireccion.setText("");
+		        dateChooser.setDate(null);
+		    }
 		});
-		btnLimpiar.setBackground(new Color(110, 140, 251));
-		btnLimpiar.setForeground(Color.WHITE);
-		btnLimpiar.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		btnLimpiar.setActionCommand("OK");
-		btnLimpiar.setBounds(492, 354, 94, 27);
+
+		estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
+
+		btnLimpiar.setBounds(492, 354, 110, 35);
 		contentPanel.add(btnLimpiar);
 
 		JLabel lblBienvenido = new JLabel("Registrar Cliente");
@@ -248,5 +250,28 @@ public class RegClientes extends JDialog {
 		}
 		Clinica.getInstancia().guardarDatosClinica();
 		dispose();
+	}
+
+	private void estilarBoton(JButton boton, Color colorFondo, Color colorTexto) {
+	    boton.setBackground(colorFondo);
+	    boton.setForeground(colorTexto);
+	    boton.setFont(new Font("Bahnschrift", Font.BOLD, 14)); 
+	    boton.setFocusPainted(false); 
+	    boton.setBorderPainted(false); 
+	    boton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); 
+
+	    boton.addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseEntered(MouseEvent e) {
+	       
+	            boton.setBackground(colorFondo.darker());
+	        }
+
+	        @Override
+	        public void mouseExited(MouseEvent e) {
+	      
+	            boton.setBackground(colorFondo);
+	        }
+	    });
 	}
 }
