@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -26,7 +28,10 @@ import logico.Especialidad;
 import logico.Medico;
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.Cursor;
+
 import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
 
 public class RegMedico extends JDialog {
 
@@ -179,9 +184,12 @@ public class RegMedico extends JDialog {
 		spnMaxCitas.setBounds(120, 304, 60, 20);
 		contentPanel.add(spnMaxCitas);
 		{
-			okButton = new JButton("Registrar");
-			okButton.setBounds(454, 341, 77, 23);
-			contentPanel.add(okButton);
+			   okButton = new JButton("Registrar");
+	            
+	            Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+	     
+	            okButton.setBounds(346, 340, 110, 35); 
+	            contentPanel.add(okButton);
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					gestionMedico();
@@ -191,9 +199,13 @@ public class RegMedico extends JDialog {
 			getRootPane().setDefaultButton(okButton);
 		}
 		{
-			JButton cancelButton = new JButton("Cancelar");
-			cancelButton.setBounds(603, 341, 75, 23);
-			contentPanel.add(cancelButton);
+            JButton cancelButton = new JButton("Cancelar");
+            
+            Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
+            
+            cancelButton.setBounds(631, 340, 110, 35);
+            contentPanel.add(cancelButton);
+
 			cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					dispose();
@@ -203,10 +215,11 @@ public class RegMedico extends JDialog {
 		}
 		
 		JLabel label = new JLabel("");
-		label.setIcon(new ImageIcon(RegMedico.class.getResource("/img/regMed.png")));
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setIcon(new ImageIcon(RegMedico.class.getResource("/img/receta.png")));
 		label.setForeground(Color.WHITE);
 		label.setFont(new Font("Bahnschrift", Font.BOLD, 22));
-		label.setBounds(439, 57, 259, 273);
+		label.setBounds(472, 49, 226, 273);
 		contentPanel.add(label);
 		
 		JLabel lblBienvenida = new JLabel("Registrar Medico");
@@ -267,4 +280,5 @@ public class RegMedico extends JDialog {
 		Clinica.getInstancia().guardarDatosClinica();
 		dispose();
 	}
+
 }

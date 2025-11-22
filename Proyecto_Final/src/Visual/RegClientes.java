@@ -147,7 +147,7 @@ public class RegClientes extends JDialog {
 		{
             okButton = new JButton("Registrar");
             
-            estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+            Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
             
             okButton.setBounds(346, 340, 110, 35); 
             contentPanel.add(okButton);
@@ -163,7 +163,7 @@ public class RegClientes extends JDialog {
 		{
             JButton cancelButton = new JButton("Cancelar");
            
-            estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
+            Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
             
             cancelButton.setBounds(631, 340, 110, 35);
             contentPanel.add(cancelButton);
@@ -188,7 +188,7 @@ public class RegClientes extends JDialog {
 		    }
 		});
 
-		estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
+		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
 
 		btnLimpiar.setBounds(492, 340, 110, 35);
 		contentPanel.add(btnLimpiar);
@@ -252,26 +252,5 @@ public class RegClientes extends JDialog {
 		dispose();
 	}
 
-	private void estilarBoton(JButton boton, Color colorFondo, Color colorTexto) {
-	    boton.setBackground(colorFondo);
-	    boton.setForeground(colorTexto);
-	    boton.setFont(new Font("Bahnschrift", Font.BOLD, 14)); 
-	    boton.setFocusPainted(false); 
-	    boton.setBorderPainted(false); 
-	    boton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); 
 
-	    boton.addMouseListener(new MouseAdapter() {
-	        @Override
-	        public void mouseEntered(MouseEvent e) {
-	       
-	            boton.setBackground(colorFondo.darker());
-	        }
-
-	        @Override
-	        public void mouseExited(MouseEvent e) {
-	      
-	            boton.setBackground(colorFondo);
-	        }
-	    });
-	}
 }
