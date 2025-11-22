@@ -122,7 +122,8 @@ public class RegUser extends JDialog {
 		txtCedulaEnlace = new JTextField();
 		txtCedulaEnlace.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		txtCedulaEnlace.setBounds(216, 250, 147, 20);
-		txtCedulaEnlace.setEnabled(false); 
+		txtCedulaEnlace.setVisible(false); 
+		lblCedulaLink.setVisible(false);
 		contentPanel.add(txtCedulaEnlace);
 
 		comboBox.addActionListener(new ActionListener() {
@@ -130,10 +131,11 @@ public class RegUser extends JDialog {
                 String seleccionado = comboBox.getSelectedItem().toString();
                 
                 if (seleccionado.equalsIgnoreCase("Medico")) {
-                    txtCedulaEnlace.setEnabled(true);
+                    txtCedulaEnlace.setVisible(true);
+                    lblCedulaLink.setVisible(true);
                 } else {
-                   
-                    txtCedulaEnlace.setEnabled(false);
+                    txtCedulaEnlace.setVisible(false);
+                    lblCedulaLink.setVisible(false);
                     txtCedulaEnlace.setText(""); 
                 }
             }
