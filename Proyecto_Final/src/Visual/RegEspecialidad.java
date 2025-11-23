@@ -17,6 +17,8 @@ import logico.Clinica;
 import logico.Especialidad;
 import java.awt.Toolkit;
 import java.awt.Color;
+import java.awt.Font;
+import javax.swing.SwingConstants;
 
 public class RegEspecialidad extends JDialog {
 
@@ -36,49 +38,56 @@ public class RegEspecialidad extends JDialog {
 		contentPanel.setLayout(null);
 
 		JLabel lblNombre = new JLabel("Nombre Especialidad:");
-		lblNombre.setBounds(28, 22, 130, 14);
+		lblNombre.setForeground(Color.WHITE);
+		lblNombre.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+		lblNombre.setBounds(22, 87, 159, 14);
 		contentPanel.add(lblNombre);
 
 		txtNombre = new JTextField();
-		txtNombre.setBounds(168, 19, 200, 20);
+		txtNombre.setBounds(205, 84, 200, 20);
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setBounds(0, 129, 475, 33);
-			contentPanel.add(buttonPane);
-			buttonPane.setBackground(Color.WHITE);
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			{
-				JButton okButton = new JButton("Registrar");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						if (!txtNombre.getText().isEmpty()) {
-							String codigo = "ESP-" + Clinica.getInstancia().getEspecialidades().size();
-							Especialidad aux = new Especialidad(codigo, txtNombre.getText());
-							Clinica.getInstancia().agregarEspecialidad(aux);
-							Clinica.getInstancia().guardarDatosClinica();
-							JOptionPane.showMessageDialog(null, "Especialidad creada con éxito.");
-							dispose();
-						} else {
-							JOptionPane.showMessageDialog(null, "El nombre no puede estar vacío.");
-						}
-					}
-				});
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancelar");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
+			JButton okButton = new JButton("Registrar");
+			contentPanel.add(okButton);
+		    Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+		    okButton.setBounds(212, 131, 77, 23); 
+			okButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (!txtNombre.getText().isEmpty()) {
+						String codigo = "ESP-" + Clinica.getInstancia().getEspecialidades().size();
+						Especialidad aux = new Especialidad(codigo, txtNombre.getText());
+						Clinica.getInstancia().agregarEspecialidad(aux);
+						Clinica.getInstancia().guardarDatosClinica();
+						JOptionPane.showMessageDialog(null, "Especialidad creada con éxito.");
 						dispose();
+					} else {
+						JOptionPane.showMessageDialog(null, "El nombre no puede estar vacío.");
 					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
+				}
+			});
+			okButton.setActionCommand("OK");
+			getRootPane().setDefaultButton(okButton);
 		}
+		{
+			JButton cancelButton = new JButton("Cancelar");
+			Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
+
+			cancelButton.setBounds(337, 131, 75, 23);
+			contentPanel.add(cancelButton);
+			cancelButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
+			cancelButton.setActionCommand("Cancel");
+		}
+		
+		JLabel lblTitulo = new JLabel("Registrar Especialidad");
+		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitulo.setForeground(Color.WHITE);
+		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
+		lblTitulo.setBounds(90, 11, 287, 37);
+		contentPanel.add(lblTitulo);
 	}
 }

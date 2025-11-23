@@ -296,7 +296,16 @@ public class RegMedico extends JDialog {
 
 			if(exito) {
 				JOptionPane.showMessageDialog(null, "Médico registrado en el Servidor.");
-				dispose();
+			    txtCedula.setText("");
+			    txtNombre.setText("");
+			    txtApellido.setText("");
+			    txtTelefono.setText("");
+			    txtDireccion.setText("");
+			    dateChooser.setDate(null); 
+			    cbxEspecialidad.setSelectedIndex(0);
+			    spnMaxCitas.setValue(1); 
+			    medicoActual = null;			    
+			    txtCedula.requestFocus();
 			} else {
 				JOptionPane.showMessageDialog(null, "Error: Cédula duplicada o fallo en servidor.");
 			}
