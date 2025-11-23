@@ -135,13 +135,13 @@ public class ConsultarClientes extends JDialog {
 		}
 
 		JPanel buttonPane = new JPanel();
-		buttonPane.setBackground(new Color(248, 244, 234));
+		buttonPane.setBackground(new Color (60, 70, 123));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		{
 			JButton btnNuevo = new JButton("Nuevo");
-			btnNuevo.setForeground(new Color(0, 128, 0));
-			btnNuevo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			Estilos.estilarBoton(btnNuevo, new Color(176, 206, 136), Color.WHITE);
+			btnNuevo.setFont(new Font("Tahoma", Font.BOLD, 16));
 			btnNuevo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					RegClientes reg = new RegClientes();
@@ -154,8 +154,8 @@ public class ConsultarClientes extends JDialog {
 		}
 		{
 			btnUpdate = new JButton("Modificar");
-			btnUpdate.setForeground(Color.ORANGE);
-			btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			Estilos.estilarBoton(btnUpdate, new Color(41, 128, 185), Color.WHITE);
+			btnUpdate.setFont(new Font("Tahoma", Font.BOLD, 16));
 			btnUpdate.setEnabled(false);
 			btnUpdate.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -171,15 +171,15 @@ public class ConsultarClientes extends JDialog {
 			buttonPane.add(btnUpdate);
 		}
 		{
-			btnDelete = new JButton("Desactivar");
-			btnDelete.setForeground(Color.RED);
-			btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			btnDelete = new JButton("Eliminar");
+			Estilos.estilarBoton(btnDelete, new Color(231, 76, 60), Color.WHITE);
+			btnDelete.setFont(new Font("Tahoma", Font.BOLD, 16));
 			btnDelete.setEnabled(false);
 			btnDelete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (seleccionado != null) {
 						int option = JOptionPane.showConfirmDialog(null,
-								"¿Seguro que desea desactivar al paciente " + seleccionado.getNombre() + "?",
+								"¿Seguro que desea eliminar al paciente " + seleccionado.getNombre() + "?",
 								"Confirmar", JOptionPane.YES_NO_OPTION);
 
 						if (option == JOptionPane.YES_OPTION) {
@@ -195,7 +195,9 @@ public class ConsultarClientes extends JDialog {
 		}
 		{
 			JButton btnCancelar = new JButton("Cerrar");
-			btnCancelar.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			Estilos.estilarBoton(btnCancelar, new Color(127, 140, 141), Color.WHITE);
+			btnCancelar.setFont(new Font("Tahoma", Font.BOLD, 16));
+		
 			btnCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					dispose();

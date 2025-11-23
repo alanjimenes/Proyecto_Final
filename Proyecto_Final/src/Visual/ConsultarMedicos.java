@@ -160,8 +160,8 @@ public class ConsultarMedicos extends JDialog {
 				{
 					btnVerDetalles = new JButton("Ver Detalles");
 					btnVerDetalles.setEnabled(false);
-					btnVerDetalles.setFont(new Font("Tahoma", Font.PLAIN, 16));
-					Estilos.estilarBoton(btnVerDetalles, Color.green, Color.WHITE);
+					btnVerDetalles.setFont(new Font("Tahoma", Font.BOLD, 16));
+					Estilos.estilarBoton(btnVerDetalles, new Color(176, 206, 136), Color.WHITE);
 					btnVerDetalles.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 
@@ -181,7 +181,7 @@ public class ConsultarMedicos extends JDialog {
 					});
 					buttonPane.add(btnVerDetalles);
 				}
-				btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 16));
+				btnUpdate.setFont(new Font("Tahoma", Font.BOLD, 16));
 				btnUpdate.setEnabled(false);
 				btnUpdate.setActionCommand("OK");
 				buttonPane.add(btnUpdate);
@@ -190,7 +190,7 @@ public class ConsultarMedicos extends JDialog {
 			{
 				btnDelete = new JButton("Eliminar");
 				Estilos.estilarBoton(btnDelete, new Color(231, 76, 60), Color.WHITE);
-				btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 16));
+				btnDelete.setFont(new Font("Tahoma", Font.BOLD, 16));
 				btnDelete.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if (seleccionado != null) {
@@ -225,7 +225,7 @@ public class ConsultarMedicos extends JDialog {
 			{
 				JButton btnCancelar = new JButton("Cancelar");
 				Estilos.estilarBoton(btnCancelar, new Color(127, 140, 141), Color.WHITE);
-				btnCancelar.setFont(new Font("Tahoma", Font.PLAIN, 16));
+				btnCancelar.setFont(new Font("Tahoma", Font.BOLD, 16));
 				btnCancelar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();
