@@ -32,6 +32,7 @@ import java.awt.Cursor;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
+import java.awt.Toolkit;
 
 public class RegMedico extends JDialog {
 
@@ -48,6 +49,7 @@ public class RegMedico extends JDialog {
 	private Medico medicoActual = null;
 
 	public RegMedico() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegMedico.class.getResource("/img/doctor.png")));
 		initComponents();
 		this.medicoActual = null;
 	}
@@ -121,7 +123,7 @@ public class RegMedico extends JDialog {
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblTelefono.setBounds(14, 189, 80, 14);
+		lblTelefono.setBounds(10, 195, 80, 14);
 		contentPanel.add(lblTelefono);
 
 		txtTelefono = new JTextField();
@@ -132,7 +134,7 @@ public class RegMedico extends JDialog {
 		JLabel lblDireccion = new JLabel("Dirección:");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblDireccion.setBounds(10, 148, 80, 14);
+		lblDireccion.setBounds(10, 150, 80, 14);
 		contentPanel.add(lblDireccion);
 
 		txtDireccion = new JTextField();
@@ -143,7 +145,7 @@ public class RegMedico extends JDialog {
 		JLabel lblFecha = new JLabel("Fecha Nac:");
 		lblFecha.setForeground(Color.WHITE);
 		lblFecha.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblFecha.setBounds(14, 235, 80, 14);
+		lblFecha.setBounds(10, 235, 80, 14);
 		contentPanel.add(lblFecha);
 
 		dateChooser = new JDateChooser();
@@ -153,15 +155,20 @@ public class RegMedico extends JDialog {
 		JLabel lblEspecialidad = new JLabel("Especialidad:");
 		lblEspecialidad.setForeground(Color.WHITE);
 		lblEspecialidad.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblEspecialidad.setBounds(14, 269, 100, 14);
+		lblEspecialidad.setBounds(10, 275, 100, 14);
 		contentPanel.add(lblEspecialidad);
 
 		cbxEspecialidad = new JComboBox<>();
-		cbxEspecialidad.setBounds(116, 267, 220, 20);
+		cbxEspecialidad.setBounds(116, 270, 220, 20);
 		contentPanel.add(cbxEspecialidad);
 
 		// BOTON EXTRA PARA ESPECIALIDAD
 		JButton btnAddEsp = new JButton("+");
+
+
+		Estilos.estilarBoton(btnAddEsp, new Color(127, 140, 141), Color.WHITE); 
+
+
 		btnAddEsp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				RegEspecialidad regEsp = new RegEspecialidad();
@@ -170,25 +177,25 @@ public class RegMedico extends JDialog {
 				cargarEspecialidades();
 			}
 		});
-		btnAddEsp.setBounds(346, 266, 45, 23);
+		btnAddEsp.setBounds(346, 270, 45, 23);
 		contentPanel.add(btnAddEsp);
 
 		JLabel lblMaxCitas = new JLabel("Citas Diarias:");
 		lblMaxCitas.setForeground(Color.WHITE);
 		lblMaxCitas.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblMaxCitas.setBounds(14, 309, 100, 14);
+		lblMaxCitas.setBounds(10, 315, 100, 14);
 		contentPanel.add(lblMaxCitas);
 
 		spnMaxCitas = new JSpinner();
 		spnMaxCitas.setModel(new SpinnerNumberModel(10, 1, 100, 1));
-		spnMaxCitas.setBounds(120, 304, 60, 20);
+		spnMaxCitas.setBounds(120, 310, 60, 20);
 		contentPanel.add(spnMaxCitas);
 		{
 			   okButton = new JButton("Registrar");
 	            
 	            Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
 	     
-	            okButton.setBounds(346, 340, 110, 35); 
+	            okButton.setBounds(361, 340, 110, 35); 
 	            contentPanel.add(okButton);
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -213,6 +220,23 @@ public class RegMedico extends JDialog {
 			});
 			cancelButton.setActionCommand("Cancel");
 		}
+		JButton btnLimpiar = new JButton("Limpiar");
+
+		btnLimpiar.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent arg0) {
+		        txtCedula.setText("");
+		        txtNombre.setText("");
+		        txtApellido.setText("");
+		        txtTelefono.setText("");
+		        txtDireccion.setText("");
+		        dateChooser.setDate(null);
+		    }
+		});
+
+		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
+
+		btnLimpiar.setBounds(492, 340, 110, 35);
+		contentPanel.add(btnLimpiar);
 		
 		JLabel label = new JLabel("");
 		label.setHorizontalAlignment(SwingConstants.CENTER);

@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 import logico.Clinica;
 import logico.Medico;
@@ -49,7 +50,7 @@ public class ConsultarMedicos extends JDialog {
 	 */
 	public ConsultarMedicos() {
 		setTitle("LISTADO DE MÉDICOS");
-		setBounds(100, 100, 1065, 640);
+		setBounds(100, 100, 1065, 534);
 		setResizable(false);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -58,13 +59,13 @@ public class ConsultarMedicos extends JDialog {
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
 			JPanel panel = new JPanel();
-			panel.setBackground(SystemColor.desktop);
+			panel.setBackground(Color.WHITE);
 			panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			contentPanel.add(panel, BorderLayout.CENTER);
 			panel.setLayout(new BorderLayout(0, 0));
 			{
 				JScrollPane scrollPane = new JScrollPane();
-				panel.add(scrollPane, BorderLayout.CENTER);
+				panel.add(scrollPane, BorderLayout.NORTH);
 				{
 					table = new JTable();
 					table.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -85,6 +86,12 @@ public class ConsultarMedicos extends JDialog {
 					String[] headers = { "Cédula", "Nombre", "Apellido", "Especialidad", "Teléfono", "Citas Máx. Día" };
 					modelo.setColumnIdentifiers(headers);
 					table.setModel(modelo);
+					JTableHeader header = table.getTableHeader();
+					header.setBackground(new Color(60, 70, 123));
+					header.setForeground(Color.WHITE);
+					header.setOpaque(true);
+
+					header.setReorderingAllowed(false);
 					scrollPane.setViewportView(table);
 				}
 			}
@@ -103,11 +110,12 @@ public class ConsultarMedicos extends JDialog {
 		}
 		{
 			JPanel panel = new JPanel();
-			panel.setBackground(Color.WHITE);
+			panel.setBackground(new Color(60, 70, 123));
 			contentPanel.add(panel, BorderLayout.NORTH);
 			{
 				JLabel lblNewLabel = new JLabel("Filtrar por Nombre:");
-				lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
+				lblNewLabel.setForeground(Color.WHITE);
+				lblNewLabel.setFont(new Font("Bahnschrift", Font.BOLD, 18));
 				panel.add(lblNewLabel);
 			}
 			{
@@ -125,13 +133,13 @@ public class ConsultarMedicos extends JDialog {
 		}
 		{
 			JPanel buttonPane = new JPanel();
-			buttonPane.setBackground(new Color(248, 244, 234));
+			buttonPane.setBackground(new Color(60, 70, 123));
 			buttonPane.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				btnUpdate = new JButton("Modificar");
-				btnUpdate.setForeground(Color.ORANGE);
+				Estilos.estilarBoton(btnUpdate, new Color(41, 128, 185), Color.WHITE);
 				btnUpdate.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if (seleccionado != null) {
@@ -153,7 +161,7 @@ public class ConsultarMedicos extends JDialog {
 					btnVerDetalles = new JButton("Ver Detalles");
 					btnVerDetalles.setEnabled(false);
 					btnVerDetalles.setFont(new Font("Tahoma", Font.PLAIN, 16));
-					btnVerDetalles.setForeground(Color.GREEN);
+					Estilos.estilarBoton(btnVerDetalles, Color.green, Color.WHITE);
 					btnVerDetalles.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 
@@ -181,7 +189,7 @@ public class ConsultarMedicos extends JDialog {
 			}
 			{
 				btnDelete = new JButton("Eliminar");
-				btnDelete.setForeground(Color.RED);
+				Estilos.estilarBoton(btnDelete, new Color(231, 76, 60), Color.WHITE);
 				btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 16));
 				btnDelete.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -216,7 +224,7 @@ public class ConsultarMedicos extends JDialog {
 			}
 			{
 				JButton btnCancelar = new JButton("Cancelar");
-				btnCancelar.setForeground(Color.GREEN);
+				Estilos.estilarBoton(btnCancelar, new Color(127, 140, 141), Color.WHITE);
 				btnCancelar.setFont(new Font("Tahoma", Font.PLAIN, 16));
 				btnCancelar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {

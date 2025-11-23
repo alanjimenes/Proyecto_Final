@@ -52,6 +52,7 @@ public class ConsultarClientes extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
+		
 		JPanel panel = new JPanel();
 		panel.setBackground(SystemColor.desktop);
 		panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));

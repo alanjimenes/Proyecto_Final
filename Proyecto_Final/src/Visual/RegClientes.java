@@ -46,7 +46,7 @@ public class RegClientes extends JDialog {
 	private JButton okButton;
 
 	public RegClientes() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(RegClientes.class.getResource("/img/seguro-de-salud.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegClientes.class.getResource("/img/gestion-de-clientes.png")));
 		initComponents();
 		this.clienteActual = null;
 	}

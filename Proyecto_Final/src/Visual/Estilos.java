@@ -18,7 +18,7 @@ public class Estilos {
     public static void estilarBoton(JButton boton, Color colorFondo, Color colorTexto) {
         boton.setBackground(colorFondo);
         boton.setForeground(colorTexto);
-        boton.setFont(new Font("Bahnschrift", Font.BOLD, 16)); 
+        boton.setFont(new Font("Bahnschrift", Font.BOLD, 15)); 
         boton.setFocusPainted(false); 
         boton.setBorderPainted(false); 
         boton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); 
