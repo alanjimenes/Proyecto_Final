@@ -11,6 +11,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -25,8 +26,10 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import logico.Cliente;
 import logico.Clinica;
 import logico.Medico;
+import Visual.ClienteSocket;
 
 public class ConsultarMedicos extends JDialog {
 
@@ -197,7 +200,7 @@ public class ConsultarMedicos extends JDialog {
 							int option = JOptionPane.showConfirmDialog(
 									null, "¿Está seguro que desea eliminar al médico con Cédula: "
 											+ seleccionado.getCedula() + "?",
-									"Eliminar Médico", JOptionPane.WARNING_MESSAGE);
+											"Eliminar Médico", JOptionPane.WARNING_MESSAGE);
 
 							if (option == JOptionPane.OK_OPTION) {
 								if (seleccionado.getCitasAsignadas().isEmpty()) {
@@ -264,16 +267,6 @@ public class ConsultarMedicos extends JDialog {
 	}
 
 	public static void cargarMedicos() {
-		modelo.setRowCount(0);
-		row = new Object[table.getColumnCount()];
-		for (Medico aux : Clinica.getInstancia().getMedicos()) {
-			row[0] = aux.getCedula();
-			row[1] = aux.getNombre();
-			row[2] = aux.getApellido();
-			row[3] = aux.getEspecialidad().getNombre();
-			row[4] = aux.getTelefono();
-			row[5] = aux.getMaxCitasPorDia();
-			modelo.addRow(row);
-		}
+		ArrayList<Cliente> lista = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_MEDICOS", null);
 	}
 }

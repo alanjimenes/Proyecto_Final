@@ -184,13 +184,14 @@ public class Login extends JFrame {
 	private void intentarLogin() {
 		String usuario = textField.getText();
 		String clave = new String(passwordField.getPassword());
-		if (Control.getInstance().confirmLogin(usuario, clave)) {
-			User usuarioLogueado = Control.getLoginUser();
+		User userTemp = new User(null, usuario, clave, null);
+		User usuarioLogueado = (User) ClienteSocket.enviar("LOGIN", userTemp);
+		if (usuarioLogueado != null) {
 			Principal frame = new Principal(usuarioLogueado);
 			dispose();
 			frame.setVisible(true);
 		} else {
-			JOptionPane.showMessageDialog(contentPane, "Usuario o clave incorrecta.", "Error",
+			JOptionPane.showMessageDialog(contentPane, "Usuario o clave incorrecta (o error de conexión).", "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}

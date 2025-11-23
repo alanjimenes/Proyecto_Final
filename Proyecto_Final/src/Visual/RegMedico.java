@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JButton;
@@ -26,6 +27,7 @@ import com.toedter.calendar.JDateChooser;
 import logico.Clinica;
 import logico.Especialidad;
 import logico.Medico;
+
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -164,10 +166,7 @@ public class RegMedico extends JDialog {
 
 		// BOTON EXTRA PARA ESPECIALIDAD
 		JButton btnAddEsp = new JButton("+");
-
-
 		Estilos.estilarBoton(btnAddEsp, new Color(127, 140, 141), Color.WHITE); 
-
 
 		btnAddEsp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -191,12 +190,12 @@ public class RegMedico extends JDialog {
 		spnMaxCitas.setBounds(120, 310, 60, 20);
 		contentPanel.add(spnMaxCitas);
 		{
-			   okButton = new JButton("Registrar");
-	            
-	            Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
-	     
-	            okButton.setBounds(361, 340, 110, 35); 
-	            contentPanel.add(okButton);
+			okButton = new JButton("Registrar");
+
+			Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+
+			okButton.setBounds(361, 340, 110, 35); 
+			contentPanel.add(okButton);
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					gestionMedico();
@@ -206,12 +205,12 @@ public class RegMedico extends JDialog {
 			getRootPane().setDefaultButton(okButton);
 		}
 		{
-            JButton cancelButton = new JButton("Cancelar");
-            
-            Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
-            
-            cancelButton.setBounds(631, 340, 110, 35);
-            contentPanel.add(cancelButton);
+			JButton cancelButton = new JButton("Cancelar");
+
+			Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
+
+			cancelButton.setBounds(631, 340, 110, 35);
+			contentPanel.add(cancelButton);
 
 			cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -223,21 +222,21 @@ public class RegMedico extends JDialog {
 		JButton btnLimpiar = new JButton("Limpiar");
 
 		btnLimpiar.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent arg0) {
-		        txtCedula.setText("");
-		        txtNombre.setText("");
-		        txtApellido.setText("");
-		        txtTelefono.setText("");
-		        txtDireccion.setText("");
-		        dateChooser.setDate(null);
-		    }
+			public void actionPerformed(ActionEvent arg0) {
+				txtCedula.setText("");
+				txtNombre.setText("");
+				txtApellido.setText("");
+				txtTelefono.setText("");
+				txtDireccion.setText("");
+				dateChooser.setDate(null);
+			}
 		});
 
 		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
 
 		btnLimpiar.setBounds(492, 340, 110, 35);
 		contentPanel.add(btnLimpiar);
-		
+
 		JLabel label = new JLabel("");
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setIcon(new ImageIcon(RegMedico.class.getResource("/img/receta.png")));
@@ -245,7 +244,7 @@ public class RegMedico extends JDialog {
 		label.setFont(new Font("Bahnschrift", Font.BOLD, 22));
 		label.setBounds(472, 49, 226, 273);
 		contentPanel.add(label);
-		
+
 		JLabel lblBienvenida = new JLabel("Registrar Medico");
 		lblBienvenida.setForeground(Color.WHITE);
 		lblBienvenida.setFont(new Font("Bahnschrift", Font.BOLD, 22));
@@ -255,11 +254,16 @@ public class RegMedico extends JDialog {
 		cargarEspecialidades();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void cargarEspecialidades() {
 		cbxEspecialidad.removeAllItems();
 		cbxEspecialidad.addItem("<Seleccione>");
-		for (Especialidad esp : Clinica.getInstancia().getEspecialidades()) {
-			cbxEspecialidad.addItem(esp.getNombre());
+		ArrayList<logico.Especialidad> lista = (ArrayList<logico.Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
+
+		if(lista != null) {
+			for (logico.Especialidad esp : lista) {
+				cbxEspecialidad.addItem(esp.getNombre());
+			}
 		}
 	}
 
@@ -287,9 +291,14 @@ public class RegMedico extends JDialog {
 					txtTelefono.getText(), txtDireccion.getText(), true, espSeleccionada, (int) spnMaxCitas.getValue(),
 					null, null);
 
-			Clinica.getInstancia().agregarMedico(nuevoMedico);
-			JOptionPane.showMessageDialog(null, "Médico registrado correctamente.");
+			boolean exito = (boolean) ClienteSocket.enviar("REG_MEDICO", nuevoMedico);
 
+			if(exito) {
+				JOptionPane.showMessageDialog(null, "Médico registrado en el Servidor.");
+				dispose();
+			} else {
+				JOptionPane.showMessageDialog(null, "Error: Cédula duplicada o fallo en servidor.");
+			}
 		} else {
 			medicoActual.setNombre(txtNombre.getText());
 			medicoActual.setApellido(txtApellido.getText());
@@ -299,7 +308,7 @@ public class RegMedico extends JDialog {
 			medicoActual.setEspecialidad(espSeleccionada);
 			medicoActual.setMaxCitasPorDia((int) spnMaxCitas.getValue());
 
-			JOptionPane.showMessageDialog(null, "Médico actualizado correctamente.");
+			boolean exito = (boolean) ClienteSocket.enviar("REG_MEDICO", medicoActual);
 		}
 		Clinica.getInstancia().guardarDatosClinica();
 		dispose();

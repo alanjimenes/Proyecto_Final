@@ -23,7 +23,7 @@ public class Clinica implements Serializable {
 	private ArrayList<Vacuna> vacunas;
 	private ArrayList<Cita> citas;
 	private Agenda agenda;
-	private ArrayList<User> users;
+	private static ArrayList<User> users;
 	private static Clinica instancia = null;
 	private ArrayList<Especialidad> especialidades;
 
@@ -501,7 +501,7 @@ public class Clinica implements Serializable {
 
 	// Manejo de datos
 
-	public void guardarUsuarios() {
+	public static void guardarUsuarios() {
 		try {
 			FileOutputStream fos = new FileOutputStream("Usuarios.dat");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);

@@ -222,17 +222,16 @@ public class GestionCitas extends JPanel {
 					JOptionPane.showMessageDialog(null, "No puede crear una cita en una fecha y hora pasadas.");
 					return;
 				}
+				Cita tempCita = new Cita(fechaHora, clienteSeleccionado, medicoSeleccionado, "Pendiente");
 
-				boolean exito = Clinica.getInstancia().crearCita(fechaHora, medicoSeleccionado.getCedula(),
-						clienteSeleccionado.getNumExpediente());
+				boolean exito = (boolean) ClienteSocket.enviar("REG_CITA", tempCita);
 
 				if (exito) {
-					JOptionPane.showMessageDialog(null, "¡Cita creada con éxito!");
+					JOptionPane.showMessageDialog(null, "¡Cita agendada en el Servidor!");
 					cargarTablaCitas();
 					limpiarCampos();
 				} else {
-					JOptionPane.showMessageDialog(null,
-							"Error: El médico no está disponible a esa hora o ya alcanzó su límite diario.");
+					JOptionPane.showMessageDialog(null, "Error: Médico no disponible.");
 				}
 			}
 		});
@@ -366,18 +365,9 @@ public class GestionCitas extends JPanel {
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	private void cargarTablaCitas() {
-		model.setRowCount(0);
-		ArrayList<Cita> citas = Clinica.getInstancia().getCitas();
-		for (Cita c : citas) {
-			Object[] fila = new Object[5];
-			fila[0] = c.getCodigo_cita();
-			fila[1] = c.getCliente().getNombre() + " " + c.getCliente().getApellido();
-			fila[2] = c.getMedico().getNombre();
-			fila[3] = c.getFechaHora().toString();
-			fila[4] = c.getEstado();
-			model.addRow(fila);
-		}
+		ArrayList<Cita> citas = (ArrayList<Cita>) ClienteSocket.enviar("LISTAR_CITAS", null);
 	}
 
 	private void limpiarCampos() {

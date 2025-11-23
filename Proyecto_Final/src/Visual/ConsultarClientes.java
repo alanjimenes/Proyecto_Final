@@ -11,6 +11,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -52,7 +53,7 @@ public class ConsultarClientes extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
-		
+
 		JPanel panel = new JPanel();
 		panel.setBackground(SystemColor.desktop);
 		panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -197,7 +198,7 @@ public class ConsultarClientes extends JDialog {
 			JButton btnCancelar = new JButton("Cerrar");
 			Estilos.estilarBoton(btnCancelar, new Color(127, 140, 141), Color.WHITE);
 			btnCancelar.setFont(new Font("Tahoma", Font.BOLD, 16));
-		
+
 			btnCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					dispose();
@@ -210,20 +211,7 @@ public class ConsultarClientes extends JDialog {
 	}
 
 	private void cargarClientes(String filtro) {
-		modelo.setRowCount(0);
-		row = new Object[6];
-
-		for (Cliente cli : Clinica.getInstancia().getClientes()) {
-			if (cli.isActivo() && (filtro.isEmpty() || cli.getNombre().toLowerCase().contains(filtro.toLowerCase()))) {
-				row[0] = cli.getNumExpediente();
-				row[1] = cli.getCedula();
-				row[2] = cli.getNombre();
-				row[3] = cli.getApellido();
-				row[4] = cli.getTelefono();
-				row[5] = cli.isEnfermo() ? "Enfermo" : "Sano";
-				modelo.addRow(row);
-			}
-		}
+		ArrayList<Cliente> lista = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
 	}
 
 	private void resetBotones() {

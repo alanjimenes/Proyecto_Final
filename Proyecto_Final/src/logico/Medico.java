@@ -19,8 +19,8 @@ public class Medico extends Persona implements Serializable {
 		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion, activo);
 		this.especialidad = especialidad;
 		this.maxCitasPorDia = maxCitasPorDia;
-		this.consultasRealizadas = new ArrayList<>();
-		this.citasAsignadas = new ArrayList<>();
+		this.consultasRealizadas = (consultasRealizadas != null) ? consultasRealizadas : new ArrayList<>();
+		this.citasAsignadas = (citasAsignadas != null) ? citasAsignadas : new ArrayList<>();
 	}
 
 	public Especialidad getEspecialidad() {

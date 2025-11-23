@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 
 import logico.Clinica;
 import logico.Control;
+import logico.Medico;
 import logico.User;
 
 import javax.swing.JLabel;
@@ -127,22 +128,22 @@ public class RegUser extends JDialog {
 		contentPanel.add(txtCedulaEnlace);
 
 		comboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String seleccionado = comboBox.getSelectedItem().toString();
-                
-                if (seleccionado.equalsIgnoreCase("Medico")) {
-                    txtCedulaEnlace.setVisible(true);
-                    lblCedulaLink.setVisible(true);
-                } else {
-                    txtCedulaEnlace.setVisible(false);
-                    lblCedulaLink.setVisible(false);
-                    txtCedulaEnlace.setText(""); 
-                }
-            }
-        });
-		
-		
-		
+			public void actionPerformed(ActionEvent e) {
+				String seleccionado = comboBox.getSelectedItem().toString();
+
+				if (seleccionado.equalsIgnoreCase("Medico")) {
+					txtCedulaEnlace.setVisible(true);
+					lblCedulaLink.setVisible(true);
+				} else {
+					txtCedulaEnlace.setVisible(false);
+					lblCedulaLink.setVisible(false);
+					txtCedulaEnlace.setText(""); 
+				}
+			}
+		});
+
+
+
 		JLabel lblFondoIcon = new JLabel("");
 		lblFondoIcon.setVerticalAlignment(SwingConstants.TOP);
 		lblFondoIcon.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -170,41 +171,26 @@ public class RegUser extends JDialog {
 						String cedulaLink = "";
 
 						if (tipo.equalsIgnoreCase("Medico")) {
-							cedulaLink = txtCedulaEnlace.getText();
+							cedulaLink = txtCedulaEnlace.getText().trim();
 							if (cedulaLink.isEmpty()) {
-								JOptionPane.showMessageDialog(contentPanel, "Para un usuario Médico, la cédula es obligatoria.");
+								JOptionPane.showMessageDialog(contentPanel, "Cédula obligatoria para médicos.");
 								return;
 							}
-							if (Clinica.getInstancia().buscarMedicoCedula(cedulaLink) == null) {
-								JOptionPane.showMessageDialog(contentPanel, "No existe ningún médico registrado con esa cédula.");
+							Medico med = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedulaLink);
+							if (med == null) {
+								JOptionPane.showMessageDialog(contentPanel, "No existe médico con esa cédula en el Servidor.");
 								return;
 							}
-						}
-						FileInputStream usuarios = null;
-						ObjectInputStream usuariosRead = null;
-						try {
-							usuarios = new FileInputStream("Usuarios.dat");
-							usuariosRead = new ObjectInputStream(usuarios);
-							Control temp = (Control) usuariosRead.readObject();
-							Control.setControl(temp); 
-							usuarios.close();
-							usuariosRead.close();
-						} catch (Exception ex) {
 						}
 						User user = new User(tipo, textField.getText(), pass1, cedulaLink);
-						Control.getInstance().regUser(user); 
-						try {
-							FileOutputStream usuarios2 = new FileOutputStream("Usuarios.dat");
-							ObjectOutputStream usuariosWrite = new ObjectOutputStream(usuarios2);
-							usuariosWrite.writeObject(Control.getInstance());
-							usuarios2.close();
-							usuariosWrite.close();
-							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado con éxito!");
-						} catch (IOException e1) {
-							e1.printStackTrace();
-							JOptionPane.showMessageDialog(contentPanel, "Error al guardar en disco.", "Error", JOptionPane.ERROR_MESSAGE);
+						boolean respuesta = (boolean) ClienteSocket.enviar("REG_USER", user);
+
+						if (respuesta) {
+							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado en el Servidor!");
+							dispose();
+						} else {
+							JOptionPane.showMessageDialog(contentPanel, "Error al guardar en el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
 						}
-						dispose();
 					}
 				});
 				okButton.setActionCommand("OK");
