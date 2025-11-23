@@ -51,6 +51,7 @@ public class RegMedico extends JDialog {
 	private Medico medicoActual = null;
 
 	public RegMedico() {
+		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegMedico.class.getResource("/img/doctor.png")));
 		initComponents();
 		this.medicoActual = null;

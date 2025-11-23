@@ -46,6 +46,7 @@ public class RegClientes extends JDialog {
 	private JButton okButton;
 
 	public RegClientes() {
+		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegClientes.class.getResource("/img/gestion-de-clientes.png")));
 		initComponents();
 		this.clienteActual = null;

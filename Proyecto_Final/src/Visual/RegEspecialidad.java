@@ -15,6 +15,8 @@ import javax.swing.border.EmptyBorder;
 
 import logico.Clinica;
 import logico.Especialidad;
+import java.awt.Toolkit;
+import java.awt.Color;
 
 public class RegEspecialidad extends JDialog {
 
@@ -22,26 +24,31 @@ public class RegEspecialidad extends JDialog {
 	private JTextField txtNombre;
 
 	public RegEspecialidad() {
+		setResizable(false);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegEspecialidad.class.getResource("/img/especialidad.png")));
 		setTitle("Registrar Especialidad");
-		setBounds(100, 100, 450, 200);
+		setBounds(100, 100, 481, 194);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(60, 70, 123));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
 		JLabel lblNombre = new JLabel("Nombre Especialidad:");
-		lblNombre.setBounds(25, 45, 130, 14);
+		lblNombre.setBounds(28, 22, 130, 14);
 		contentPanel.add(lblNombre);
 
 		txtNombre = new JTextField();
-		txtNombre.setBounds(160, 42, 200, 20);
+		txtNombre.setBounds(168, 19, 200, 20);
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 		{
 			JPanel buttonPane = new JPanel();
+			buttonPane.setBounds(0, 129, 475, 33);
+			contentPanel.add(buttonPane);
+			buttonPane.setBackground(Color.WHITE);
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("Registrar");
 				okButton.addActionListener(new ActionListener() {
