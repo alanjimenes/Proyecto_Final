@@ -210,8 +210,25 @@ public class ConsultarClientes extends JDialog {
 		cargarClientes("");
 	}
 
+	@SuppressWarnings("unchecked")
 	private void cargarClientes(String filtro) {
+		modelo.setRowCount(0);
+		row = new Object[6];
 		ArrayList<Cliente> lista = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
+
+		if (lista != null) {
+			for (Cliente cli : lista) {
+				if (cli.isActivo() && (filtro.isEmpty() || cli.getNombre().toLowerCase().contains(filtro.toLowerCase()))) {
+					row[0] = cli.getNumExpediente();
+					row[1] = cli.getCedula();
+					row[2] = cli.getNombre();
+					row[3] = cli.getApellido();
+					row[4] = cli.getTelefono();
+					row[5] = cli.isEnfermo() ? "Enfermo" : "Sano";
+					modelo.addRow(row);
+				}
+			}
+		}
 	}
 
 	private void resetBotones() {

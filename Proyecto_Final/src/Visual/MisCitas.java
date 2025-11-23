@@ -126,21 +126,22 @@ public class MisCitas extends JDialog {
 		model.setRowCount(0);
 		row = new Object[5];
 		String cedulaMedico = usuarioMedico.getCedula();
+
 		if(cedulaMedico == null || cedulaMedico.isEmpty()) {
-			return;
+			return; 
 		}
-		Medico medicoActual = Clinica.getInstancia().buscarMedicoCedula(cedulaMedico);
-
+		Medico medicoActual = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedulaMedico);
 		if (medicoActual == null) {
+			JOptionPane.showMessageDialog(null, "Error: No se encontró la información del médico en el servidor.");
 			return;
 		}
-
 		for (Cita cita : medicoActual.getCitasAsignadas()) {
+
 			boolean esHoy = cita.getFechaHora().toLocalDate().equals(LocalDate.now());
 			boolean esPendiente = cita.getEstado().equalsIgnoreCase("Pendiente");
 			if (esHoy && esPendiente) {
 				row[0] = cita.getCodigo_cita();
-				row[1] = cita.getFechaHora().format(DateTimeFormatter.ofPattern("hh:mm a")); 
+				row[1] = cita.getFechaHora().toLocalTime().toString();
 				row[2] = cita.getCliente().getNombre() + " " + cita.getCliente().getApellido();
 				row[3] = cita.getCliente().getCedula();
 				row[4] = cita.getEstado();

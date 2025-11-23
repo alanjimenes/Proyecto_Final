@@ -266,7 +266,22 @@ public class ConsultarMedicos extends JDialog {
 		btnVerDetalles.setEnabled(false);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void cargarMedicos() {
-		ArrayList<Cliente> lista = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_MEDICOS", null);
+		modelo.setRowCount(0);
+		row = new Object[6];
+		ArrayList<Medico> lista = (ArrayList<Medico>) ClienteSocket.enviar("LISTAR_MEDICOS", null);
+
+		if (lista != null) {
+			for (Medico med : lista) {
+				row[0] = med.getCedula();
+				row[1] = med.getNombre();
+				row[2] = med.getApellido();
+				row[3] = med.getEspecialidad().getNombre();
+				row[4] = med.getTelefono();
+				row[5] = med.getMaxCitasPorDia();
+				modelo.addRow(row);
+			}
+		}
 	}
 }

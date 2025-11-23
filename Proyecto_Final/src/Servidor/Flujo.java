@@ -112,6 +112,14 @@ public class Flujo extends Thread {
 			}
 			else if (comando.equalsIgnoreCase("REG_CONSULTA")) {
 				paquete.setRespuesta(true); 
+			} else if (comando.equalsIgnoreCase("REG_VACUNA")) {
+				Vacuna v = (Vacuna) paquete.getObjeto();
+				boolean exito = Clinica.getInstancia().agregarVacuna(v);
+				if(exito) Clinica.getInstancia().guardarDatosClinica();
+				paquete.setRespuesta(exito);
+			}
+			else if (comando.equalsIgnoreCase("LISTAR_VACUNAS")) {
+				paquete.setRespuesta(Clinica.getInstancia().getVacunas());
 			}
 
 			FlujoEscritura.writeObject(paquete);

@@ -367,7 +367,20 @@ public class GestionCitas extends JPanel {
 
 	@SuppressWarnings("unchecked")
 	private void cargarTablaCitas() {
+		model.setRowCount(0);
 		ArrayList<Cita> citas = (ArrayList<Cita>) ClienteSocket.enviar("LISTAR_CITAS", null);
+
+		if (citas != null) {
+			for (Cita c : citas) {
+				Object[] fila = new Object[5];
+				fila[0] = c.getCodigo_cita();
+				fila[1] = c.getCliente().getNombre() + " " + c.getCliente().getApellido();
+				fila[2] = c.getMedico().getNombre();
+				fila[3] = c.getFechaHora().toString().replace("T", " "); 
+				fila[4] = c.getEstado();
+				model.addRow(fila);
+			}
+		}
 	}
 
 	private void limpiarCampos() {
