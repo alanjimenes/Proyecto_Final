@@ -53,7 +53,7 @@ public class Control implements Serializable{
 	public boolean confirmLogin(String text, String text2) {
 		boolean login = false;
 		for (User user : misUsuarios) {
-			if(user.getUsuario().equals(text) && user.getPassword().equals(text2)){
+			if(user.getUsuario().equalsIgnoreCase(text) && user.getPassword().equals(text2)){
 				loginUser = user;
 				login = true;
 			}
@@ -61,4 +61,13 @@ public class Control implements Serializable{
 		return login;
 	}
 
+	
+	public boolean userExist(String username) {
+	    for (User user : misUsuarios) {
+	        if (user.getUsuario().equalsIgnoreCase(username)) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
 }
