@@ -169,16 +169,6 @@ public class Principal extends JFrame {
 		// MEDICOS
 		JMenu menuGestionMedicos = new JMenu("Gestionar Médicos");
 		menuGestionMedicos.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		JMenuItem itemRegEspecialidad = new JMenuItem("Registrar Especialidad");
-		itemRegEspecialidad.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		itemRegEspecialidad.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				RegEspecialidad regEsp = new RegEspecialidad();
-				regEsp.setModal(true);
-				regEsp.setVisible(true);
-			}
-		});
-		menuGestionMedicos.add(itemRegEspecialidad);
 
 		JMenuItem itemRegMedico = new JMenuItem("Registrar Médico");
 		itemRegMedico.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -203,6 +193,33 @@ public class Principal extends JFrame {
 		menuGestionMedicos.add(itemListarMedicos);
 
 		menuAdministracion.add(menuGestionMedicos);
+
+		JMenu menuGestionEspecialidades = new JMenu("Gestionar Especialidades");
+		menuGestionEspecialidades.setFont(new Font("Tahoma", Font.PLAIN, 16));
+
+		JMenuItem itemRegEspecialidad = new JMenuItem("Registrar Especialidad");
+		itemRegEspecialidad.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		itemRegEspecialidad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegEspecialidad regEsp = new RegEspecialidad();
+				regEsp.setModal(true);
+				regEsp.setVisible(true);
+			}
+		});
+		menuGestionEspecialidades.add(itemRegEspecialidad);
+
+		JMenuItem itemListarEspecialidades = new JMenuItem("Consultar Especialidades");
+		itemListarEspecialidades.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		itemListarEspecialidades.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConsultarEspecialidades consulta = new ConsultarEspecialidades();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
+		});
+		menuGestionEspecialidades.add(itemListarEspecialidades);
+
+		menuAdministracion.add(menuGestionEspecialidades);
 
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
