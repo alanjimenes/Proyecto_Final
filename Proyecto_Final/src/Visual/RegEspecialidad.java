@@ -29,7 +29,7 @@ public class RegEspecialidad extends JDialog {
 		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegEspecialidad.class.getResource("/img/especialidad.png")));
 		setTitle("Registrar Especialidad");
-		setBounds(100, 100, 481, 194);
+		setBounds(100, 100, 490, 235);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(new Color(60, 70, 123));
@@ -44,14 +44,14 @@ public class RegEspecialidad extends JDialog {
 		contentPanel.add(lblNombre);
 
 		txtNombre = new JTextField();
-		txtNombre.setBounds(205, 84, 200, 20);
+		txtNombre.setBounds(201, 84, 251, 20);
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 		{
 			JButton okButton = new JButton("Registrar");
 			contentPanel.add(okButton);
 		    Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
-		    okButton.setBounds(212, 131, 77, 23); 
+		    okButton.setBounds(22, 150, 110, 35); 
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (!txtNombre.getText().isEmpty()) {
@@ -60,7 +60,7 @@ public class RegEspecialidad extends JDialog {
 						Clinica.getInstancia().agregarEspecialidad(aux);
 						Clinica.getInstancia().guardarDatosClinica();
 						JOptionPane.showMessageDialog(null, "Especialidad creada con éxito.");
-						dispose();
+						txtNombre.setText("");
 					} else {
 						JOptionPane.showMessageDialog(null, "El nombre no puede estar vacío.");
 					}
@@ -73,7 +73,7 @@ public class RegEspecialidad extends JDialog {
 			JButton cancelButton = new JButton("Cancelar");
 			Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
 
-			cancelButton.setBounds(337, 131, 75, 23);
+			cancelButton.setBounds(342, 150, 110, 35);
 			contentPanel.add(cancelButton);
 			cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -89,5 +89,17 @@ public class RegEspecialidad extends JDialog {
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
 		lblTitulo.setBounds(90, 11, 287, 37);
 		contentPanel.add(lblTitulo);
+		
+		JButton btnLimpiar = new JButton("Limpiar");
+		
+		
+		btnLimpiar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			txtNombre.setText("");
+			}
+		});
+		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
+		btnLimpiar.setBounds(184, 150, 110, 35);
+		contentPanel.add(btnLimpiar);
 	}
 }
