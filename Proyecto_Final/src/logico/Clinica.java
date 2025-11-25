@@ -545,9 +545,7 @@ public class Clinica implements Serializable {
 		return null;
 	}
 
-
-
-	//Metodos de cargas
+	// Metodos de cargas
 	public void refrescarRelaciones() {
 		for (Cita c : this.citas) {
 			if (c.getCliente() != null) {
@@ -559,7 +557,7 @@ public class Clinica implements Serializable {
 			if (c.getMedico() != null) {
 				Medico medicoReal = buscarMedicoCedula(c.getMedico().getCedula());
 				if (medicoReal != null) {
-					c.setMedico(medicoReal); 
+					c.setMedico(medicoReal);
 					if (!medicoReal.getCitasAsignadas().contains(c)) {
 						medicoReal.agregarCitaAsignada(c);
 					}
@@ -572,7 +570,8 @@ public class Clinica implements Serializable {
 				for (Consulta cons : cli.getHistorial().getConsultas()) {
 					if (cons.getMedico() != null) {
 						Medico m = buscarMedicoCedula(cons.getMedico().getCedula());
-						if (m != null) cons.setMedico(m);
+						if (m != null)
+							cons.setMedico(m);
 					}
 					cons.setPaciente(cli);
 				}
@@ -620,4 +619,95 @@ public class Clinica implements Serializable {
 		}
 
 	}
+
+	// Métodos auxiliares para los reportes
+
+	public ArrayList<Consulta> getTodasLasConsultas() {
+		ArrayList<Consulta> todas = new ArrayList<>();
+		for (Cliente cli : this.clientes) {
+			if (cli == null)
+				continue;
+			Historial h = cli.getHistorial();
+			if (h == null || h.getConsultas() == null)
+				continue;
+			todas.addAll(h.getConsultas());
+		}
+		return todas;
+	}
+
+	public ArrayList<Consulta> getConsultasPorRango(LocalDate desde, LocalDate hasta) {
+		ArrayList<Consulta> result = new ArrayList<>();
+
+		if (desde == null || hasta == null)
+			return result;
+
+		for (Cliente cli : this.clientes) {
+			if (cli == null)
+				continue;
+
+			Historial h = cli.getHistorial();
+			if (h == null || h.getConsultas() == null)
+				continue;
+
+			for (Consulta con : h.getConsultas()) {
+				if (con == null || con.getFechaConsulta() == null)
+					continue;
+
+				LocalDate f = con.getFechaConsulta();
+
+				if ((f.isAfter(desde) || f.isEqual(desde)) && (f.isBefore(hasta) || f.isEqual(hasta))) {
+					result.add(con);
+				}
+			}
+		}
+		return result;
+	}
+
+	public ArrayList<Cita> getCitasDeCliente(String codigoExpediente) {
+		ArrayList<Cita> result = new ArrayList<>();
+		if (codigoExpediente == null)
+			return result;
+
+		for (Cita c : this.citas) {
+			if (c == null)
+				continue;
+			Cliente cli = c.getCliente();
+			if (cli == null)
+				continue;
+
+			if (cli.getNumExpediente() != null && cli.getNumExpediente().equalsIgnoreCase(codigoExpediente)) {
+				result.add(c);
+			}
+		}
+		return result;
+	}
+
+	public ArrayList<Consulta> getConsultasPorDoctor(String cedulaDoctor) {
+		ArrayList<Consulta> result = new ArrayList<>();
+		if (cedulaDoctor == null)
+			return result;
+
+		for (Cliente cli : this.clientes) {
+			if (cli == null)
+				continue;
+
+			Historial h = cli.getHistorial();
+			if (h == null || h.getConsultas() == null)
+				continue;
+
+			for (Consulta con : h.getConsultas()) {
+				if (con == null)
+					continue;
+
+				Medico m = con.getMedico();
+
+				if (m != null && m.getCedula() != null && m.getCedula().equalsIgnoreCase(cedulaDoctor)) {
+
+					result.add(con);
+				}
+			}
+		}
+		return result;
+	}
+
 }
