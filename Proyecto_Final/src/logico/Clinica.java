@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Clinica implements Serializable {
 
@@ -708,6 +709,113 @@ public class Clinica implements Serializable {
 			}
 		}
 		return result;
+	}
+
+	public HashMap<String, Integer> getFrecuenciaEnfermedades() {
+		HashMap<String, Integer> mapa = new HashMap<>();
+
+		if (this.clientes == null) {
+			return mapa;
+		}
+
+		for (Cliente cli : this.clientes) {
+			if (cli == null) {
+			} else {
+				Historial h = cli.getHistorial();
+				if (h == null) {
+				} else {
+					ArrayList<Consulta> consultas = h.getConsultas();
+					if (consultas == null) {
+					} else {
+						for (Consulta con : consultas) {
+							if (con == null) {
+							} else {
+								ArrayList<Enfermedad> listaEnf = con.getEnfermedadesDiag();
+								if (listaEnf == null) {
+								} else {
+									for (Enfermedad enfObj : listaEnf) {
+										if (enfObj == null) {
+										} else {
+											String nombre = enfObj.getNombre();
+											if (nombre == null) {
+											} else {
+												nombre = nombre.trim().toLowerCase();
+												int actual = 0;
+												if (mapa.containsKey(nombre)) {
+													actual = mapa.get(nombre);
+												}
+												mapa.put(nombre, actual + 1);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return mapa;
+	}
+
+	public ArrayList<String> getEnfermedadesDeCliente(String codigoCliente) {
+		ArrayList<String> lista = new ArrayList<>();
+
+		Cliente cli = buscarClientePorCodigo(codigoCliente);
+		if (cli == null)
+			return lista;
+
+		Historial h = cli.getHistorial();
+		if (h == null || h.getConsultas() == null)
+			return lista;
+
+		for (Consulta con : h.getConsultas()) {
+			if (con != null && con.getEnfermedadesDiag() != null) {
+				for (Enfermedad enf : con.getEnfermedadesDiag()) {
+					if (enf != null && enf.getNombre() != null) {
+						lista.add(enf.getNombre().trim());
+					}
+				}
+			}
+		}
+
+		return lista;
+	}
+
+	public ArrayList<Cliente> getClientesPorEnfermedad(String enfermedad) {
+		ArrayList<Cliente> lista = new ArrayList<>();
+
+		if (clientes == null || enfermedad == null)
+			return lista;
+
+		for (Cliente cli : clientes) {
+			if (cli != null && cli.getHistorial() != null) {
+				Historial h = cli.getHistorial();
+
+				if (h.getConsultas() != null) {
+					boolean encontrado = false;
+
+					for (Consulta con : h.getConsultas()) {
+						if (con != null && con.getEnfermedadesDiag() != null) {
+							for (Enfermedad enf : con.getEnfermedadesDiag()) {
+								if (enf != null && enfermedad.equalsIgnoreCase(enf.getNombre())) {
+									encontrado = true;
+									break;
+								}
+							}
+						}
+						if (encontrado)
+							break;
+					}
+
+					if (encontrado)
+						lista.add(cli);
+				}
+			}
+		}
+
+		return lista;
 	}
 
 }
