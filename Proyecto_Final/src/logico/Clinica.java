@@ -934,4 +934,28 @@ public class Clinica implements Serializable {
 		return mapa;
 	}
 
+	public HashMap<String, Integer> getFrecuenciaVacunasPorMes() {
+		HashMap<String, Integer> mapa = new HashMap<>();
+
+		if (clientes == null)
+			return mapa;
+
+		for (Cliente cli : clientes) {
+			if (cli != null && cli.getRegVacunas() != null) {
+
+				for (RegistroVacunacion reg : cli.getRegVacunas()) {
+					if (reg != null && reg.getFecha() != null) {
+
+						String mes = reg.getFecha().getYear() + "-" + reg.getFecha().getMonthValue();
+						int actual = mapa.containsKey(mes) ? mapa.get(mes) : 0;
+
+						mapa.put(mes, actual + 1);
+					}
+				}
+			}
+		}
+
+		return mapa;
+	}
+
 }
