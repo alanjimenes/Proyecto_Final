@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Clinica implements Serializable {
 
@@ -623,6 +624,8 @@ public class Clinica implements Serializable {
 
 	// Métodos auxiliares para los reportes
 
+	// Consultas
+
 	public ArrayList<Consulta> getTodasLasConsultas() {
 		ArrayList<Consulta> todas = new ArrayList<>();
 		for (Cliente cli : this.clientes) {
@@ -710,6 +713,8 @@ public class Clinica implements Serializable {
 		}
 		return result;
 	}
+
+	// Enfermedades
 
 	public HashMap<String, Integer> getFrecuenciaEnfermedades() {
 		HashMap<String, Integer> mapa = new HashMap<>();
@@ -816,6 +821,117 @@ public class Clinica implements Serializable {
 		}
 
 		return lista;
+	}
+
+	public ArrayList<String> getTop5Enfermedades() {
+		HashMap<String, Integer> mapa = getFrecuenciaEnfermedades();
+		ArrayList<Map.Entry<String, Integer>> lista = new ArrayList<>(mapa.entrySet());
+
+		lista.sort((a, b) -> b.getValue() - a.getValue());
+
+		ArrayList<String> top = new ArrayList<>();
+
+		int max = Math.min(5, lista.size());
+		for (int i = 0; i < max; i++) {
+			top.add(lista.get(i).getKey());
+		}
+
+		return top;
+	}
+
+	// Vacunas
+
+	public HashMap<String, Integer> getFrecuenciaVacunas() {
+		HashMap<String, Integer> mapa = new HashMap<>();
+
+		if (clientes == null)
+			return mapa;
+
+		for (Cliente cli : clientes) {
+			if (cli != null && cli.getRegVacunas() != null) {
+
+				for (RegistroVacunacion reg : cli.getRegVacunas()) {
+					if (reg != null && reg.getVacuna() != null && reg.getVacuna().getNombre() != null) {
+
+						String nombre = reg.getVacuna().getNombre().trim();
+						int actual = mapa.containsKey(nombre) ? mapa.get(nombre) : 0;
+
+						mapa.put(nombre, actual + 1);
+					}
+				}
+			}
+		}
+
+		return mapa;
+	}
+
+	public ArrayList<Cliente> getClientesPorVacuna(String nombreVacuna) {
+		ArrayList<Cliente> lista = new ArrayList<>();
+
+		if (clientes == null || nombreVacuna == null)
+			return lista;
+
+		for (Cliente cli : clientes) {
+			if (cli != null && cli.getRegVacunas() != null) {
+
+				for (RegistroVacunacion reg : cli.getRegVacunas()) {
+					if (reg != null && reg.getVacuna() != null
+							&& nombreVacuna.equalsIgnoreCase(reg.getVacuna().getNombre())) {
+
+						lista.add(cli);
+						break;
+					}
+				}
+			}
+		}
+
+		return lista;
+	}
+
+	public HashMap<Cliente, RegistroVacunacion> getUltimaVacunaPorCliente() {
+		HashMap<Cliente, RegistroVacunacion> mapa = new HashMap<>();
+
+		if (clientes == null)
+			return mapa;
+
+		for (Cliente cli : clientes) {
+			RegistroVacunacion ultima = null;
+
+			if (cli != null && cli.getRegVacunas() != null) {
+
+				for (RegistroVacunacion reg : cli.getRegVacunas()) {
+					if (reg != null && reg.getFecha() != null) {
+
+						if (ultima == null || reg.getFecha().isAfter(ultima.getFecha())) {
+							ultima = reg;
+						}
+					}
+				}
+			}
+
+			mapa.put(cli, ultima);
+		}
+
+		return mapa;
+	}
+
+	public HashMap<Cliente, Integer> getCantidadVacunasPorCliente() {
+		HashMap<Cliente, Integer> mapa = new HashMap<>();
+
+		if (clientes == null)
+			return mapa;
+
+		for (Cliente cli : clientes) {
+			int cant = 0;
+
+			if (cli != null && cli.getRegVacunas() != null) {
+				cant = cli.getRegVacunas().size();
+			}
+
+			mapa.put(cli, cant);
+		}
+
+		return mapa;
 	}
 
 }
