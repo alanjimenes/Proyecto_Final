@@ -1,55 +1,95 @@
 package Visual;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import logico.Clinica;
+import logico.Cliente;
 
 public class ReportesEnfermedades extends JDialog {
 
-	private final JPanel contentPanel = new JPanel();
+	private JTable tableFrecuencia;
+	private JTable tableClientes;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ReportesEnfermedades dialog = new ReportesEnfermedades();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	private DefaultTableModel modeloFrecuencia;
+	private DefaultTableModel modeloClientes;
 
-	/**
-	 * Create the dialog.
-	 */
 	public ReportesEnfermedades() {
-		setBounds(100, 100, 450, 300);
+
+		setTitle("Reporte de Enfermedades");
+		setSize(700, 500);
+		setLocationRelativeTo(null);
+		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setLayout(new FlowLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
+
+		JPanel panelTop = new JPanel(new BorderLayout());
+		panelTop.setBorder(BorderFactory.createTitledBorder("Frecuencia de Enfermedades"));
+		getContentPane().add(panelTop, BorderLayout.NORTH);
+
+		modeloFrecuencia = new DefaultTableModel(
+				new String[] { "Enfermedad", "Cantidad" }, 0);
+
+		tableFrecuencia = new JTable(modeloFrecuencia);
+		panelTop.add(new JScrollPane(tableFrecuencia), BorderLayout.CENTER);
+
+		JPanel panelBottom = new JPanel(new BorderLayout());
+		panelBottom.setBorder(BorderFactory.createTitledBorder("Clientes con esta Enfermedad"));
+		getContentPane().add(panelBottom, BorderLayout.CENTER);
+
+		modeloClientes = new DefaultTableModel(
+				new String[] { "Cédula", "Nombre", "Apellido" }, 0);
+
+		tableClientes = new JTable(modeloClientes);
+		panelBottom.add(new JScrollPane(tableClientes), BorderLayout.CENTER);
+
+		JPanel panelBtns = new JPanel(new FlowLayout());
+		getContentPane().add(panelBtns, BorderLayout.SOUTH);
+
+		JButton btnVerClientes = new JButton("Ver Clientes");
+		JButton btnCerrar = new JButton("Cerrar");
+
+		panelBtns.add(btnVerClientes);
+		panelBtns.add(btnCerrar);
+
+		btnCerrar.addActionListener(e -> dispose());
+		btnVerClientes.addActionListener(e -> cargarClientesPorEnfermedad());
+		cargarFrecuencia();
+	}
+
+	private void cargarFrecuencia() {
+		modeloFrecuencia.setRowCount(0);
+
+		HashMap<String, Integer> mapa = Clinica.getInstancia().getFrecuenciaEnfermedades();
+
+		for (String enf : mapa.keySet()) {
+			modeloFrecuencia.addRow(
+					new Object[] { enf, mapa.get(enf) }
+			);
 		}
 	}
 
+	private void cargarClientesPorEnfermedad() {
+		int fila = tableFrecuencia.getSelectedRow();
+
+		if (fila == -1) {
+			JOptionPane.showMessageDialog(this, "Seleccione una enfermedad.");
+			return;
+		}
+
+		String enfermedad = (String) modeloFrecuencia.getValueAt(fila, 0);
+		modeloClientes.setRowCount(0);
+
+		ArrayList<Cliente> lista = Clinica.getInstancia().getClientesPorEnfermedad(enfermedad);
+
+		for (Cliente c : lista) {
+			modeloClientes.addRow(new Object[] {
+					c.getCedula(),
+					c.getNombre(),
+					c.getApellido()
+			});
+		}
+	}
 }
