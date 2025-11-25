@@ -34,7 +34,7 @@ public class Reportes extends JDialog {
         // BOTÓN: REPORTE DE ENFERMEDADES
         JButton btnEnfermedades = new JButton("Reporte de Enfermedades");
         btnEnfermedades.addActionListener(e -> {
-            ReporteEnfermedades rep = new ReporteEnfermedades();
+            ReportesEnfermedades rep = new ReportesEnfermedades();
             rep.setVisible(true);
         });
         contentPanel.add(btnEnfermedades);
@@ -42,7 +42,7 @@ public class Reportes extends JDialog {
         // BOTÓN: REPORTE DE VACUNAS
         JButton btnVacunas = new JButton("Reporte de Vacunas");
         btnVacunas.addActionListener(e -> {
-            ReporteVacunas rep = new ReporteVacunas();
+            ReportesVacunas rep = new ReportesVacunas();
             rep.setVisible(true);
         });
         contentPanel.add(btnVacunas);
