@@ -794,6 +794,8 @@ public class Clinica implements Serializable {
 		if (clientes == null || enfermedad == null)
 			return lista;
 
+		enfermedad = enfermedad.trim().toLowerCase();
+
 		for (Cliente cli : clientes) {
 			if (cli != null && cli.getHistorial() != null) {
 				Historial h = cli.getHistorial();
@@ -803,19 +805,21 @@ public class Clinica implements Serializable {
 
 					for (Consulta con : h.getConsultas()) {
 						if (con != null && con.getEnfermedadesDiag() != null) {
+
 							for (Enfermedad enf : con.getEnfermedadesDiag()) {
-								if (enf != null && enfermedad.equalsIgnoreCase(enf.getNombre())) {
-									encontrado = true;
-									break;
+								if (enf != null && enf.getNombre() != null) {
+
+									if (enf.getNombre().trim().toLowerCase().equals(enfermedad)) {
+										lista.add(cli);
+										encontrado = true;
+										break;
+									}
 								}
 							}
 						}
 						if (encontrado)
 							break;
 					}
-
-					if (encontrado)
-						lista.add(cli);
 				}
 			}
 		}
