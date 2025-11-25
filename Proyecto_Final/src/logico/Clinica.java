@@ -962,4 +962,50 @@ public class Clinica implements Serializable {
 		return mapa;
 	}
 
+	// Citas
+
+	public ArrayList<Cita> getTodasLasCitas() {
+		ArrayList<Cita> todas = new ArrayList<>();
+		if (this.citas == null)
+			return todas;
+
+		for (Cita c : this.citas) {
+			if (c != null)
+				todas.add(c);
+		}
+		return todas;
+	}
+
+	public ArrayList<Cita> getCitasPorMedico(String cedulaMedico) {
+		ArrayList<Cita> result = new ArrayList<>();
+		if (cedulaMedico == null || this.citas == null)
+			return result;
+
+		for (Cita c : this.citas) {
+			if (c == null)
+				continue;
+			Medico m = c.getMedico();
+			if (m != null && m.getCedula() != null && m.getCedula().equalsIgnoreCase(cedulaMedico)) {
+				result.add(c);
+			}
+		}
+		return result;
+	}
+
+	public ArrayList<Cita> getCitasPorRango(LocalDateTime desde, LocalDateTime hasta) {
+		ArrayList<Cita> result = new ArrayList<>();
+		if (desde == null || hasta == null || this.citas == null)
+			return result;
+
+		for (Cita c : this.citas) {
+			if (c == null || c.getFechaHora() == null)
+				continue;
+			LocalDateTime f = c.getFechaHora();
+			if ((f.isAfter(desde) || f.isEqual(desde)) && (f.isBefore(hasta) || f.isEqual(hasta))) {
+				result.add(c);
+			}
+		}
+		return result;
+	}
+
 }
