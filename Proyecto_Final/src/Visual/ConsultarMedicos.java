@@ -30,6 +30,7 @@ import logico.Cliente;
 import logico.Clinica;
 import logico.Medico;
 import Visual.ClienteSocket;
+import java.awt.Toolkit;
 
 public class ConsultarMedicos extends JDialog {
 
@@ -52,7 +53,8 @@ public class ConsultarMedicos extends JDialog {
 	 * Create the dialog.
 	 */
 	public ConsultarMedicos() {
-		setTitle("LISTADO DE MÉDICOS");
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarMedicos.class.getResource("/img/doctor.png")));
+		setTitle("Listado de Medicos");
 		setBounds(100, 100, 1065, 534);
 		setResizable(false);
 		setLocationRelativeTo(null);

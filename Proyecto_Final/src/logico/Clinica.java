@@ -283,6 +283,26 @@ public class Clinica implements Serializable {
 		return contador;
 	}
 
+	public int contarCitasPorMes(int mes, int anio) {
+	    int contador = 0;
+	    if (this.citas != null) {
+	        for (Cita c : this.citas) {
+	            if (c != null && c.getFechaHora() != null && c.getEstado() != null) {
+	                
+	                int mesCita = c.getFechaHora().getMonthValue();
+	                int anioCita = c.getFechaHora().getYear();
+
+	              
+	                if (mesCita == mes && anioCita == anio && c.getEstado().equalsIgnoreCase("Completada")) {
+	                    contador++;
+	                }
+	            }
+	        }
+	    }
+	    
+	    return contador;
+	}
+	
 	public boolean crearCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente) {
 
 		Medico medico = buscarMedicoCedula(cedulaMedico);
