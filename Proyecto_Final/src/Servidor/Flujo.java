@@ -168,6 +168,17 @@ public class Flujo extends Thread {
 				if(exito) Clinica.getInstancia().guardarDatosClinica();
 				paquete.setRespuesta(exito);
 			}
+			else if (comando.equalsIgnoreCase("APLICAR_VACUNA")) {
+				RegistroVacunacion reg = (RegistroVacunacion) paquete.getObjeto();
+				Cliente clienteReal = Clinica.getInstancia().buscarClientePorCodigo(reg.getCliente().getNumExpediente());
+				if(clienteReal != null) {
+					clienteReal.getRegVacunas().add(reg);
+					Clinica.getInstancia().guardarDatosClinica();
+					paquete.setRespuesta(true);
+				} else {
+					paquete.setRespuesta(false);
+				}
+			}
 			else if (comando.equalsIgnoreCase("LISTAR_VACUNAS")) {
 				paquete.setRespuesta(Clinica.getInstancia().getVacunas());
 			}

@@ -40,6 +40,7 @@ public class RealizarConsulta extends JDialog {
 	private JTextArea txtDiagnostico;
 	private JTextArea txtAntecedentes;
 	private JTextArea txtTratamiento;
+	private ArrayList<Enfermedad> listaEnfermedadesGlobal;
 
 	private String presion = "N/A";
 	private int pulso = 0;
@@ -48,7 +49,6 @@ public class RealizarConsulta extends JDialog {
 	private float talla = 0;
 	private boolean signosRegistrados = false;
 
-	//ENFERMEDADES
 	private JList<String> listDisponibles;
 	private DefaultListModel<String> modelDisponibles;
 	private JList<String> listDiagnosticadas;
@@ -239,9 +239,11 @@ public class RealizarConsulta extends JDialog {
 		JButton btnVacuna = new JButton("Aplicar Vacuna");
 		btnVacuna.setForeground(Color.BLACK);
 		btnVacuna.addActionListener(new ActionListener() {
+			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent e) {
-				ArrayList<logico.Vacuna> vacunas = logico.Clinica.getInstancia().getVacunas();
-				if(vacunas.isEmpty()) {
+				ArrayList<logico.Vacuna> vacunas = (ArrayList<logico.Vacuna>) ClienteSocket.enviar("LISTAR_VACUNAS", null);
+
+				if(vacunas == null || vacunas.isEmpty()) {
 					JOptionPane.showMessageDialog(null, "No hay vacunas en el sistema.");
 					return;
 				}
@@ -266,9 +268,15 @@ public class RealizarConsulta extends JDialog {
 							vacunaObj = v; break;
 						}
 					}
-					logico.Clinica.getInstancia().aplicarVacunaCliente(citaActual.getCliente(), vacunaObj, citaActual.getMedico());
-					logico.Clinica.getInstancia().guardarDatosClinica();
-					JOptionPane.showMessageDialog(null, "Vacuna " + seleccion + " aplicada y registrada.");
+					logico.RegistroVacunacion reg = new logico.RegistroVacunacion(citaActual.getCliente(), vacunaObj, java.time.LocalDate.now(), true);
+
+					boolean exito = (boolean) ClienteSocket.enviar("APLICAR_VACUNA", reg);
+
+					if(exito) {
+						JOptionPane.showMessageDialog(null, "Vacuna " + seleccion + " aplicada y registrada en el Servidor.");
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al registrar vacuna.");
+					}
 				}
 			}
 		});
@@ -335,10 +343,15 @@ public class RealizarConsulta extends JDialog {
 
 
 	//REVISAR ABAJO
+	@SuppressWarnings("unchecked")
 	private void cargarEnfermedades() {
 		modelDisponibles.clear();
-		for (Enfermedad enf : Clinica.getInstancia().getEnfermedades()) {
-			modelDisponibles.addElement(enf.getNombre());
+		listaEnfermedadesGlobal = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
+
+		if(listaEnfermedadesGlobal != null) {
+			for (Enfermedad enf : listaEnfermedadesGlobal) {
+				modelDisponibles.addElement(enf.getNombre());
+			}
 		}
 	}
 
@@ -347,7 +360,8 @@ public class RealizarConsulta extends JDialog {
 		if (seleccion != null) {
 			modelDisponibles.removeElement(seleccion);
 			modelDiagnosticadas.addElement(seleccion);
-			for (Enfermedad enf : Clinica.getInstancia().getEnfermedades()) {
+
+			for (Enfermedad enf : listaEnfermedadesGlobal) {
 				if (enf.getNombre().equals(seleccion)) {
 					enfermedadesSeleccionadas.add(enf);
 
