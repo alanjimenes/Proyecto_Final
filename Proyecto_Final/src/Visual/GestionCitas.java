@@ -136,11 +136,8 @@ public class GestionCitas extends JPanel {
 		btnLimpiar.setBounds(507, 142, 138, 45);
 		panelFormulario.add(btnLimpiar);
 
-		/*
-		 * LO IMPORTANTE DEL CODIGO (LA TABLA DE CITAS) CUIDAO AL TOPAR AQUI
-		 */
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 220, 860, 67);
+		scrollPane.setBounds(10, 220, 860, 300);
 		add(scrollPane);
 
 		tablaCitas = new JTable();
@@ -153,7 +150,6 @@ public class GestionCitas extends JPanel {
 
 		btnBuscarCliente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				ConsultarClientes dialog = new ConsultarClientes();
 				dialog.setModal(true);
 				dialog.setVisible(true);
@@ -161,7 +157,8 @@ public class GestionCitas extends JPanel {
 				int fila = ConsultarClientes.table.getSelectedRow();
 				if (fila >= 0) {
 					String codigo = ConsultarClientes.table.getValueAt(fila, 0).toString();
-					clienteSeleccionado = Clinica.getInstancia().buscarClientePorCodigo(codigo);
+
+					clienteSeleccionado = (Cliente) ClienteSocket.enviar("BUSCAR_CLIENTE", codigo);
 
 					if (clienteSeleccionado != null) {
 						txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
@@ -174,7 +171,6 @@ public class GestionCitas extends JPanel {
 
 		btnBuscarMedico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				ConsultarMedicos dialog = new ConsultarMedicos();
 				dialog.setModal(true);
 				dialog.setVisible(true);
@@ -182,7 +178,7 @@ public class GestionCitas extends JPanel {
 				int fila = ConsultarMedicos.table.getSelectedRow();
 				if (fila >= 0) {
 					String cedula = ConsultarMedicos.table.getValueAt(fila, 0).toString();
-					medicoSeleccionado = Clinica.getInstancia().buscarMedicoCedula(cedula);
+					medicoSeleccionado = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedula);
 
 					if (medicoSeleccionado != null) {
 						txtCedulaMedico.setText(medicoSeleccionado.getCedula());
@@ -200,13 +196,10 @@ public class GestionCitas extends JPanel {
 					return;
 				}
 				LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-				String seleccion = cbxHora.getSelectedItem().toString(); // Ej: "02:30 PM"
-
+				String seleccion = cbxHora.getSelectedItem().toString();
 				String horaStr = seleccion.substring(0, 2);
 				String minStr = seleccion.substring(3, 5);
 				String ampm = seleccion.substring(6);
-
 				int hora = Integer.parseInt(horaStr);
 
 				if (ampm.equals("PM") && hora != 12)
@@ -215,7 +208,6 @@ public class GestionCitas extends JPanel {
 					hora = 0;
 
 				LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
-
 				LocalDateTime fechaHora = LocalDateTime.of(fecha, horaConvertida);
 
 				if (fechaHora.isBefore(LocalDateTime.now())) {
@@ -248,26 +240,19 @@ public class GestionCitas extends JPanel {
 				int filaSeleccionada = tablaCitas.getSelectedRow();
 				if (filaSeleccionada >= 0) {
 					String codigoCita = (String) model.getValueAt(filaSeleccionada, 0);
-					citaSeleccionada = Clinica.getInstancia().buscarCita(codigoCita);
+
+					citaSeleccionada = (Cita) ClienteSocket.enviar("BUSCAR_CITA", codigoCita);
 
 					if (citaSeleccionada != null) {
 						clienteSeleccionado = citaSeleccionada.getCliente();
 						medicoSeleccionado = citaSeleccionada.getMedico();
+
 						txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
 						txtCedulaMedico.setText(medicoSeleccionado.getCedula());
 						lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre());
 						lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre());
-						dateChooser.setDate(
-								Date.from(citaSeleccionada.getFechaHora().atZone(ZoneId.systemDefault()).toInstant()));
-						int h24 = citaSeleccionada.getFechaHora().getHour();
-						int minuto = citaSeleccionada.getFechaHora().getMinute();
 
-						String ampm = (h24 < 12) ? "AM" : "PM";
-						int h12 = (h24 == 0) ? 12 : (h24 > 12 ? h24 - 12 : h24);
-
-						String formatoCombo = String.format("%02d:%02d %s", h12, minuto, ampm);
-
-						cbxHora.setSelectedItem(formatoCombo);
+						dateChooser.setDate(Date.from(citaSeleccionada.getFechaHora().atZone(ZoneId.systemDefault()).toInstant()));
 
 						if (citaSeleccionada.getEstado().equalsIgnoreCase("Completada")) {
 							btnModificarCita.setEnabled(false);
@@ -328,15 +313,17 @@ public class GestionCitas extends JPanel {
 					return;
 				}
 
-				boolean exito = Clinica.getInstancia().editCita(citaSeleccionada, nuevaFechaHora, medicoSeleccionado);
+				citaSeleccionada.setFechaHora(nuevaFechaHora);
+				citaSeleccionada.setMedico(medicoSeleccionado);
+
+				boolean exito = (boolean) ClienteSocket.enviar("EDIT_CITA", citaSeleccionada);
 
 				if (exito) {
-					JOptionPane.showMessageDialog(null, "¡Cita modificada!");
+					JOptionPane.showMessageDialog(null, "Cita modificada en el servidor.");
 					cargarTablaCitas();
 					limpiarCampos();
 				} else {
-					JOptionPane.showMessageDialog(null,
-							"Error: No se pudo modificar. El médico no está disponible o excede su límite diario.");
+					JOptionPane.showMessageDialog(null, "Error: Médico ocupado o fecha inválida.");
 				}
 			}
 		});
@@ -351,14 +338,14 @@ public class GestionCitas extends JPanel {
 						"¿Está seguro que desea cancelar la cita " + citaSeleccionada.getCodigo_cita() + "?",
 						"Confirmar cancelación", JOptionPane.YES_NO_OPTION);
 				if (confirm == JOptionPane.YES_OPTION) {
-					boolean exito = Clinica.getInstancia().cancelCita(citaSeleccionada);
+					boolean exito = (boolean) ClienteSocket.enviar("CANCEL_CITA", citaSeleccionada);
 
 					if (exito) {
-						JOptionPane.showMessageDialog(null, "¡Cita cancelada!");
+						JOptionPane.showMessageDialog(null, "Cita cancelada.");
 						cargarTablaCitas();
 						limpiarCampos();
 					} else {
-						JOptionPane.showMessageDialog(null, "Error: No se puede cancelar una cita que ya pasó.");
+						JOptionPane.showMessageDialog(null, "Error al cancelar.");
 					}
 				}
 			}

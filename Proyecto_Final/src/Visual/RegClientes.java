@@ -146,47 +146,47 @@ public class RegClientes extends JDialog {
 		dateChooser.setBounds(112, 297, 200, 20);
 		contentPanel.add(dateChooser);
 		{
-            okButton = new JButton("Registrar");
-            
-            Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
-            
-            okButton.setBounds(346, 340, 110, 35); 
-            contentPanel.add(okButton);
-            
-            okButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    registrarCliente();
-                }
-            });
-            okButton.setActionCommand("OK");
-            getRootPane().setDefaultButton(okButton);
-        }
+			okButton = new JButton("Registrar");
+
+			Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+
+			okButton.setBounds(346, 340, 110, 35); 
+			contentPanel.add(okButton);
+
+			okButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					registrarCliente();
+				}
+			});
+			okButton.setActionCommand("OK");
+			getRootPane().setDefaultButton(okButton);
+		}
 		{
-            JButton cancelButton = new JButton("Cancelar");
-           
-            Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
-            
-            cancelButton.setBounds(631, 340, 110, 35);
-            contentPanel.add(cancelButton);
-            
-            cancelButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    dispose();
-                }
-            });
-            cancelButton.setActionCommand("Cancel");
-        }
+			JButton cancelButton = new JButton("Cancelar");
+
+			Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
+
+			cancelButton.setBounds(631, 340, 110, 35);
+			contentPanel.add(cancelButton);
+
+			cancelButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
+			cancelButton.setActionCommand("Cancel");
+		}
 		JButton btnLimpiar = new JButton("Limpiar");
 
 		btnLimpiar.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent arg0) {
-		        txtCedula.setText("");
-		        txtNombre.setText("");
-		        txtApellido.setText("");
-		        txtTelefono.setText("");
-		        txtDireccion.setText("");
-		        dateChooser.setDate(null);
-		    }
+			public void actionPerformed(ActionEvent arg0) {
+				txtCedula.setText("");
+				txtNombre.setText("");
+				txtApellido.setText("");
+				txtTelefono.setText("");
+				txtDireccion.setText("");
+				dateChooser.setDate(null);
+			}
 		});
 
 		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
@@ -220,38 +220,39 @@ public class RegClientes extends JDialog {
 		LocalDate fechaNac = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 		if (clienteActual == null) {
-			if (Clinica.getInstancia().buscarIndiceClientePorCedula(txtCedula.getText()) != -1) {
+			Cliente existe = (Cliente) ClienteSocket.enviar("BUSCAR_CLIENTE_CEDULA", txtCedula.getText());
+			if (existe != null) {
 				JOptionPane.showMessageDialog(null, "Ya existe un cliente con esa cédula.");
 				return;
 			}
-			Historial nuevoHistorial = new Historial("HIST-" + txtCedula.getText());
-			ArrayList<RegistroVacunacion> vacunasVacias = new ArrayList<>();
 
 			Cliente nuevoCliente = new Cliente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(),
-					fechaNac, txtTelefono.getText(), txtDireccion.getText(), true, null, nuevoHistorial, false,
-					vacunasVacias, true);
+					fechaNac, txtTelefono.getText(), txtDireccion.getText(), true, null, null, false,
+					null, true);
 
-			Clinica.getInstancia().insertarCliente(nuevoCliente);
-			JOptionPane.showMessageDialog(null, "Paciente registrado con éxito.");
-			txtCedula.setText("");
-			txtNombre.setText("");
-			txtApellido.setText("");
-			txtTelefono.setText("");
-			txtDireccion.setText("");
-			dateChooser.setDate(null);
+			boolean exito = (boolean) ClienteSocket.enviar("REG_CLIENTE", nuevoCliente);
 
-		} else {
+			if(exito) {
+				JOptionPane.showMessageDialog(null, "Paciente registrado con éxito.");
+			} else {
+				JOptionPane.showMessageDialog(null, "Error al registrar en el servidor.");
+			}
+
+		} else { 
 			clienteActual.setNombre(txtNombre.getText());
 			clienteActual.setApellido(txtApellido.getText());
 			clienteActual.setTelefono(txtTelefono.getText());
 			clienteActual.setDireccion(txtDireccion.getText());
 			clienteActual.setFechaNacimiento(fechaNac);
 
-			JOptionPane.showMessageDialog(null, "Datos actualizados.");
+			boolean exito = (boolean) ClienteSocket.enviar("UPDATE_CLIENTE", clienteActual);
+
+			if(exito) {
+				JOptionPane.showMessageDialog(null, "Datos actualizados.");
+				dispose();
+			} else {
+				JOptionPane.showMessageDialog(null, "Error al actualizar.");
+			}
 		}
-		Clinica.getInstancia().guardarDatosClinica();
-		dispose();
 	}
-
-
 }

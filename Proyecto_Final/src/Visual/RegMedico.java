@@ -259,10 +259,10 @@ public class RegMedico extends JDialog {
 	private void cargarEspecialidades() {
 		cbxEspecialidad.removeAllItems();
 		cbxEspecialidad.addItem("<Seleccione>");
-		ArrayList<logico.Especialidad> lista = (ArrayList<logico.Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
+		ArrayList<Especialidad> lista = (ArrayList<Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
 
 		if(lista != null) {
-			for (logico.Especialidad esp : lista) {
+			for (Especialidad esp : lista) {
 				cbxEspecialidad.addItem(esp.getNombre());
 			}
 		}
@@ -274,7 +274,8 @@ public class RegMedico extends JDialog {
 			return;
 		}
 		String nombreEsp = (String) cbxEspecialidad.getSelectedItem();
-		Especialidad espSeleccionada = Clinica.getInstancia().buscarEspecialidadPorNombre(nombreEsp);
+		Especialidad espSeleccionada = (Especialidad) ClienteSocket.enviar("BUSCAR_ESPECIALIDAD_NOMBRE", nombreEsp);
+
 		Date date = dateChooser.getDate();
 		LocalDate fechaNac = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -283,7 +284,8 @@ public class RegMedico extends JDialog {
 				JOptionPane.showMessageDialog(null, "La cédula es obligatoria.");
 				return;
 			}
-			if (Clinica.getInstancia().buscarMedicoCedula(txtCedula.getText()) != null) {
+			Medico existe = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", txtCedula.getText());
+			if (existe != null) {
 				JOptionPane.showMessageDialog(null, "Ya existe un médico con esa cédula.");
 				return;
 			}
@@ -296,18 +298,9 @@ public class RegMedico extends JDialog {
 
 			if(exito) {
 				JOptionPane.showMessageDialog(null, "Médico registrado en el Servidor.");
-			    txtCedula.setText("");
-			    txtNombre.setText("");
-			    txtApellido.setText("");
-			    txtTelefono.setText("");
-			    txtDireccion.setText("");
-			    dateChooser.setDate(null); 
-			    cbxEspecialidad.setSelectedIndex(0);
-			    spnMaxCitas.setValue(1); 
-			    medicoActual = null;			    
-			    txtCedula.requestFocus();
+				dispose();
 			} else {
-				JOptionPane.showMessageDialog(null, "Error: Cédula duplicada o fallo en servidor.");
+				JOptionPane.showMessageDialog(null, "Error al guardar en servidor.");
 			}
 		} else {
 			medicoActual.setNombre(txtNombre.getText());
@@ -318,10 +311,15 @@ public class RegMedico extends JDialog {
 			medicoActual.setEspecialidad(espSeleccionada);
 			medicoActual.setMaxCitasPorDia((int) spnMaxCitas.getValue());
 
-			boolean exito = (boolean) ClienteSocket.enviar("REG_MEDICO", medicoActual);
+			boolean exito = (boolean) ClienteSocket.enviar("UPDATE_MEDICO", medicoActual);
+
+			if(exito) {
+				JOptionPane.showMessageDialog(null, "Médico actualizado.");
+				dispose();
+			} else {
+				JOptionPane.showMessageDialog(null, "Error al actualizar.");
+			}
 		}
-		Clinica.getInstancia().guardarDatosClinica();
-		dispose();
 	}
 
 }

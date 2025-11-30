@@ -25,6 +25,7 @@ public class Flujo extends Thread {
 		try {
 			PaqueteDeDatos paquete = (PaqueteDeDatos) FlujoLectura.readObject();
 			String comando = paquete.getComando();
+
 			//LOGIN
 			if (comando.equalsIgnoreCase("LOGIN")) {
 				User u = (User) paquete.getObjeto();
@@ -35,6 +36,7 @@ public class Flujo extends Thread {
 					paquete.setRespuesta(null);
 				}
 			}
+
 			//GESTIÓN DE USUARIOS
 			else if (comando.equalsIgnoreCase("REG_USER")) {
 				User u = (User) paquete.getObjeto();
@@ -42,6 +44,8 @@ public class Flujo extends Thread {
 				Clinica.guardarUsuarios();
 				paquete.setRespuesta(true);
 			}
+
+
 			//GESTIÓN DE MEDICOS
 			else if (comando.equalsIgnoreCase("REG_MEDICO")) {
 				Medico m = (Medico) paquete.getObjeto();
@@ -56,6 +60,18 @@ public class Flujo extends Thread {
 				String cedula = (String) paquete.getObjeto();
 				paquete.setRespuesta(Clinica.getInstancia().buscarMedicoCedula(cedula));
 			}
+			else if (comando.equalsIgnoreCase("UPDATE_MEDICO")) {
+				Medico m = (Medico) paquete.getObjeto();
+				Clinica.getInstancia().actualizarMedico(m);
+				Clinica.getInstancia().guardarDatosClinica();
+				paquete.setRespuesta(true);
+			}
+			else if (comando.equalsIgnoreCase("DELETE_MEDICO")) {
+				Medico m = (Medico) paquete.getObjeto();
+				boolean exito = Clinica.getInstancia().desactivarMedico(m.getCedula()); 
+				paquete.setRespuesta(exito);
+			}
+
 			//GESTIÓN DE CLIENTES (PACIENTES)
 			else if (comando.equalsIgnoreCase("REG_CLIENTE")) {
 				Cliente cli = (Cliente) paquete.getObjeto();
@@ -73,6 +89,23 @@ public class Flujo extends Thread {
 				String codigo = (String) paquete.getObjeto();
 				paquete.setRespuesta(Clinica.getInstancia().buscarClientePorCodigo(codigo));
 			}
+			else if (comando.equalsIgnoreCase("BUSCAR_CLIENTE_CEDULA")) {
+				String cedula = (String) paquete.getObjeto();
+				Cliente encontrado = null;
+				for(Cliente c : Clinica.getInstancia().getClientes()){
+					if(c.getCedula().equals(cedula)){
+						encontrado = c;
+						break;
+					}
+				}
+				paquete.setRespuesta(encontrado);
+			}
+			else if (comando.equalsIgnoreCase("UPDATE_CLIENTE")) {
+				Cliente c = (Cliente) paquete.getObjeto();
+				Clinica.getInstancia().actualizarCliente(c);
+				Clinica.getInstancia().guardarDatosClinica();
+				paquete.setRespuesta(true);
+			}
 
 			//GESTIÓN DE ESPECIALIDADES
 			else if (comando.equalsIgnoreCase("REG_ESPECIALIDAD")) {
@@ -83,6 +116,10 @@ public class Flujo extends Thread {
 			}
 			else if (comando.equalsIgnoreCase("LISTAR_ESPECIALIDADES")) {
 				paquete.setRespuesta(Clinica.getInstancia().getEspecialidades());
+			}
+			else if (comando.equalsIgnoreCase("BUSCAR_ESPECIALIDAD_NOMBRE")) {
+				String nombre = (String) paquete.getObjeto();
+				paquete.setRespuesta(Clinica.getInstancia().buscarEspecialidadPorNombre(nombre));
 			}
 
 			//GESTIÓN DE CITAS 
@@ -100,16 +137,28 @@ public class Flujo extends Thread {
 				Clinica.getInstancia().refrescarRelaciones(); 
 				paquete.setRespuesta(Clinica.getInstancia().getCitas());
 			}
-			else if (comando.equalsIgnoreCase("CANCELAR_CITA")) {
+			else if (comando.equalsIgnoreCase("BUSCAR_CITA")) {
+				String codigo = (String) paquete.getObjeto();
+				paquete.setRespuesta(Clinica.getInstancia().buscarCita(codigo));
+			}
+			else if (comando.equalsIgnoreCase("EDIT_CITA")) {
+				Cita citaModificada = (Cita) paquete.getObjeto();
+				Cita original = Clinica.getInstancia().buscarCita(citaModificada.getCodigo_cita());
+				boolean exito = Clinica.getInstancia().editCita(original, citaModificada.getFechaHora(), citaModificada.getMedico());
+				paquete.setRespuesta(exito);
+			}
+			else if (comando.equalsIgnoreCase("CANCEL_CITA")) {
 				Cita c = (Cita) paquete.getObjeto();
-				Cita citaReal = Clinica.getInstancia().buscarCita(c.getCodigo_cita());
+				Cita real = Clinica.getInstancia().buscarCita(c.getCodigo_cita());
 				boolean exito = false;
-				if (citaReal != null) {
-					exito = Clinica.getInstancia().cancelCita(citaReal);
-					if(exito) Clinica.getInstancia().guardarDatosClinica();
+				if(real != null) {
+					exito = Clinica.getInstancia().cancelCita(real);
+					Clinica.getInstancia().guardarDatosClinica();
 				}
 				paquete.setRespuesta(exito);
 			}
+
+			//GESTION DE VACUNAS
 			else if (comando.equalsIgnoreCase("REG_CONSULTA")) {
 				paquete.setRespuesta(true); 
 			} else if (comando.equalsIgnoreCase("REG_VACUNA")) {

@@ -284,25 +284,25 @@ public class Clinica implements Serializable {
 	}
 
 	public int contarCitasPorMes(int mes, int anio) {
-	    int contador = 0;
-	    if (this.citas != null) {
-	        for (Cita c : this.citas) {
-	            if (c != null && c.getFechaHora() != null && c.getEstado() != null) {
-	                
-	                int mesCita = c.getFechaHora().getMonthValue();
-	                int anioCita = c.getFechaHora().getYear();
+		int contador = 0;
+		if (this.citas != null) {
+			for (Cita c : this.citas) {
+				if (c != null && c.getFechaHora() != null && c.getEstado() != null) {
 
-	              
-	                if (mesCita == mes && anioCita == anio && c.getEstado().equalsIgnoreCase("Completada")) {
-	                    contador++;
-	                }
-	            }
-	        }
-	    }
-	    
-	    return contador;
+					int mesCita = c.getFechaHora().getMonthValue();
+					int anioCita = c.getFechaHora().getYear();
+
+
+					if (mesCita == mes && anioCita == anio && c.getEstado().equalsIgnoreCase("Completada")) {
+						contador++;
+					}
+				}
+			}
+		}
+
+		return contador;
 	}
-	
+
 	public boolean crearCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente) {
 
 		Medico medico = buscarMedicoCedula(cedulaMedico);
@@ -433,6 +433,32 @@ public class Clinica implements Serializable {
 
 	public boolean verificarDisponibilidad(Medico medico, LocalDateTime fechaHora) {
 		return medicoDisponible(medico, fechaHora);
+	}
+
+	public void actualizarMedico(Medico medicoNuevo) {
+		Medico viejo = buscarMedicoCedula(medicoNuevo.getCedula());
+		if (viejo != null) {
+			viejo.setNombre(medicoNuevo.getNombre());
+			viejo.setApellido(medicoNuevo.getApellido());
+			viejo.setTelefono(medicoNuevo.getTelefono());
+			viejo.setDireccion(medicoNuevo.getDireccion());
+			viejo.setFechaNacimiento(medicoNuevo.getFechaNacimiento());
+			viejo.setActivo(medicoNuevo.isActivo());
+			viejo.setEspecialidad(medicoNuevo.getEspecialidad());
+			viejo.setMaxCitasPorDia(medicoNuevo.getMaxCitasPorDia());
+
+			guardarDatosClinica(); 
+		}
+	}
+
+	public boolean desactivarMedico(String cedula) {
+		Medico m = buscarMedicoCedula(cedula);
+		if (m != null) {
+			m.setActivo(false);
+			guardarDatosClinica();
+			return true;
+		}
+		return false;
 	}
 
 	// Enfermedad
@@ -601,48 +627,7 @@ public class Clinica implements Serializable {
 		}
 	}
 
-	/*
-	 * OJO AQUI: LEER BIEN ANTES DE DAR ENTER
-	 * 
-	 * O J O
-	 * 
-	 * DEJAR ESTOS METODOS AL FINAL :)
-	 * 
-	 */
-
-	public void guardarDatosClinica() {
-		try {
-			FileOutputStream fos = new FileOutputStream("clinica.dat");
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-			oos.writeObject(instancia);
-
-			oos.close();
-			fos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void cargarDatosClinica() {
-		try {
-			FileInputStream fis = new FileInputStream("clinica.dat");
-			ObjectInputStream ois = new ObjectInputStream(fis);
-
-			instancia = (Clinica) ois.readObject();
-
-			ois.close();
-			fis.close();
-
-			instancia.refrescarRelaciones();
-
-		} catch (Exception e) {
-			System.out.println("No se encontro archivo de datos clinicos. Iniciando vacio.");
-		}
-
-	}
-
-	// Métodos auxiliares para los reportes
+	// Metodos auxiliares para los reportes
 
 	// Consultas
 
@@ -1027,5 +1012,48 @@ public class Clinica implements Serializable {
 		}
 		return result;
 	}
+
+
+	/*
+	 * OJO AQUI: LEER BIEN ANTES DE DAR ENTER
+	 * 
+	 * O J O
+	 * 
+	 * DEJAR ESTOS METODOS AL FINAL :)
+	 * 
+	 */
+
+	public void guardarDatosClinica() {
+		try {
+			FileOutputStream fos = new FileOutputStream("clinica.dat");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+			oos.writeObject(instancia);
+
+			oos.close();
+			fos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void cargarDatosClinica() {
+		try {
+			FileInputStream fis = new FileInputStream("clinica.dat");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+
+			instancia = (Clinica) ois.readObject();
+
+			ois.close();
+			fis.close();
+
+			instancia.refrescarRelaciones();
+
+		} catch (Exception e) {
+			System.out.println("No se encontro archivo de datos clinicos. Iniciando vacio.");
+		}
+
+	}
+
 
 }

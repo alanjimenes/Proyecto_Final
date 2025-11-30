@@ -80,7 +80,8 @@ public class ConsultarMedicos extends JDialog {
 							int index = table.getSelectedRow();
 							if (index >= 0) {
 								String cedula = table.getValueAt(index, 0).toString();
-								seleccionado = Clinica.getInstancia().buscarMedicoCedula(cedula);
+
+								seleccionado = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedula);
 
 								btnDelete.setEnabled(true);
 								btnUpdate.setEnabled(true);

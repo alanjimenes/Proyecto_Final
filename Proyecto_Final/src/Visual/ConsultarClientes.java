@@ -71,7 +71,8 @@ public class ConsultarClientes extends JDialog {
 						int index = table.getSelectedRow();
 						if (index >= 0) {
 							String codigo = table.getValueAt(index, 0).toString();
-							seleccionado = Clinica.getInstancia().buscarClientePorCodigo(codigo);
+							seleccionado = (Cliente) ClienteSocket.enviar("BUSCAR_CLIENTE", codigo);
+
 							btnDelete.setEnabled(true);
 							btnUpdate.setEnabled(true);
 						}
@@ -184,8 +185,9 @@ public class ConsultarClientes extends JDialog {
 								"Confirmar", JOptionPane.YES_NO_OPTION);
 
 						if (option == JOptionPane.YES_OPTION) {
-							Clinica.getInstancia().desactivarCliente(seleccionado);
-							Clinica.getInstancia().guardarDatosClinica();
+							seleccionado.setActivo(false);
+							ClienteSocket.enviar("UPDATE_CLIENTE", seleccionado);
+
 							cargarClientes("");
 							resetBotones();
 						}
