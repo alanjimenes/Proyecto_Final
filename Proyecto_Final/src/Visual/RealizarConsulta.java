@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import javax.swing.border.TitledBorder;
 
 import logico.Cita;
 import logico.Clinica;
+import logico.Consulta;
 import logico.Enfermedad;
 import logico.Historial;
 import logico.Vacuna;
@@ -36,19 +38,30 @@ public class RealizarConsulta extends JDialog {
 	private Cita citaActual;
 	private JTextArea txtSintomas;
 	private JTextArea txtDiagnostico;
-	private JCheckBox chkResumen;
+	private JTextArea txtAntecedentes;
+	private JTextArea txtTratamiento;
+
+	private String presion = "N/A";
+	private int pulso = 0;
+	private float temp = 0;
+	private float peso = 0;
+	private float talla = 0;
+	private boolean signosRegistrados = false;
+
+	//ENFERMEDADES
 	private JList<String> listDisponibles;
 	private DefaultListModel<String> modelDisponibles;
 	private JList<String> listDiagnosticadas;
 	private DefaultListModel<String> modelDiagnosticadas;
 	private ArrayList<Enfermedad> enfermedadesSeleccionadas;
+	private JCheckBox chkResumen;
 
 	public RealizarConsulta(Cita cita) {
 		this.citaActual = cita;
 		this.enfermedadesSeleccionadas = new ArrayList<>();
 
 		setTitle("Consulta Médica - Paciente: " + cita.getCliente().getNombre());
-		setBounds(100, 100, 850, 600);
+		setBounds(100, 100, 1000, 750);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -56,8 +69,8 @@ public class RealizarConsulta extends JDialog {
 		contentPanel.setLayout(null);
 
 		JPanel panelInfo = new JPanel();
-		panelInfo.setBorder(new TitledBorder(null, "Información del Paciente", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelInfo.setBounds(10, 11, 814, 70);
+		panelInfo.setBorder(new TitledBorder(null, "Datos del Paciente", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelInfo.setBounds(10, 11, 960, 60);
 		contentPanel.add(panelInfo);
 		panelInfo.setLayout(null);
 
@@ -70,82 +83,133 @@ public class RealizarConsulta extends JDialog {
 		lblCedula.setBounds(350, 28, 200, 14);
 		panelInfo.add(lblCedula);
 
-		JLabel lblSintomas = new JLabel("Síntomas:");
-		lblSintomas.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblSintomas.setBounds(20, 92, 100, 14);
-		contentPanel.add(lblSintomas);
+		boolean tieneHistorial = !cita.getCliente().getHistorial().getConsultas().isEmpty();
 
-		JScrollPane scrollSintomas = new JScrollPane();
-		scrollSintomas.setBounds(20, 117, 380, 100);
-		contentPanel.add(scrollSintomas);
+		JButton btnVerHistorial = new JButton("Ver Historial");
+		btnVerHistorial.setEnabled(tieneHistorial);
+		btnVerHistorial.setBounds(800, 18, 140, 25);
+		btnVerHistorial.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				verHistorialFiltrado();
+			}
+		});
+		panelInfo.add(btnVerHistorial);
 
+		JPanel panelInformacion = new JPanel();
+		panelInformacion.setBorder(new TitledBorder(null, "Anamnesis", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelInformacion.setBounds(10, 80, 470, 250);
+		contentPanel.add(panelInformacion);
+		panelInformacion.setLayout(null);
+
+		JLabel lblAnt = new JLabel("Antecedentes (Alergias, Cirugías):");
+		lblAnt.setBounds(10, 20, 250, 14);
+		panelInformacion.add(lblAnt);
+
+		JScrollPane scAnt = new JScrollPane();
+		scAnt.setBounds(10, 40, 450, 60);
+		panelInformacion.add(scAnt);
+		txtAntecedentes = new JTextArea();
+		txtAntecedentes.setLineWrap(true);
+		scAnt.setViewportView(txtAntecedentes);
+
+		JLabel lblSint = new JLabel("Enfermedad Actual (Síntomas):");
+		lblSint.setBounds(10, 110, 250, 14);
+		panelInformacion.add(lblSint);
+
+		JScrollPane scSint = new JScrollPane();
+		scSint.setBounds(10, 130, 450, 100);
+		panelInformacion.add(scSint);
 		txtSintomas = new JTextArea();
-		scrollSintomas.setViewportView(txtSintomas);
+		txtSintomas.setLineWrap(true);
+		scSint.setViewportView(txtSintomas);
 
-		JLabel lblDiagnostico = new JLabel("Diagnóstico / Observaciones:");
-		lblDiagnostico.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblDiagnostico.setBounds(20, 228, 200, 14);
-		contentPanel.add(lblDiagnostico);
+		JPanel panelExamen = new JPanel();
+		panelExamen.setBorder(new TitledBorder(null, "Examen y Diagnóstico", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelExamen.setBounds(490, 80, 480, 250);
+		contentPanel.add(panelExamen);
+		panelExamen.setLayout(null);
 
-		JScrollPane scrollDiagnostico = new JScrollPane();
-		scrollDiagnostico.setBounds(20, 253, 380, 100);
-		contentPanel.add(scrollDiagnostico);
+		JButton btnSignos = new JButton("Registrar Signos Vitales");
+		Estilos.estilarBoton(btnSignos, new Color(41, 128, 185), Color.WHITE);
+		btnSignos.setBounds(10, 25, 200, 30);
+		btnSignos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				registrarSignosVitales();
+			}
+		});
+		panelExamen.add(btnSignos);
 
+		JLabel lblDiag = new JLabel("Diagnóstico:");
+		lblDiag.setBounds(10, 70, 200, 14);
+		panelExamen.add(lblDiag);
+
+		JScrollPane scDiag = new JScrollPane();
+		scDiag.setBounds(10, 90, 460, 140);
+		panelExamen.add(scDiag);
 		txtDiagnostico = new JTextArea();
-		scrollDiagnostico.setViewportView(txtDiagnostico);
+		txtDiagnostico.setLineWrap(true);
+		scDiag.setViewportView(txtDiagnostico);
 
-		JPanel panelEnfermedades = new JPanel();
-		panelEnfermedades.setBorder(new TitledBorder(null, "Diagnosticar Enfermedad", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelEnfermedades.setBounds(420, 92, 404, 261);
-		contentPanel.add(panelEnfermedades);
-		panelEnfermedades.setLayout(null);
+		JPanel panelEnf = new JPanel();
+		panelEnf.setBorder(new TitledBorder(null, "Enfermedades Controladas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelEnf.setBounds(10, 340, 470, 250);
+		contentPanel.add(panelEnf);
+		panelEnf.setLayout(null);
 
-		JScrollPane scrollDisp = new JScrollPane();
-		scrollDisp.setBounds(10, 45, 150, 200);
-		panelEnfermedades.add(scrollDisp);
+		JScrollPane spDisp = new JScrollPane(); 
+		spDisp.setBounds(10, 40, 180, 180); 
+		panelEnf.add(spDisp);
+		modelDisponibles = new DefaultListModel<>(); 
+		listDisponibles = new JList<>(modelDisponibles); 
+		spDisp.setViewportView(listDisponibles);
 
-		modelDisponibles = new DefaultListModel<>();
-		listDisponibles = new JList<>(modelDisponibles);
-		scrollDisp.setViewportView(listDisponibles);
+		JScrollPane spDiag = new JScrollPane(); 
+		spDiag.setBounds(270, 40, 180, 180); 
+		panelEnf.add(spDiag);
+		modelDiagnosticadas = new DefaultListModel<>(); 
+		listDiagnosticadas = new JList<>(modelDiagnosticadas); 
+		spDiag.setViewportView(listDiagnosticadas);
 
-		JLabel lblDisp = new JLabel("Disponibles");
-		lblDisp.setBounds(10, 25, 100, 14);
-		panelEnfermedades.add(lblDisp);
-
-		JScrollPane scrollDiag = new JScrollPane();
-		scrollDiag.setBounds(234, 45, 150, 200);
-		panelEnfermedades.add(scrollDiag);
-
-		modelDiagnosticadas = new DefaultListModel<>();
-		listDiagnosticadas = new JList<>(modelDiagnosticadas);
-		scrollDiag.setViewportView(listDiagnosticadas);
-
-		JLabel lblSelect = new JLabel("Seleccionadas");
-		lblSelect.setBounds(234, 25, 100, 14);
-		panelEnfermedades.add(lblSelect);
-
-		JButton btnAdd = new JButton(">");
-		btnAdd.addActionListener(new ActionListener() {
+		JButton btnRight = new JButton(">"); 
+		btnRight.setBounds(200, 100, 60, 25);
+		btnRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				moverEnfermedadDerecha();
 			}
 		});
-		btnAdd.setBounds(170, 100, 54, 23);
-		panelEnfermedades.add(btnAdd);
+		panelEnf.add(btnRight);
 
-		JButton btnRemove = new JButton("<");
-		btnRemove.addActionListener(new ActionListener() {
+		JButton btnLeft = new JButton("<"); 
+		btnLeft.setBounds(200, 140, 60, 25);
+		btnLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				moverEnfermedadIzquierda();
 			}
 		});
-		btnRemove.setBounds(170, 140, 54, 23);
-		panelEnfermedades.add(btnRemove);
+		panelEnf.add(btnLeft);
 
-		chkResumen = new JCheckBox("Marcar para Resumen Clínico");
-		chkResumen.setFont(new Font("Tahoma", Font.BOLD, 12));
-		chkResumen.setBounds(20, 370, 250, 23);
-		contentPanel.add(chkResumen);
+		cargarEnfermedades();
+
+		JPanel panelPlan = new JPanel();
+		panelPlan.setBorder(new TitledBorder(null, "Plan y Tratamiento", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelPlan.setBounds(490, 340, 480, 250);
+		contentPanel.add(panelPlan);
+		panelPlan.setLayout(null);
+
+		JLabel lblRx = new JLabel("Receta Médica / Indicaciones:");
+		lblRx.setBounds(10, 20, 250, 14);
+		panelPlan.add(lblRx);
+
+		JScrollPane scRx = new JScrollPane();
+		scRx.setBounds(10, 40, 460, 150);
+		panelPlan.add(scRx);
+		txtTratamiento = new JTextArea();
+		txtTratamiento.setLineWrap(true);
+		scRx.setViewportView(txtTratamiento);
+
+		chkResumen = new JCheckBox("Agregar al Resumen Clínico");
+		chkResumen.setBounds(10, 200, 250, 20);
+		panelPlan.add(chkResumen);;
 
 		cargarEnfermedades();
 
@@ -153,22 +217,14 @@ public class RealizarConsulta extends JDialog {
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-		JButton btnTerminar = new JButton("Terminar Consulta");
-		btnTerminar.setBackground(new Color(60, 179, 113));
-		btnTerminar.setForeground(Color.BLACK);
-		btnTerminar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				terminarConsulta();
-			}
-		});
+		JButton btnTerminar = new JButton("Terminar y Generar Receta");
+		Estilos.estilarBoton(btnTerminar, new Color(46, 204, 113), Color.WHITE);
+		btnTerminar.addActionListener(e -> terminarConsulta());
 		buttonPane.add(btnTerminar);
 
 		JButton btnCancelar = new JButton("Cancelar");
-		btnCancelar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
+		Estilos.estilarBoton(btnCancelar, new Color(231, 76, 60), Color.WHITE);
+		btnCancelar.addActionListener(e -> dispose());
 		buttonPane.add(btnCancelar);
 
 		JButton btnHistorial = new JButton("Ver Historial Previo");
@@ -219,6 +275,66 @@ public class RealizarConsulta extends JDialog {
 		buttonPane.add(btnVacuna);
 	}
 
+	private void registrarSignosVitales() {
+		JPanel panel = new JPanel(new GridLayout(5, 2, 5, 5));
+		JTextField txtPresion = new JTextField(presion);
+		JTextField txtPulso = new JTextField(String.valueOf(pulso));
+		JTextField txtTemp = new JTextField(String.valueOf(temp));
+		JTextField txtPeso = new JTextField(String.valueOf(peso));
+		JTextField txtTalla = new JTextField(String.valueOf(talla));
+
+		panel.add(new JLabel("Presión Arterial (mm/Hg):")); panel.add(txtPresion);
+		panel.add(new JLabel("Frecuencia Cardíaca (lpm):")); panel.add(txtPulso);
+		panel.add(new JLabel("Temperatura (°C):")); panel.add(txtTemp);
+		panel.add(new JLabel("Peso (Kg):")); panel.add(txtPeso);
+		panel.add(new JLabel("Talla (m):")); panel.add(txtTalla);
+
+		int res = JOptionPane.showConfirmDialog(this, panel, "Registro de Signos Vitales", JOptionPane.OK_CANCEL_OPTION);
+		if (res == JOptionPane.OK_OPTION) {
+			try {
+				presion = txtPresion.getText();
+				pulso = Integer.parseInt(txtPulso.getText());
+				temp = Float.parseFloat(txtTemp.getText());
+				peso = Float.parseFloat(txtPeso.getText());
+				talla = Float.parseFloat(txtTalla.getText());
+				signosRegistrados = true;
+				JOptionPane.showMessageDialog(this, "Signos vitales registrados.");
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, "Error en los datos numéricos.", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+
+	private void terminarConsulta() {
+		if (txtSintomas.getText().isEmpty() || txtDiagnostico.getText().isEmpty() || txtTratamiento.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Debe completar Síntomas, Diagnóstico y Tratamiento.");
+			return;
+		}
+		if (!signosRegistrados) {
+			int opt = JOptionPane.showConfirmDialog(null, "No ha registrado Signos Vitales. ¿Desea continuar?", "Advertencia", JOptionPane.YES_NO_OPTION);
+			if (opt == JOptionPane.NO_OPTION) return;
+		}
+
+		Consulta consultaTemp = new Consulta("TEMP", java.time.LocalDate.now(), txtSintomas.getText(), txtDiagnostico.getText(), citaActual.getMedico(), citaActual.getCliente());
+		consultaTemp.setAntecedentes(txtAntecedentes.getText());
+		consultaTemp.setRecetaMedica(txtTratamiento.getText());
+		consultaTemp.setEnfermedadesDiag(enfermedadesSeleccionadas);
+
+		boolean guardado = (boolean) ClienteSocket.enviar("REG_CONSULTA", consultaTemp); 
+
+		if (guardado) {
+			int word = JOptionPane.showConfirmDialog(null, "¿Desea descargar la Receta Médica en Word?", "Receta", JOptionPane.YES_NO_OPTION);
+			if (word == JOptionPane.YES_OPTION) {
+				GeneradorReportes.generarReceta(consultaTemp);
+			}
+			dispose();
+		} else {
+			JOptionPane.showMessageDialog(null, "Error al guardar en el sistema.");
+		}
+	}
+
+
+	//REVISAR ABAJO
 	private void cargarEnfermedades() {
 		modelDisponibles.clear();
 		for (Enfermedad enf : Clinica.getInstancia().getEnfermedades()) {
@@ -234,9 +350,7 @@ public class RealizarConsulta extends JDialog {
 			for (Enfermedad enf : Clinica.getInstancia().getEnfermedades()) {
 				if (enf.getNombre().equals(seleccion)) {
 					enfermedadesSeleccionadas.add(enf);
-					/* MEJORA IMPLEMENTADA
-					 * Si esta bajo vigilancia marca la casilla de resumen y avisa al medico
-					 */
+
 					if (enf.isVigilancia()) {
 						chkResumen.setSelected(true);
 						chkResumen.setEnabled(false); 
@@ -255,34 +369,6 @@ public class RealizarConsulta extends JDialog {
 			modelDiagnosticadas.removeElement(seleccion);
 			modelDisponibles.addElement(seleccion);
 			enfermedadesSeleccionadas.removeIf(enf -> enf.getNombre().equals(seleccion));
-		}
-	}
-
-	private void terminarConsulta() {
-		if (txtSintomas.getText().isEmpty() || txtDiagnostico.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Debe detallar los síntomas y el diagnóstico.");
-			return;
-		}
-
-		int confirm = JOptionPane.showConfirmDialog(null, "¿Seguro que desea finalizar la consulta?", "Confirmar", JOptionPane.YES_NO_OPTION);
-		if (confirm == JOptionPane.YES_OPTION) {
-			boolean iniciada = Clinica.getInstancia().iniciarConsulta(citaActual, txtSintomas.getText(), txtDiagnostico.getText());
-
-			if (iniciada) {
-				int totalConsultas = citaActual.getCliente().getHistorial().getConsultas().size();
-				logico.Consulta consultaObj = citaActual.getCliente().getHistorial().getConsultas().get(totalConsultas - 1);
-				consultaObj.setEnfermedadesDiag(enfermedadesSeleccionadas);
-				consultaObj.setAgregarAlResumen(chkResumen.isSelected());
-				if (!enfermedadesSeleccionadas.isEmpty()) {
-					citaActual.getCliente().setEnfermo(true);
-				}
-				Clinica.getInstancia().guardarDatosClinica();
-
-				JOptionPane.showMessageDialog(null, "Consulta finalizada con éxito.");
-				dispose();
-			} else {
-				JOptionPane.showMessageDialog(null, "Error al guardar la consulta.");
-			}
 		}
 	}
 

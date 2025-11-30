@@ -16,6 +16,14 @@ public class Consulta implements Serializable {
 	private ArrayList<Enfermedad> enfermedadesDiag;
 	private boolean AddResumen;
 
+	private String antecedentes;
+	private String presionArterial;
+	private int frecuenciaCardiaca;
+	private float temperatura;
+	private float peso;
+	private float talla;
+	private String recetaMedica;
+
 	public Consulta(String codigo_cons,LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico, Cliente cliente) {
 
 		this.fechaConsulta = fechaConsulta;
@@ -25,6 +33,9 @@ public class Consulta implements Serializable {
 		this.cliente = cliente;
 		this.enfermedadesDiag = new ArrayList<>();
 		this.AddResumen = false;
+		this.antecedentes = "";
+		this.presionArterial = "";
+		this.recetaMedica = "";
 
 	}
 
@@ -88,10 +99,65 @@ public class Consulta implements Serializable {
 		return AddResumen;
 	}
 
+	public String getAntecedentes() {
+		return antecedentes;
+	}
+
+	public void setAntecedentes(String antecedentes) {
+		this.antecedentes = antecedentes;
+	}
+
+	public String getPresionArterial() {
+		return presionArterial;
+	}
+
+	public void setPresionArterial(String presionArterial) {
+		this.presionArterial = presionArterial;
+	}
+
+	public int getFrecuenciaCardiaca() {
+		return frecuenciaCardiaca;
+	}
+
+	public void setFrecuenciaCardiaca(int frecuenciaCardiaca) {
+		this.frecuenciaCardiaca = frecuenciaCardiaca;
+	}
+
+	public float getTemperatura() {
+		return temperatura;
+	}
+
+	public void setTemperatura(float temperatura) {
+		this.temperatura = temperatura;
+	}
+
+	public float getPeso() {
+		return peso;
+	}
+
+	public void setPeso(float peso) {
+		this.peso = peso;
+	}
+
+	public float getTalla() {
+		return talla;
+	}
+
+	public void setTalla(float talla) {
+		this.talla = talla;
+	}
+
+	public String getRecetaMedica() {
+		return recetaMedica;
+	}
+
+	public void setRecetaMedica(String recetaMedica) {
+		this.recetaMedica = recetaMedica;
+	}
+
 	public void setAgregarAlResumen(boolean agregarAlResumen) {
 		this.AddResumen = agregarAlResumen;
 	}
-
 
 	public void agregarEnfermedad(Enfermedad enfermedad) {
 		this.enfermedadesDiag.add(enfermedad);
