@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,6 +29,8 @@ import java.awt.SystemColor;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import java.awt.Toolkit;
+
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
@@ -44,6 +47,7 @@ public class RegClientes extends JDialog {
 	private JDateChooser dateChooser;
 	private Cliente clienteActual = null;
 	private JButton okButton;
+	private JComboBox<String> cbxGenero;
 
 	public RegClientes() {
 		setResizable(false);
@@ -135,6 +139,17 @@ public class RegClientes extends JDialog {
 		txtDireccion.setBounds(112, 243, 200, 20);
 		contentPanel.add(txtDireccion);
 		txtDireccion.setColumns(10);
+
+		JLabel lblGenero = new JLabel("Género:");
+		lblGenero.setForeground(Color.WHITE);
+		lblGenero.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblGenero.setBounds(10, 350, 98, 14);
+		contentPanel.add(lblGenero);
+
+		JComboBox<String> cbxGenero = new JComboBox<>();
+		cbxGenero.setModel(new DefaultComboBoxModel<>(new String[] {"<Seleccione>", "Masculino", "Femenino"}));
+		cbxGenero.setBounds(112, 347, 200, 20);
+		contentPanel.add(cbxGenero);
 
 		JLabel lblFecha = new JLabel("Fecha Nac:");
 		lblFecha.setForeground(Color.WHITE);
@@ -228,7 +243,7 @@ public class RegClientes extends JDialog {
 
 			Cliente nuevoCliente = new Cliente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(),
 					fechaNac, txtTelefono.getText(), txtDireccion.getText(), true, null, null, false,
-					null, true);
+					null, true, cbxGenero.getSelectedItem().toString());
 
 			boolean exito = (boolean) ClienteSocket.enviar("REG_CLIENTE", nuevoCliente);
 

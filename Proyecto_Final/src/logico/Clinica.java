@@ -303,7 +303,7 @@ public class Clinica implements Serializable {
 		return contador;
 	}
 
-	public boolean crearCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente) {
+	public boolean crearCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente, String motivo) {
 
 		Medico medico = buscarMedicoCedula(cedulaMedico);
 		if (medico == null)
@@ -324,22 +324,20 @@ public class Clinica implements Serializable {
 			return false;
 		}
 
-		Cita nuevaCita = new Cita(fechaHora, cliente, medico, "Pendiente");
+		Cita nuevaCita = new Cita(fechaHora, cliente, medico, "Pendiente", motivo);
 
 		String codigo = "CIT-" + System.currentTimeMillis();
 		nuevaCita.setCodigo_cita(codigo);
 
 		this.citas.add(nuevaCita);
-
 		medico.agregarCitaAsignada(nuevaCita);
-
 		guardarDatosClinica();
 
 		return true;
 	}
 
-	public boolean agendarCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente) {
-		return crearCita(fechaHora, cedulaMedico, codigoCliente);
+	public boolean agendarCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente, String motivo) {
+		return crearCita(fechaHora, cedulaMedico, codigoCliente, motivo);
 	}
 
 	// Consultas

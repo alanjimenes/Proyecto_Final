@@ -11,16 +11,18 @@ public class Cliente extends Persona implements Serializable {
 	private Historial historial;
 	private boolean enfermo;
 	private ArrayList<RegistroVacunacion> regVacunas;
+	private String genero;
 
 	public Cliente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
 			String direccion, boolean activo, String numExpediente, Historial historial, boolean enfermo,
-			ArrayList<RegistroVacunacion> regVacunas, boolean activo2) {
+			ArrayList<RegistroVacunacion> regVacunas, boolean activo2, String genero) {
 		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion, activo);
 		this.numExpediente = numExpediente;
 		this.historial = historial;
 		this.enfermo = enfermo;
 		this.regVacunas = regVacunas;
-		activo = activo2;
+		this.activo = activo2;
+		this.genero = genero;
 	}
 
 	public String getNumExpediente() {
@@ -61,5 +63,13 @@ public class Cliente extends Persona implements Serializable {
 
 	public void setActivo(boolean activo) {
 		this.activo = activo;
+	}
+
+	public String getGenero() {
+		return genero;
+	}
+
+	public void setGenero(String genero) {
+		this.genero = genero;
 	}
 }

@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
@@ -49,6 +50,7 @@ public class GestionCitas extends JPanel {
 	private Cliente clienteSeleccionado = null;
 	private Medico medicoSeleccionado = null;
 	private Cita citaSeleccionada = null;
+	private JTextArea txtMotivo;
 
 	/**
 	 * Create the panel.
@@ -100,16 +102,16 @@ public class GestionCitas extends JPanel {
 		panelFormulario.add(lblFecha);
 
 		dateChooser = new JDateChooser();
-		dateChooser.setBounds(90, 72, 130, 20);
+		dateChooser.setBounds(66, 72, 130, 20);
 		dateChooser.getJCalendar().setMinSelectableDate(new Date()); //PARA QUE SOLO SEA ELEGIBLE DE HOY EN ADELANTE
 		panelFormulario.add(dateChooser);
 
 		JLabel lblHora = new JLabel("Hora:");
-		lblHora.setBounds(230, 75, 40, 14);
+		lblHora.setBounds(20, 102, 40, 14);
 		panelFormulario.add(lblHora);
 
 		cbxHora = new JComboBox<>();
-		cbxHora.setBounds(270, 72, 80, 20);
+		cbxHora.setBounds(76, 99, 80, 20);
 		for (int h = 8; h <= 17; h++) {
 			String ampm = (h < 12) ? "AM" : "PM";
 			int hora12 = (h == 12) ? 12 : (h % 12);
@@ -119,7 +121,21 @@ public class GestionCitas extends JPanel {
 		}
 		panelFormulario.add(cbxHora);
 
+		//MOTIVO
+		JLabel lblMotivo = new JLabel("Motivo:");
+		lblMotivo.setBounds(308, 88, 60, 14);
+		panelFormulario.add(lblMotivo);
+
+		JScrollPane scrollMotivo = new JScrollPane();
+		scrollMotivo.setBounds(380, 72, 450, 50);
+		panelFormulario.add(scrollMotivo);
+
+		txtMotivo = new JTextArea();
+		txtMotivo.setLineWrap(true);
+		scrollMotivo.setViewportView(txtMotivo);
+
 		// BOTONES
+		int btnY = 180;
 		btnCrearCita = new JButton("Crear Cita");
 		btnCrearCita.setBounds(10, 142, 138, 45);
 		panelFormulario.add(btnCrearCita);
@@ -137,7 +153,7 @@ public class GestionCitas extends JPanel {
 		panelFormulario.add(btnLimpiar);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 220, 860, 300);
+		scrollPane.setBounds(10, 290, 860, 250);
 		add(scrollPane);
 
 		tablaCitas = new JTable();
@@ -195,6 +211,10 @@ public class GestionCitas extends JPanel {
 					JOptionPane.showMessageDialog(null, "Debe buscar un cliente, un médico y seleccionar una fecha.");
 					return;
 				}
+				if(txtMotivo.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Debe especificar el motivo de la consulta.");
+					return;
+				}
 				LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				String seleccion = cbxHora.getSelectedItem().toString();
 				String horaStr = seleccion.substring(0, 2);
@@ -214,7 +234,7 @@ public class GestionCitas extends JPanel {
 					JOptionPane.showMessageDialog(null, "No puede crear una cita en una fecha y hora pasadas.");
 					return;
 				}
-				Cita tempCita = new Cita(fechaHora, clienteSeleccionado, medicoSeleccionado, "Pendiente");
+				Cita tempCita = new Cita(fechaHora, clienteSeleccionado, medicoSeleccionado, "Pendiente", txtMotivo.getText());
 
 				boolean exito = (boolean) ClienteSocket.enviar("REG_CITA", tempCita);
 
@@ -251,6 +271,7 @@ public class GestionCitas extends JPanel {
 						txtCedulaMedico.setText(medicoSeleccionado.getCedula());
 						lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre());
 						lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre());
+						txtMotivo.setText(citaSeleccionada.getMotivo());
 
 						dateChooser.setDate(Date.from(citaSeleccionada.getFechaHora().atZone(ZoneId.systemDefault()).toInstant()));
 
@@ -315,6 +336,7 @@ public class GestionCitas extends JPanel {
 
 				citaSeleccionada.setFechaHora(nuevaFechaHora);
 				citaSeleccionada.setMedico(medicoSeleccionado);
+				citaSeleccionada.setMotivo(txtMotivo.getText());
 
 				boolean exito = (boolean) ClienteSocket.enviar("EDIT_CITA", citaSeleccionada);
 

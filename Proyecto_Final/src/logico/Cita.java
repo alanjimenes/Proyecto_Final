@@ -11,13 +11,15 @@ public class Cita implements Serializable {
 	private Cliente cliente;
 	private Medico medico;
 	private String estado;
+	private String motivo;
 
-	public Cita(LocalDateTime fechaHora, Cliente cliente, Medico medico, String estado) {
+	public Cita(LocalDateTime fechaHora, Cliente cliente, Medico medico, String estado, String motivo) {
 		super();
 		this.fechaHora = fechaHora;
 		this.cliente = cliente;
 		this.medico = medico;
 		this.estado = estado;
+		this.motivo = motivo;
 	}
 
 	public String getCodigo_cita() {
@@ -58,6 +60,14 @@ public class Cita implements Serializable {
 
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+
+	public String getMotivo() {
+		return motivo;
+	}
+
+	public void setMotivo(String motivo) {
+		this.motivo = motivo;
 	}
 
 

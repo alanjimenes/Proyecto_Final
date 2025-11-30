@@ -128,7 +128,8 @@ public class Flujo extends Thread {
 				boolean exito = Clinica.getInstancia().crearCita(
 						c.getFechaHora(), 
 						c.getMedico().getCedula(), 
-						c.getCliente().getNumExpediente()
+						c.getCliente().getNumExpediente(),
+						c.getMotivo()
 						);
 				if(exito) Clinica.getInstancia().guardarDatosClinica();
 				paquete.setRespuesta(exito);
