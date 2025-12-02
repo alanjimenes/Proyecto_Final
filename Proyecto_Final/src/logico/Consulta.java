@@ -15,6 +15,7 @@ public class Consulta implements Serializable {
 	private Cliente cliente;
 	private ArrayList<Enfermedad> enfermedadesDiag;
 	private boolean AddResumen;
+	private String motivo;
 
 	private String antecedentes;
 	private String presionArterial;
@@ -24,7 +25,8 @@ public class Consulta implements Serializable {
 	private float talla;
 	private String recetaMedica;
 
-	public Consulta(String codigo_cons,LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico, Cliente cliente) {
+	public Consulta(String codigo_cons, LocalDate fechaConsulta, String sintomas, String diagnostico, Medico medico,
+			Cliente cliente) {
 
 		this.fechaConsulta = fechaConsulta;
 		this.sintomas = sintomas;
@@ -99,6 +101,14 @@ public class Consulta implements Serializable {
 		return AddResumen;
 	}
 
+	public String getMotivo() {
+		return motivo;
+	}
+
+	public void setMotivo(String motivo) {
+		this.motivo = motivo;
+	}
+
 	public String getAntecedentes() {
 		return antecedentes;
 	}
@@ -171,4 +181,5 @@ public class Consulta implements Serializable {
 		}
 		return false;
 	}
+
 }

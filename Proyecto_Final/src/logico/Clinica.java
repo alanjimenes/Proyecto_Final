@@ -292,7 +292,6 @@ public class Clinica implements Serializable {
 					int mesCita = c.getFechaHora().getMonthValue();
 					int anioCita = c.getFechaHora().getYear();
 
-
 					if (mesCita == mes && anioCita == anio && c.getEstado().equalsIgnoreCase("Completada")) {
 						contador++;
 					}
@@ -445,7 +444,7 @@ public class Clinica implements Serializable {
 			viejo.setEspecialidad(medicoNuevo.getEspecialidad());
 			viejo.setMaxCitasPorDia(medicoNuevo.getMaxCitasPorDia());
 
-			guardarDatosClinica(); 
+			guardarDatosClinica();
 		}
 	}
 
@@ -1011,6 +1010,20 @@ public class Clinica implements Serializable {
 		return result;
 	}
 
+	public ArrayList<Consulta> getConsultasPorCliente(String cedulaCliente) {
+		ArrayList<Consulta> lista = new ArrayList<>();
+
+		for (Cliente c : clientes) {
+			if (c.getCedula().equals(cedulaCliente)) {
+				if (c.getHistorial() != null) {
+					lista.addAll(c.getHistorial().getConsultas());
+				}
+				break;
+			}
+		}
+
+		return lista;
+	}
 
 	/*
 	 * OJO AQUI: LEER BIEN ANTES DE DAR ENTER
@@ -1052,6 +1065,5 @@ public class Clinica implements Serializable {
 		}
 
 	}
-
 
 }
