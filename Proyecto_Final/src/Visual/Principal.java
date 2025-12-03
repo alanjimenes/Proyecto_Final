@@ -322,9 +322,11 @@ public class Principal extends JFrame {
 		JDialog dialogCitas = new JDialog(Principal.this, "Gestión de Citas", true);
 		GestionCitas panel = new GestionCitas();
 		dialogCitas.getContentPane().add(panel);
-		dialogCitas.setSize(900, 650);
-		dialogCitas.setLocationRelativeTo(Principal.this);
+		dialogCitas.setSize(1130, 750);
+		dialogCitas.setResizable(false);
+		dialogCitas.setLocationRelativeTo(null);
 		dialogCitas.setVisible(true);
+		dialogCitas.setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
 	}
 
 	private void iniciarReloj() {

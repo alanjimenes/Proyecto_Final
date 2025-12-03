@@ -30,6 +30,7 @@ import logico.Cita;
 import logico.Cliente;
 import logico.Clinica;
 import logico.Medico;
+import java.awt.Color;
 
 public class GestionCitas extends JPanel {
 
@@ -56,62 +57,77 @@ public class GestionCitas extends JPanel {
 	 * Create the panel.
 	 */
 	public GestionCitas() {
+		setBackground(new Color (60, 70, 123));
 		setLayout(null);
 		JPanel panelFormulario = new JPanel();
-		panelFormulario.setBounds(10, 13, 860, 200);
+		panelFormulario.setBackground(new Color (60, 70, 123));
+		panelFormulario.setBounds(10, 10, 1096, 269);
 		panelFormulario.setLayout(null);
 		add(panelFormulario);
 
 		// CLIENTE
 		JLabel lblCodCliente = new JLabel("Cód. Cliente:");
-		lblCodCliente.setBounds(10, 15, 80, 14);
+		lblCodCliente.setForeground(Color.WHITE);
+		lblCodCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+		lblCodCliente.setBounds(10, 45, 100, 14);
 		panelFormulario.add(lblCodCliente);
 
 		txtCodCliente = new JTextField();
-		txtCodCliente.setBounds(90, 12, 100, 20);
+		txtCodCliente.setBounds(122, 42, 142, 20);
 		panelFormulario.add(txtCodCliente);
 
 		btnBuscarCliente = new JButton("Buscar");
-		btnBuscarCliente.setBounds(200, 11, 80, 23);
+		Estilos.estilarBoton(btnBuscarCliente, new Color(127, 140, 141), Color.WHITE); 
+
+		btnBuscarCliente.setBounds(274, 41, 102, 23);
 		panelFormulario.add(btnBuscarCliente);
 
 		lblNombreCliente = new JLabel("Paciente: (Busque un cliente)");
-		lblNombreCliente.setBounds(290, 15, 250, 14);
+		lblNombreCliente.setForeground(Color.WHITE);
+		lblNombreCliente.setBounds(386, 45, 180, 14);
 		panelFormulario.add(lblNombreCliente);
 
 		// MEDICO
 		JLabel lblCedMedico = new JLabel("Cédula Médico:");
-		lblCedMedico.setBounds(10, 45, 80, 14);
+		lblCedMedico.setForeground(Color.WHITE);
+		lblCedMedico.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+		lblCedMedico.setBounds(10, 85, 100, 14);
 		panelFormulario.add(lblCedMedico);
 
 		txtCedulaMedico = new JTextField();
-		txtCedulaMedico.setBounds(90, 42, 100, 20);
+		txtCedulaMedico.setBounds(120, 82, 149, 20);
 		panelFormulario.add(txtCedulaMedico);
 
 		btnBuscarMedico = new JButton("Buscar");
-		btnBuscarMedico.setBounds(200, 41, 80, 23);
+		Estilos.estilarBoton(btnBuscarMedico, new Color(127, 140, 141), Color.WHITE); 
+		btnBuscarMedico.setBounds(274, 81, 102, 23);
 		panelFormulario.add(btnBuscarMedico);
 
 		lblNombreMedico = new JLabel("Médico: (Busque un médico)");
-		lblNombreMedico.setBounds(290, 45, 250, 14);
+		lblNombreMedico.setForeground(Color.WHITE);
+		lblNombreMedico.setBounds(386, 85, 180, 14);
 		panelFormulario.add(lblNombreMedico);
 
 		// FECHA Y HORA
 		JLabel lblFecha = new JLabel("Fecha:");
-		lblFecha.setBounds(10, 75, 80, 14);
+		lblFecha.setForeground(Color.WHITE);
+		lblFecha.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+		lblFecha.setBounds(10, 123, 80, 14);
 		panelFormulario.add(lblFecha);
 
 		dateChooser = new JDateChooser();
-		dateChooser.setBounds(66, 72, 130, 20);
+		dateChooser.setBounds(120, 120, 149, 20);
 		dateChooser.getJCalendar().setMinSelectableDate(new Date()); //PARA QUE SOLO SEA ELEGIBLE DE HOY EN ADELANTE
 		panelFormulario.add(dateChooser);
 
 		JLabel lblHora = new JLabel("Hora:");
-		lblHora.setBounds(20, 102, 40, 14);
+		lblHora.setForeground(Color.WHITE);
+		lblHora.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+		lblHora.setBounds(10, 163, 40, 14);
 		panelFormulario.add(lblHora);
 
 		cbxHora = new JComboBox<>();
-		cbxHora.setBounds(76, 99, 80, 20);
+		cbxHora.setBounds(120, 163, 149, 20);
 		for (int h = 8; h <= 17; h++) {
 			String ampm = (h < 12) ? "AM" : "PM";
 			int hora12 = (h == 12) ? 12 : (h % 12);
@@ -123,46 +139,168 @@ public class GestionCitas extends JPanel {
 
 		//MOTIVO
 		JLabel lblMotivo = new JLabel("Motivo:");
-		lblMotivo.setBounds(308, 88, 60, 14);
+		lblMotivo.setForeground(Color.WHITE);
+		lblMotivo.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+		lblMotivo.setBounds(593, 29, 60, 14);
 		panelFormulario.add(lblMotivo);
 
 		JScrollPane scrollMotivo = new JScrollPane();
-		scrollMotivo.setBounds(380, 72, 450, 50);
+		scrollMotivo.setBounds(593, 54, 450, 123);
 		panelFormulario.add(scrollMotivo);
-
-		txtMotivo = new JTextArea();
-		txtMotivo.setLineWrap(true);
-		scrollMotivo.setViewportView(txtMotivo);
+		
+				txtMotivo = new JTextArea();
+				scrollMotivo.setViewportView(txtMotivo);
+				txtMotivo.setLineWrap(true);
 
 		// BOTONES
-		int btnY = 180;
-		btnCrearCita = new JButton("Crear Cita");
-		btnCrearCita.setBounds(10, 142, 138, 45);
-		panelFormulario.add(btnCrearCita);
-
-		btnModificarCita = new JButton("Modificar Cita");
-		btnModificarCita.setBounds(177, 142, 138, 45);
-		panelFormulario.add(btnModificarCita);
 
 		btnCancelarCita = new JButton("Cancelar Cita");
-		btnCancelarCita.setBounds(478, 144, 138, 45);
+		Estilos.estilarBoton(btnCancelarCita, new Color(231, 76, 60), Color.WHITE);
+		btnCancelarCita.setBounds(593, 213, 155, 45);
 		panelFormulario.add(btnCancelarCita);
 
 		btnLimpiar = new JButton("Limpiar");
-		btnLimpiar.setBounds(659, 142, 138, 45);
+		Estilos.estilarBoton(btnLimpiar, new Color(110, 140, 251), Color.WHITE);
+		btnLimpiar.setBounds(888, 213, 155, 45);
 		panelFormulario.add(btnLimpiar);
+		
+				btnModificarCita = new JButton("Modificar Cita");
+				Estilos.estilarBoton(btnModificarCita, new Color(41, 128, 185), Color.WHITE);
+				btnModificarCita.setBounds(322, 213, 149, 45);
+				panelFormulario.add(btnModificarCita);
+				btnCrearCita = new JButton("Crear Cita");
+				Estilos.estilarBoton(btnCrearCita, new Color(99, 163, 97), Color.WHITE);
+				btnCrearCita.setBounds(51, 213, 155, 45);
+				panelFormulario.add(btnCrearCita);
+				
+						btnCrearCita.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								if (clienteSeleccionado == null || medicoSeleccionado == null || dateChooser.getDate() == null) {
+									JOptionPane.showMessageDialog(null, "Debe buscar un cliente, un médico y seleccionar una fecha.");
+									return;
+								}
+								if(txtMotivo.getText().isEmpty()) {
+									JOptionPane.showMessageDialog(null, "Debe especificar el motivo de la consulta.");
+									return;
+								}
+								LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+								String seleccion = cbxHora.getSelectedItem().toString();
+								String horaStr = seleccion.substring(0, 2);
+								String minStr = seleccion.substring(3, 5);
+								String ampm = seleccion.substring(6);
+								int hora = Integer.parseInt(horaStr);
+				
+								if (ampm.equals("PM") && hora != 12)
+									hora += 12;
+								if (ampm.equals("AM") && hora == 12)
+									hora = 0;
+				
+								LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
+								LocalDateTime fechaHora = LocalDateTime.of(fecha, horaConvertida);
+				
+								if (fechaHora.isBefore(LocalDateTime.now())) {
+									JOptionPane.showMessageDialog(null, "No puede crear una cita en una fecha y hora pasadas.");
+									return;
+								}
+								Cita tempCita = new Cita(fechaHora, clienteSeleccionado, medicoSeleccionado, "Pendiente", txtMotivo.getText());
+				
+								boolean exito = (boolean) ClienteSocket.enviar("REG_CITA", tempCita);
+				
+								if (exito) {
+									JOptionPane.showMessageDialog(null, "¡Cita agendada en el Servidor!");
+									cargarTablaCitas();
+									limpiarCampos();
+								} else {
+									JOptionPane.showMessageDialog(null, "Error: Médico no disponible.");
+								}
+							}
+						});
+				
+						btnModificarCita.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								if (citaSeleccionada == null) {
+									JOptionPane.showMessageDialog(null, "Debe seleccionar una cita de la tabla primero.");
+									return;
+								}
+								if (dateChooser.getDate() == null) {
+									JOptionPane.showMessageDialog(null, "Seleccione una fecha.");
+									return;
+								}
+								if (medicoSeleccionado == null) {
+									JOptionPane.showMessageDialog(null, "Debe seleccionar un médico.");
+									return;
+								}
+				
+								LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				
+								String seleccion = cbxHora.getSelectedItem().toString();
+								if (seleccion.length() < 7) {
+									JOptionPane.showMessageDialog(null, "Formato de hora inválido.");
+									return;
+								}
+								String horaStr = seleccion.substring(0, 2);
+								String minStr = seleccion.substring(3, 5);
+								String ampm = seleccion.substring(6).trim().toUpperCase();
+				
+								int hora;
+								try {
+									hora = Integer.parseInt(horaStr);
+								} catch (NumberFormatException ex) {
+									JOptionPane.showMessageDialog(null, "Hora inválida.");
+									return;
+								}
+				
+								if (ampm.equals("PM") && hora != 12)
+									hora += 12;
+								if (ampm.equals("AM") && hora == 12)
+									hora = 0;
+				
+								LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
+								LocalDateTime nuevaFechaHora = LocalDateTime.of(fecha, horaConvertida);
+				
+								if (nuevaFechaHora.isBefore(LocalDateTime.now())) {
+									JOptionPane.showMessageDialog(null, "No puede establecer una cita en una fecha/hora pasadas.");
+									return;
+								}
+				
+								citaSeleccionada.setFechaHora(nuevaFechaHora);
+								citaSeleccionada.setMedico(medicoSeleccionado);
+								citaSeleccionada.setMotivo(txtMotivo.getText());
+				
+								boolean exito = (boolean) ClienteSocket.enviar("EDIT_CITA", citaSeleccionada);
+				
+								if (exito) {
+									JOptionPane.showMessageDialog(null, "Cita modificada en el servidor.");
+									cargarTablaCitas();
+									limpiarCampos();
+								} else {
+									JOptionPane.showMessageDialog(null, "Error: Médico ocupado o fecha inválida.");
+								}
+							}
+						});
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 290, 860, 250);
+		scrollPane.setBounds(10, 290, 1096, 399);
 		add(scrollPane);
 
 		tablaCitas = new JTable();
-		tablaCitas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		model = new DefaultTableModel();
-		model.setColumnIdentifiers(new String[] { "Código", "Paciente", "Médico", "Fecha y Hora", "Estado" });
-		tablaCitas.setModel(model);
-		scrollPane.setViewportView(tablaCitas);
-		cargarTablaCitas();
+        tablaCitas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
+        tablaCitas.getTableHeader().setReorderingAllowed(false);
+        tablaCitas.getTableHeader().setBackground(new Color(80, 88, 156)); 
+        tablaCitas.getTableHeader().setForeground(Color.WHITE); 
+        tablaCitas.getTableHeader().setFont(new Font("Bahnschrift", Font.BOLD, 14)); 
+        model = new DefaultTableModel();
+        model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        model.setColumnIdentifiers(new String[] { "Código", "Paciente", "Médico", "Fecha y Hora", "Estado" });
+        tablaCitas.setModel(model);
+        scrollPane.setViewportView(tablaCitas);
+        cargarTablaCitas();
 
 		btnBuscarCliente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -205,49 +343,6 @@ public class GestionCitas extends JPanel {
 			}
 		});
 
-		btnCrearCita.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (clienteSeleccionado == null || medicoSeleccionado == null || dateChooser.getDate() == null) {
-					JOptionPane.showMessageDialog(null, "Debe buscar un cliente, un médico y seleccionar una fecha.");
-					return;
-				}
-				if(txtMotivo.getText().isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Debe especificar el motivo de la consulta.");
-					return;
-				}
-				LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				String seleccion = cbxHora.getSelectedItem().toString();
-				String horaStr = seleccion.substring(0, 2);
-				String minStr = seleccion.substring(3, 5);
-				String ampm = seleccion.substring(6);
-				int hora = Integer.parseInt(horaStr);
-
-				if (ampm.equals("PM") && hora != 12)
-					hora += 12;
-				if (ampm.equals("AM") && hora == 12)
-					hora = 0;
-
-				LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
-				LocalDateTime fechaHora = LocalDateTime.of(fecha, horaConvertida);
-
-				if (fechaHora.isBefore(LocalDateTime.now())) {
-					JOptionPane.showMessageDialog(null, "No puede crear una cita en una fecha y hora pasadas.");
-					return;
-				}
-				Cita tempCita = new Cita(fechaHora, clienteSeleccionado, medicoSeleccionado, "Pendiente", txtMotivo.getText());
-
-				boolean exito = (boolean) ClienteSocket.enviar("REG_CITA", tempCita);
-
-				if (exito) {
-					JOptionPane.showMessageDialog(null, "¡Cita agendada en el Servidor!");
-					cargarTablaCitas();
-					limpiarCampos();
-				} else {
-					JOptionPane.showMessageDialog(null, "Error: Médico no disponible.");
-				}
-			}
-		});
-
 		btnLimpiar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				limpiarCampos();
@@ -283,69 +378,6 @@ public class GestionCitas extends JPanel {
 							btnCancelarCita.setEnabled(true);
 						}
 					}
-				}
-			}
-		});
-
-		btnModificarCita.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (citaSeleccionada == null) {
-					JOptionPane.showMessageDialog(null, "Debe seleccionar una cita de la tabla primero.");
-					return;
-				}
-				if (dateChooser.getDate() == null) {
-					JOptionPane.showMessageDialog(null, "Seleccione una fecha.");
-					return;
-				}
-				if (medicoSeleccionado == null) {
-					JOptionPane.showMessageDialog(null, "Debe seleccionar un médico.");
-					return;
-				}
-
-				LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-				String seleccion = cbxHora.getSelectedItem().toString();
-				if (seleccion.length() < 7) {
-					JOptionPane.showMessageDialog(null, "Formato de hora inválido.");
-					return;
-				}
-				String horaStr = seleccion.substring(0, 2);
-				String minStr = seleccion.substring(3, 5);
-				String ampm = seleccion.substring(6).trim().toUpperCase();
-
-				int hora;
-				try {
-					hora = Integer.parseInt(horaStr);
-				} catch (NumberFormatException ex) {
-					JOptionPane.showMessageDialog(null, "Hora inválida.");
-					return;
-				}
-
-				if (ampm.equals("PM") && hora != 12)
-					hora += 12;
-				if (ampm.equals("AM") && hora == 12)
-					hora = 0;
-
-				LocalTime horaConvertida = LocalTime.of(hora, Integer.parseInt(minStr));
-				LocalDateTime nuevaFechaHora = LocalDateTime.of(fecha, horaConvertida);
-
-				if (nuevaFechaHora.isBefore(LocalDateTime.now())) {
-					JOptionPane.showMessageDialog(null, "No puede establecer una cita en una fecha/hora pasadas.");
-					return;
-				}
-
-				citaSeleccionada.setFechaHora(nuevaFechaHora);
-				citaSeleccionada.setMedico(medicoSeleccionado);
-				citaSeleccionada.setMotivo(txtMotivo.getText());
-
-				boolean exito = (boolean) ClienteSocket.enviar("EDIT_CITA", citaSeleccionada);
-
-				if (exito) {
-					JOptionPane.showMessageDialog(null, "Cita modificada en el servidor.");
-					cargarTablaCitas();
-					limpiarCampos();
-				} else {
-					JOptionPane.showMessageDialog(null, "Error: Médico ocupado o fecha inválida.");
 				}
 			}
 		});
