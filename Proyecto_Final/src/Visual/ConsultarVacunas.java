@@ -3,18 +3,23 @@ package Visual;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 import logico.Vacuna;
 
@@ -26,8 +31,10 @@ public class ConsultarVacunas extends JDialog {
 	private Object[] row;
 
 	public ConsultarVacunas() {
+		//setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarVacunas.class.getResource("/img/seguro-de-salud.png")));
 		setTitle("Gestión de Vacunas");
-		setBounds(100, 100, 600, 400);
+		setBounds(100, 100, 800, 500);
+		setResizable(false);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -35,6 +42,7 @@ public class ConsultarVacunas extends JDialog {
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
+		panel.setBackground(SystemColor.desktop);
 		panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		contentPanel.add(panel, BorderLayout.CENTER);
 		panel.setLayout(new BorderLayout(0, 0));
@@ -43,35 +51,67 @@ public class ConsultarVacunas extends JDialog {
 		panel.add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
-		model = new DefaultTableModel();
+		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+		model = new DefaultTableModel() {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+
 		String[] headers = {"Código", "Nombre", "Descripción"};
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
+
+		JTableHeader header = table.getTableHeader();
+		header.setBackground(new Color(60, 70, 123));
+		header.setForeground(Color.WHITE);
+		header.setOpaque(true);
+		header.setReorderingAllowed(false);
+
 		scrollPane.setViewportView(table);
 
+		JPanel panelNorte = new JPanel();
+		panelNorte.setBackground(new Color(60, 70, 123));
+		contentPanel.add(panelNorte, BorderLayout.NORTH);
+
+		JLabel lblTitulo = new JLabel("Listado de Vacunas Disponibles");
+		lblTitulo.setForeground(Color.WHITE);
+		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
+		panelNorte.add(lblTitulo);
+
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(248, 244, 234));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-		JButton btnNuevo = new JButton("Nueva Vacuna");
-		btnNuevo.setForeground(new Color(0, 128, 0));
-		btnNuevo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				RegVacuna reg = new RegVacuna();
-				reg.setModal(true);
-				reg.setVisible(true);
-				cargarVacunas();
-			}
-		});
-		buttonPane.add(btnNuevo);
+		{
+			JButton btnNuevo = new JButton("Nueva Vacuna");
+			Estilos.estilarBoton(btnNuevo, new Color(176, 206, 136), Color.WHITE);
+			btnNuevo.setFont(new Font("Tahoma", Font.BOLD, 16));
+			btnNuevo.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					RegVacuna reg = new RegVacuna();
+					reg.setModal(true);
+					reg.setVisible(true);
+					cargarVacunas();
+				}
+			});
+			buttonPane.add(btnNuevo);
+		}
 
-		JButton btnCerrar = new JButton("Cerrar");
-		btnCerrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-		buttonPane.add(btnCerrar);
+		{
+			JButton btnCerrar = new JButton("Cerrar");
+			Estilos.estilarBoton(btnCerrar, new Color(127, 140, 141), Color.WHITE);
+			btnCerrar.setFont(new Font("Tahoma", Font.BOLD, 16));
+			btnCerrar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
+			buttonPane.add(btnCerrar);
+		}
 		cargarVacunas();
 	}
 

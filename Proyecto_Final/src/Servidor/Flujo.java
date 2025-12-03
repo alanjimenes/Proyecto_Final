@@ -42,6 +42,7 @@ public class Flujo extends Thread {
 				User u = (User) paquete.getObjeto();
 				Control.getInstance().regUser(u);
 				Clinica.guardarUsuarios();
+				Server.guardarUsuariosIndividual();
 				paquete.setRespuesta(true);
 			}
 
