@@ -343,7 +343,6 @@ public class RealizarConsulta extends JDialog {
 	}
 
 
-	//REVISAR ABAJO
 	@SuppressWarnings("unchecked")
 	private void cargarEnfermedades() {
 		modelDisponibles.clear();

@@ -2,11 +2,16 @@ package Visual;
 
 import java.io.File;
 import java.io.FileOutputStream;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.apache.poi.xwpf.usermodel.*;
+// IMPORTS DE ITEXT (¡ESTOS SON LOS NUEVOS!)
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import logico.Consulta;
 
@@ -14,65 +19,49 @@ public class GeneradorReportes {
 
 	public static void generarReceta(Consulta consulta) {
 		try {
-			XWPFDocument documento = new XWPFDocument();
-
-			XWPFParagraph titulo = documento.createParagraph();
-			titulo.setAlignment(ParagraphAlignment.CENTER);
-			XWPFRun runTitulo = titulo.createRun();
-			runTitulo.setBold(true);
-			runTitulo.setFontSize(20);
-			runTitulo.setText("RECETA MÉDICA - CLÍNICA UNPHU");
-			runTitulo.addBreak();
-
-			XWPFParagraph info = documento.createParagraph();
-			XWPFRun runInfo = info.createRun();
-			runInfo.setText("Dr./Dra.: " + consulta.getMedico().getNombre() + " " + consulta.getMedico().getApellido());
-			runInfo.addBreak();
-			runInfo.setText("Especialidad: " + consulta.getMedico().getEspecialidad().getNombre());
-			runInfo.addBreak();
-			runInfo.setText("----------------------------------------------------------");
-			runInfo.addBreak();
-			runInfo.setText("Paciente: " + consulta.getCliente().getNombre() + " " + consulta.getCliente().getApellido());
-			runInfo.addBreak();
-			runInfo.setText("Cédula: " + consulta.getCliente().getCedula());
-			runInfo.addBreak();
-			runInfo.setText("Fecha: " + consulta.getFechaConsulta().toString());
-			runInfo.addBreak();
-			runInfo.addBreak();
-
-			XWPFParagraph diag = documento.createParagraph();
-			XWPFRun runDiag = diag.createRun();
-			runDiag.setBold(true);
-			runDiag.setText("DIAGNÓSTICO:");
-			runDiag.addBreak();
-			XWPFRun runDiagText = diag.createRun();
-			runDiagText.setText(consulta.getDiagnostico());
-			runDiagText.addBreak();
-			runDiagText.addBreak();
-
-			XWPFParagraph rx = documento.createParagraph();
-			XWPFRun runRx = rx.createRun();
-			runRx.setBold(true);
-			runRx.setText("TRATAMIENTO / INDICACIONES:");
-			runRx.addBreak();
-			XWPFRun runRxText = rx.createRun();
-			runRxText.setText(consulta.getRecetaMedica()); 
-
 			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setSelectedFile(new File("Receta_" + consulta.getCliente().getNombre() + ".docx"));
+			fileChooser.setSelectedFile(new File("Receta_" + consulta.getCliente().getNombre() + ".pdf"));
 
 			if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-				FileOutputStream out = new FileOutputStream(fileChooser.getSelectedFile());
-				documento.write(out);
-				out.close();
+
+				Document documento = new Document();
+				PdfWriter.getInstance(documento, new FileOutputStream(fileChooser.getSelectedFile()));
+				documento.open();
+
+				Font fontTitulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+				Font fontNegrita = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+				Font fontNormal = FontFactory.getFont(FontFactory.HELVETICA, 12);
+
+				Paragraph titulo = new Paragraph("RECETA MÉDICA - CLÍNICA UNPHU", fontTitulo);
+				titulo.setAlignment(Element.ALIGN_CENTER);
+				documento.add(titulo);
+				documento.add(new Paragraph(" ")); 
+
+				documento.add(new Paragraph("Dr./Dra.: " + consulta.getMedico().getNombre() + " " + consulta.getMedico().getApellido(), fontNegrita));
+				documento.add(new Paragraph("Especialidad: " + consulta.getMedico().getEspecialidad().getNombre(), fontNormal));
+				documento.add(new Paragraph("-----------------------------------------------------------------------------"));
+
+				documento.add(new Paragraph("Paciente: " + consulta.getCliente().getNombre() + " " + consulta.getCliente().getApellido(), fontNormal));
+				documento.add(new Paragraph("Cédula: " + consulta.getCliente().getCedula(), fontNormal));
+				documento.add(new Paragraph("Fecha: " + consulta.getFechaConsulta().toString(), fontNormal));
+				documento.add(new Paragraph(" "));
+
+
+				documento.add(new Paragraph("DIAGNÓSTICO:", fontNegrita));
+				documento.add(new Paragraph(consulta.getDiagnostico(), fontNormal));
+				documento.add(new Paragraph(" ")); 
+
+				documento.add(new Paragraph("TRATAMIENTO / INDICACIONES:", fontNegrita));
+				documento.add(new Paragraph(consulta.getRecetaMedica(), fontNormal));
+
 				documento.close();
-				JOptionPane.showMessageDialog(null, "Receta generada correctamente.");
+
+				JOptionPane.showMessageDialog(null, "¡Receta PDF generada correctamente!");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Error al generar Word: " + e.getMessage());
+			JOptionPane.showMessageDialog(null, "Error al generar PDF: " + e.getMessage());
 		}
 	}
-
 }
