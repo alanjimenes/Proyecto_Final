@@ -1038,11 +1038,12 @@ public class Clinica implements Serializable {
 		try {
 			FileOutputStream fos = new FileOutputStream("clinica.dat");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
-
 			oos.writeObject(instancia);
-
 			oos.close();
 			fos.close();
+
+			Servidor.Server.generarRespaldoTotal(); 
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
