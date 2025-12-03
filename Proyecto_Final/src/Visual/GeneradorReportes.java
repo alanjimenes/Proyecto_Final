@@ -2,8 +2,10 @@ package Visual;
 
 import java.io.File;
 import java.io.FileOutputStream;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+
 import org.apache.poi.xwpf.usermodel.*;
 
 import logico.Consulta;
