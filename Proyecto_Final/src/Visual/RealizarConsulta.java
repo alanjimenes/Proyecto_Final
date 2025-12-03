@@ -30,6 +30,7 @@ import logico.Clinica;
 import logico.Consulta;
 import logico.Enfermedad;
 import logico.Historial;
+import logico.RegistroVacunacion;
 import logico.Vacuna;
 
 public class RealizarConsulta extends JDialog {
@@ -268,7 +269,7 @@ public class RealizarConsulta extends JDialog {
 							vacunaObj = v; break;
 						}
 					}
-					logico.RegistroVacunacion reg = new logico.RegistroVacunacion(citaActual.getCliente(), vacunaObj, java.time.LocalDate.now(), true);
+					logico.RegistroVacunacion reg = new logico.RegistroVacunacion(citaActual.getCliente(), vacunaObj, java.time.LocalDate.now(), citaActual.getMedico(), true);
 
 					boolean exito = (boolean) ClienteSocket.enviar("APLICAR_VACUNA", reg);
 

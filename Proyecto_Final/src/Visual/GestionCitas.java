@@ -145,11 +145,11 @@ public class GestionCitas extends JPanel {
 		panelFormulario.add(btnModificarCita);
 
 		btnCancelarCita = new JButton("Cancelar Cita");
-		btnCancelarCita.setBounds(343, 142, 138, 45);
+		btnCancelarCita.setBounds(478, 144, 138, 45);
 		panelFormulario.add(btnCancelarCita);
 
 		btnLimpiar = new JButton("Limpiar");
-		btnLimpiar.setBounds(507, 142, 138, 45);
+		btnLimpiar.setBounds(659, 142, 138, 45);
 		panelFormulario.add(btnLimpiar);
 
 		JScrollPane scrollPane = new JScrollPane();

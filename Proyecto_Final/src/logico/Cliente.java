@@ -13,10 +13,11 @@ public class Cliente extends Persona implements Serializable {
 	private ArrayList<RegistroVacunacion> regVacunas;
 	private String genero;
 
-	public Cliente(String cedula, String nombre, String apellido, LocalDate fechaNacimiento, String telefono,
+	public Cliente(String cedula, String nombre, String apellido, String telefono,
 			String direccion, boolean activo, String numExpediente, Historial historial, boolean enfermo,
 			ArrayList<RegistroVacunacion> regVacunas, boolean activo2, String genero) {
-		super(cedula, nombre, apellido, fechaNacimiento, telefono, direccion, activo);
+		
+		super(cedula, nombre, apellido, telefono, direccion, activo, genero);
 		this.numExpediente = numExpediente;
 		this.historial = historial;
 		this.enfermo = enfermo;

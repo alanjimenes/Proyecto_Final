@@ -530,7 +530,7 @@ public class Clinica implements Serializable {
 		if (cliente == null || vacuna == null || medico == null) {
 			return false;
 		}
-		RegistroVacunacion reg = new RegistroVacunacion(cliente, vacuna, LocalDate.now(), true);
+		RegistroVacunacion reg = new RegistroVacunacion(cliente, vacuna, LocalDate.now(),medico, true);
 
 		reg.setCodigo_reg("REG-VAC-" + vacuna.getCodigo_vacun() + "-" + cliente.getCedula());
 		cliente.getRegVacunas().add(reg);

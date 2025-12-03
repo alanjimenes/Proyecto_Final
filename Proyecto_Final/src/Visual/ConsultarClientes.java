@@ -141,20 +141,6 @@ public class ConsultarClientes extends JDialog {
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		{
-			JButton btnNuevo = new JButton("Nuevo");
-			Estilos.estilarBoton(btnNuevo, new Color(176, 206, 136), Color.WHITE);
-			btnNuevo.setFont(new Font("Tahoma", Font.BOLD, 16));
-			btnNuevo.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					RegClientes reg = new RegClientes();
-					reg.setModal(true);
-					reg.setVisible(true);
-					cargarClientes("");
-				}
-			});
-			buttonPane.add(btnNuevo);
-		}
-		{
 			btnUpdate = new JButton("Modificar");
 			Estilos.estilarBoton(btnUpdate, new Color(41, 128, 185), Color.WHITE);
 			btnUpdate.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -198,7 +184,7 @@ public class ConsultarClientes extends JDialog {
 		}
 		{
 			JButton btnCancelar = new JButton("Cerrar");
-			Estilos.estilarBoton(btnCancelar, new Color(127, 140, 141), Color.WHITE);
+			Estilos.estilarBoton(btnCancelar, new Color(231, 76, 60), Color.WHITE);
 			btnCancelar.setFont(new Font("Tahoma", Font.BOLD, 16));
 
 			btnCancelar.addActionListener(new ActionListener() {

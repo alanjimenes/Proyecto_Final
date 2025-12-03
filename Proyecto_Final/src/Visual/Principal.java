@@ -64,7 +64,9 @@ public class Principal extends JFrame {
 	 * Launch the application.
 	 */
 	public Principal(User usuarioLogueado) {
-
+		LocalDate hoy = LocalDate.now();
+		DateTimeFormatter formateador = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", new Locale("es", "ES"));
+		String fechaTexto = hoy.format(formateador);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
 		this.usuarioActual = usuarioLogueado;
 
@@ -86,6 +88,11 @@ public class Principal extends JFrame {
 		lblReloj.setForeground(Color.WHITE);
 		lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 36));
 		panel_1.add(lblReloj, BorderLayout.EAST);
+		fechaTexto = fechaTexto.substring(0, 1).toUpperCase() + fechaTexto.substring(1);
+		JLabel lblBienvenido = new JLabel("¡Bienvenido! Hoy es " + fechaTexto);
+		lblBienvenido.setForeground(Color.WHITE);
+		lblBienvenido.setFont(new Font("Bahnschrift", Font.BOLD, 36));
+		panel_1.add(lblBienvenido, BorderLayout.WEST);
 
 		iniciarReloj();
 	}
@@ -122,7 +129,7 @@ public class Principal extends JFrame {
 		menuCitas.add(itemCrearCita);
 
 		/* MENU DE PACIENTES */
-		menuPacientes = new JMenu("  Gesti\u00F3n de Clientes\r\n");
+		menuPacientes = new JMenu("  Gesti\u00F3n de Pacientes\r\n");
 		menuPacientes.setForeground(Color.WHITE);
 		menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/img/gestion-de-clientes.png")));
 		menuPacientes.setFont(new Font("Bahnschrift", Font.BOLD, 25));
@@ -268,7 +275,7 @@ public class Principal extends JFrame {
 		lblUsuario = new JLabel("Usuario: " + usuarioActual.getUsuario() + " (" + usuarioActual.getRol() + ")  "); 
 		lblUsuario.setForeground(Color.WHITE);
 		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 25)); 
-		lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/hospital.png")));
+		lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/perfil(2).png")));
 
 		// 3. AÑADIRLO A LA BARRA
 		menuBar.add(lblUsuario);
