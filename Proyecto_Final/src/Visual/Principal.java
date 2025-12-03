@@ -128,7 +128,7 @@ public class Principal extends JFrame {
 		menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/img/gestion-de-clientes.png")));
 		menuPacientes.setFont(new Font("Bahnschrift", Font.BOLD, 25));
 		menuBar.add(menuPacientes);
-		JMenuItem itemRegPaciente = new JMenuItem("Registrar Cliente");
+		JMenuItem itemRegPaciente = new JMenuItem("Registrar Paciente");
 		itemRegPaciente.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
 
 		JMenuItem itemRegCliente = new JMenuItem("Registrar Paciente");
@@ -141,7 +141,7 @@ public class Principal extends JFrame {
 		});
 		menuPacientes.add(itemRegPaciente);
 
-		JMenuItem itemListarPacientes = new JMenuItem("Listado de Clientes");
+		JMenuItem itemListarPacientes = new JMenuItem("Listado de Pacientes");
 		itemListarPacientes.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
 		itemListarPacientes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

@@ -92,29 +92,70 @@ public class RegClientes extends JDialog {
 		txtCedula.setBounds(145, 169, 200, 20);
 		contentPanel.add(txtCedula);
 		txtCedula.setColumns(10);
+		
+		txtCedula.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                    java.awt.Toolkit.getDefaultToolkit().beep(); 
+                    return;
+                }
+                if (txtCedula.getText().length() >= 13 && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                    return;
+                }
+                if (c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+                   
+                    if (txtCedula.getText().length() == 3) {
+                        txtCedula.setText(txtCedula.getText() + "-");
+                    }
+                    else if (txtCedula.getText().length() == 11) {
+                        txtCedula.setText(txtCedula.getText() + "-");
+                    }
+                }
+            }
+        });
 
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setForeground(Color.WHITE);
 		lblNombre.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblNombre.setBounds(391, 171, 81, 14);
 		contentPanel.add(lblNombre);
-
 		txtNombre = new JTextField();
 		txtNombre.setBounds(482, 169, 200, 20);
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
-
+		txtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isLetter(c) && c != ' ' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                   
+                     java.awt.Toolkit.getDefaultToolkit().beep(); 
+                }
+            }
+        });
 		JLabel lblApellido = new JLabel("Apellido:");
 		lblApellido.setForeground(Color.WHITE);
 		lblApellido.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblApellido.setBounds(723, 169, 104, 14);
 		contentPanel.add(lblApellido);
-
+		
 		txtApellido = new JTextField();
 		txtApellido.setBounds(820, 167, 200, 20);
 		contentPanel.add(txtApellido);
 		txtApellido.setColumns(10);
-
+		txtApellido.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isLetter(c) && c != ' ' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                   
+                     java.awt.Toolkit.getDefaultToolkit().beep(); 
+                }
+            }
+        });
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
@@ -125,7 +166,27 @@ public class RegClientes extends JDialog {
 		txtTelefono.setBounds(145, 231, 200, 20);
 		contentPanel.add(txtTelefono);
 		txtTelefono.setColumns(10);
-
+		txtTelefono.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                    return;
+                }
+                if (txtTelefono.getText().length() >= 15 && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                    return;
+                }
+                if (c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+                    if (txtTelefono.getText().length() == 3) {
+                        txtTelefono.setText(txtTelefono.getText() + "-");
+                    }
+                    else if (txtTelefono.getText().length() == 7) {
+                        txtTelefono.setText(txtTelefono.getText() + "-");
+                    }
+                }
+            }
+        });
 		JLabel lblDireccion = new JLabel("Dirección:");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
@@ -143,10 +204,10 @@ public class RegClientes extends JDialog {
 		lblGenero.setBounds(723, 237, 98, 14);
 		contentPanel.add(lblGenero);
 
-		JComboBox<String> cbxGenero = new JComboBox<>();
-		cbxGenero.setModel(new DefaultComboBoxModel<>(new String[] {"<Seleccione>", "Masculino", "Femenino"}));
-		cbxGenero.setBounds(820, 233, 200, 20);
-		contentPanel.add(cbxGenero);
+		cbxGenero = new JComboBox<>(); 
+        cbxGenero.setModel(new DefaultComboBoxModel<>(new String[] {"<Seleccione>", "Masculino", "Femenino"}));
+        cbxGenero.setBounds(820, 233, 200, 20);
+        contentPanel.add(cbxGenero);
 		{
 			okButton = new JButton("Registrar");
 
@@ -182,11 +243,7 @@ public class RegClientes extends JDialog {
 
 		btnLimpiar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				txtCedula.setText("");
-				txtNombre.setText("");
-				txtApellido.setText("");
-				txtTelefono.setText("");
-				txtDireccion.setText("");
+				limpiarCampos();
 				
 			}
 		});
@@ -202,12 +259,7 @@ public class RegClientes extends JDialog {
 		
 		btnListado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				txtCedula.setText("");
-				txtNombre.setText("");
-				txtApellido.setText("");
-				txtTelefono.setText("");
-				txtDireccion.setText("");
-		
+			    limpiarCampos();
 				ConsultarClientes frame = new ConsultarClientes();
 			
 				frame.setLocationRelativeTo(contentPanel);
@@ -236,8 +288,73 @@ public class RegClientes extends JDialog {
 		lblNewlogo.setBounds(663, 0, 366, 131);
 		contentPanel.add(lblNewlogo);
 	}
+	private void limpiarCampos() {
+        txtCedula.setText("");
+        txtNombre.setText("");
+        txtApellido.setText("");
+        txtTelefono.setText("");
+        txtDireccion.setText("");
+        
+       
+        if(cbxGenero != null) {
+            cbxGenero.setSelectedIndex(0);
+        }
+        
+        clienteActual = null;
+        txtCedula.setEditable(true); 
+        txtCedula.requestFocus(); 
+    }
 
 	private void registrarCliente() {
+       
+        if (txtCedula.getText().isEmpty() || 
+            txtNombre.getText().isEmpty() || 
+            txtTelefono.getText().isEmpty() || 
+            cbxGenero.getSelectedIndex() == 0) { 
+
+            JOptionPane.showMessageDialog(null,
+                    "Por favor llene los campos obligatorios y seleccione un género válido.");
+            return;
+        }
+
+        if (clienteActual == null) {
+            Cliente existe = (Cliente) ClienteSocket.enviar("BUSCAR_CLIENTE_CEDULA", txtCedula.getText());
+            if (existe != null) {
+                JOptionPane.showMessageDialog(null, "Ya existe un cliente con esa cédula.");
+                return;
+            }
+
+            Cliente nuevoCliente = new Cliente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(),
+                    txtTelefono.getText(), txtDireccion.getText(), true, null, null, false,
+                    null, true, cbxGenero.getSelectedItem().toString());
+
+            boolean exito = (boolean) ClienteSocket.enviar("REG_CLIENTE", nuevoCliente);
+
+            if(exito) {
+                JOptionPane.showMessageDialog(null, "Paciente registrado con éxito.");
+               
+                limpiarCampos(); 
+            } else {
+                JOptionPane.showMessageDialog(null, "Error al registrar en el servidor.");
+            }
+
+        } else { 
+            clienteActual.setNombre(txtNombre.getText());
+            clienteActual.setApellido(txtApellido.getText());
+            clienteActual.setTelefono(txtTelefono.getText());
+            clienteActual.setDireccion(txtDireccion.getText());
+            clienteActual.setGenero(cbxGenero.getSelectedItem().toString());
+
+            boolean exito = (boolean) ClienteSocket.enviar("UPDATE_CLIENTE", clienteActual);
+
+            if(exito) {
+                JOptionPane.showMessageDialog(null, "Datos actualizados.");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Error al actualizar.");
+            }
+        }
+    
 		if (txtCedula.getText().isEmpty() || txtNombre.getText().isEmpty() || txtTelefono.getText().isEmpty()
 				) {
 			JOptionPane.showMessageDialog(null,
@@ -271,6 +388,7 @@ public class RegClientes extends JDialog {
 			clienteActual.setApellido(txtApellido.getText());
 			clienteActual.setTelefono(txtTelefono.getText());
 			clienteActual.setDireccion(txtDireccion.getText());
+			
 	
 
 			boolean exito = (boolean) ClienteSocket.enviar("UPDATE_CLIENTE", clienteActual);
@@ -283,4 +401,5 @@ public class RegClientes extends JDialog {
 			}
 		}
 	}
+
 }
