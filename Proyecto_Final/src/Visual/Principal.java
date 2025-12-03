@@ -77,13 +77,7 @@ public class Principal extends JFrame {
 		panel_1.setBackground(new Color(60, 70, 123));
 		panel_1.setLayout(new BorderLayout());
 		contentPane.add(panel_1, BorderLayout.SOUTH);
-/*
-		lblUsuario = new JLabel("Usuario: " + usuarioActual.getUsuario() + " (Rol: " + usuarioActual.getRol() + ")");
-		lblUsuario.setForeground(Color.WHITE);
-		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 28));
-		lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/hospital.png")));
-		panel_1.add(lblUsuario, BorderLayout.WEST);
-*/
+
 		lblReloj = new JLabel("00:00:00");
 		lblReloj.setForeground(Color.WHITE);
 		lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 36));
@@ -255,12 +249,7 @@ public class Principal extends JFrame {
 		contentPane.setBorder(null);
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
-/*
-		lblFondoIcon = new JLabel("");
-		lblFondoIcon.setIcon(new ImageIcon(Principal.class.getResource("/img/logo.png")));
-		lblFondoIcon.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblFondoIcon, BorderLayout.CENTER);
-	*/
+
 		JPanel panelDashboardCentral = new JPanel();
 		panelDashboardCentral.setBackground(Color.WHITE);
 		panelDashboardCentral.setLayout(new GridLayout(1, 2, 20, 0)); 
@@ -270,7 +259,7 @@ public class Principal extends JFrame {
 
 
 		contentPane.add(panelDashboardCentral, BorderLayout.CENTER);
-		
+
 		menuBar.add(javax.swing.Box.createHorizontalGlue());
 		lblUsuario = new JLabel("Usuario: " + usuarioActual.getUsuario() + " (" + usuarioActual.getRol() + ")  "); 
 		lblUsuario.setForeground(Color.WHITE);
@@ -289,26 +278,26 @@ public class Principal extends JFrame {
 			return;
 		}
 		String rol = this.usuarioActual.getRol();
-		menuCitas.setEnabled(false);
-		menuConsulta.setEnabled(false);
-		menuAdministracion.setEnabled(false);
-		menuPacientes.setEnabled(false);
+		menuCitas.setVisible(false);
+		menuConsulta.setVisible(false);
+		menuAdministracion.setVisible(false);
+		menuPacientes.setVisible(false);
 
 		switch (rol) {
 		case "Administrador":
-			menuCitas.setEnabled(true);
-			menuConsulta.setEnabled(true);
-			menuAdministracion.setEnabled(true);
-			menuPacientes.setEnabled(true);
+			menuCitas.setVisible(true);
+			menuConsulta.setVisible(true);
+			menuAdministracion.setVisible(true);
+			menuPacientes.setVisible(true);
 			break;
 
 		case "Asistente":
-			menuCitas.setEnabled(true);
-			menuPacientes.setEnabled(true);
+			menuCitas.setVisible(true);
 			break;
 
 		case "Medico":
-			menuConsulta.setEnabled(true);
+			menuPacientes.setVisible(true);
+			menuConsulta.setVisible(true);
 			break;
 
 		default:
@@ -342,100 +331,100 @@ public class Principal extends JFrame {
 	}
 
 	private JPanel crearPanelEstadistico() {
-	    JPanel panelGrafico = new JPanel(new BorderLayout());
-	    panelGrafico.setBackground(Color.WHITE);
+		JPanel panelGrafico = new JPanel(new BorderLayout());
+		panelGrafico.setBackground(Color.WHITE);
 
-	    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-	    
-	    
-	    
-	    LocalDate hoy = LocalDate.now();
-	    DateTimeFormatter formateador = DateTimeFormatter.ofPattern("MMMM", new Locale("es", "ES"));
-	    for (int i = 3; i >= 0; i--) {
-	        LocalDate fechaMes = hoy.minusMonths(i);
-	        String nombreMes = fechaMes.format(formateador);
-	        int mes = fechaMes.getMonthValue();
-	        int anio = fechaMes.getYear();   
-	        nombreMes = nombreMes.substring(0, 1).toUpperCase() + nombreMes.substring(1);
-	        int cantidadReal = Clinica.getInstancia().contarCitasPorMes(mes, anio);
-	        dataset.addValue(cantidadReal, "Citas Completadas", nombreMes);
-	    }
-	    JFreeChart chart = ChartFactory.createBarChart(
-	            "Rendimiento Mensual",       
-	            "Meses",                     
-	            "Pacientes Atendidos",       
-	            dataset,                     
-	            PlotOrientation.VERTICAL,    
-	            true,                        
-	            true,                        
-	            false                        
-	    );
-	
-	    chart.setBackgroundPaint(Color.WHITE);
-	    CategoryPlot plot = chart.getCategoryPlot();
-	    plot.setBackgroundPaint(new Color(245, 245, 245));
-	    plot.setOutlineVisible(false);
 
-	 
-	    BarRenderer renderer = (BarRenderer) plot.getRenderer();
-	    renderer.setSeriesPaint(0, new Color(60, 70, 123));
-	    renderer.setDrawBarOutline(false);
 
-	   
-	    ChartPanel chartPanel = new ChartPanel(chart);
-	    panelGrafico.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
-	    panelGrafico.add(chartPanel, BorderLayout.CENTER);
-	
-	   
-	    renderer.setBarPainter(new org.jfree.chart.renderer.category.StandardBarPainter());
-	    renderer.setShadowVisible(false); 
-	    renderer.setSeriesPaint(0, new Color(60, 70, 123)); 
-	    
-	     renderer.setBaseItemLabelGenerator(new org.jfree.chart.labels.StandardCategoryItemLabelGenerator());
-	     renderer.setBaseItemLabelsVisible(true);
-	    return panelGrafico;
+
+		LocalDate hoy = LocalDate.now();
+		DateTimeFormatter formateador = DateTimeFormatter.ofPattern("MMMM", new Locale("es", "ES"));
+		for (int i = 3; i >= 0; i--) {
+			LocalDate fechaMes = hoy.minusMonths(i);
+			String nombreMes = fechaMes.format(formateador);
+			int mes = fechaMes.getMonthValue();
+			int anio = fechaMes.getYear();   
+			nombreMes = nombreMes.substring(0, 1).toUpperCase() + nombreMes.substring(1);
+			int cantidadReal = Clinica.getInstancia().contarCitasPorMes(mes, anio);
+			dataset.addValue(cantidadReal, "Citas Completadas", nombreMes);
+		}
+		JFreeChart chart = ChartFactory.createBarChart(
+				"Rendimiento Mensual",       
+				"Meses",                     
+				"Pacientes Atendidos",       
+				dataset,                     
+				PlotOrientation.VERTICAL,    
+				true,                        
+				true,                        
+				false                        
+				);
+
+		chart.setBackgroundPaint(Color.WHITE);
+		CategoryPlot plot = chart.getCategoryPlot();
+		plot.setBackgroundPaint(new Color(245, 245, 245));
+		plot.setOutlineVisible(false);
+
+
+		BarRenderer renderer = (BarRenderer) plot.getRenderer();
+		renderer.setSeriesPaint(0, new Color(60, 70, 123));
+		renderer.setDrawBarOutline(false);
+
+
+		ChartPanel chartPanel = new ChartPanel(chart);
+		panelGrafico.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		panelGrafico.add(chartPanel, BorderLayout.CENTER);
+
+
+		renderer.setBarPainter(new org.jfree.chart.renderer.category.StandardBarPainter());
+		renderer.setShadowVisible(false); 
+		renderer.setSeriesPaint(0, new Color(60, 70, 123)); 
+
+		renderer.setBaseItemLabelGenerator(new org.jfree.chart.labels.StandardCategoryItemLabelGenerator());
+		renderer.setBaseItemLabelsVisible(true);
+		return panelGrafico;
 	}
 	private JPanel crearGraficoPastelEjemplo() {
-	    DefaultPieDataset dataset = new DefaultPieDataset();
-	    dataset.setValue("Consultas", 60);
-	    dataset.setValue("Emergencias", 25);
-	    dataset.setValue("Hospitalización", 15);
+		DefaultPieDataset dataset = new DefaultPieDataset();
+		dataset.setValue("Consultas", 60);
+		dataset.setValue("Emergencias", 25);
+		dataset.setValue("Hospitalización", 15);
 
-	    JFreeChart chart = ChartFactory.createPieChart(
-	            "Tipos de Atención (Hoy)",
-	            dataset,
-	            true, 
-	            true,
-	            false
-	    );
+		JFreeChart chart = ChartFactory.createPieChart(
+				"Tipos de Atención (Hoy)",
+				dataset,
+				true, 
+				true,
+				false
+				);
 
-	    chart.setBackgroundPaint(Color.WHITE);
-	    
-	    PiePlot plot = (PiePlot) chart.getPlot();
-	    plot.setBackgroundPaint(Color.WHITE); 
-	    plot.setOutlineVisible(false); 
-	    plot.setSectionPaint("Consultas", new Color(60, 70, 123));  
-	    plot.setSectionPaint("Emergencias", new Color(231, 76, 60));
-	    plot.setSectionPaint("Hospitalización", new Color(46, 204, 113));
-	    plot.setLabelGenerator(new org.jfree.chart.labels.StandardPieSectionLabelGenerator(
-	            "{0} ({2})", java.text.NumberFormat.getNumberInstance(), java.text.NumberFormat.getPercentInstance()
-	    ));
-	    
-	    
-	    plot.setLabelBackgroundPaint(null); 
-	    plot.setLabelOutlinePaint(null);    
-	    plot.setLabelShadowPaint(null);     
-	    plot.setLabelFont(new Font("Segoe UI", Font.PLAIN, 12)); 
-	    ChartPanel chartPanel = new ChartPanel(chart);
-	    JPanel panel = new JPanel(new BorderLayout());
-	    panel.setBackground(Color.WHITE);
-	    panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-	            javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10),
-	            javax.swing.BorderFactory.createLineBorder(new Color(230, 230, 230), 1)
-	    ));
-	    panel.add(chartPanel, BorderLayout.CENTER);
-	    
-	    return panel;
+		chart.setBackgroundPaint(Color.WHITE);
+
+		PiePlot plot = (PiePlot) chart.getPlot();
+		plot.setBackgroundPaint(Color.WHITE); 
+		plot.setOutlineVisible(false); 
+		plot.setSectionPaint("Consultas", new Color(60, 70, 123));  
+		plot.setSectionPaint("Emergencias", new Color(231, 76, 60));
+		plot.setSectionPaint("Hospitalización", new Color(46, 204, 113));
+		plot.setLabelGenerator(new org.jfree.chart.labels.StandardPieSectionLabelGenerator(
+				"{0} ({2})", java.text.NumberFormat.getNumberInstance(), java.text.NumberFormat.getPercentInstance()
+				));
+
+
+		plot.setLabelBackgroundPaint(null); 
+		plot.setLabelOutlinePaint(null);    
+		plot.setLabelShadowPaint(null);     
+		plot.setLabelFont(new Font("Segoe UI", Font.PLAIN, 12)); 
+		ChartPanel chartPanel = new ChartPanel(chart);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBackground(Color.WHITE);
+		panel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+				javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10),
+				javax.swing.BorderFactory.createLineBorder(new Color(230, 230, 230), 1)
+				));
+		panel.add(chartPanel, BorderLayout.CENTER);
+
+		return panel;
 	}
 }
