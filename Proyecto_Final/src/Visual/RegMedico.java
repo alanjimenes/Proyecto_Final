@@ -35,6 +35,7 @@ import java.awt.Cursor;
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import java.awt.Toolkit;
+import javax.swing.JSeparator;
 
 public class RegMedico extends JDialog {
 
@@ -82,7 +83,7 @@ public class RegMedico extends JDialog {
 
 	private void initComponents() {
 		setTitle("Registrar Médico");
-		setBounds(100, 100, 769, 433);
+		setBounds(100, 100, 1074, 509);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(new  Color(60, 70, 123));
@@ -93,76 +94,76 @@ public class RegMedico extends JDialog {
 		JLabel lblCedula = new JLabel("Cédula:");
 		lblCedula.setForeground(Color.WHITE);
 		lblCedula.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblCedula.setBounds(10, 30, 80, 14);
+		lblCedula.setBounds(28, 163, 80, 14);
 		contentPanel.add(lblCedula);
 
 		txtCedula = new JTextField();
-		txtCedula.setBounds(116, 30, 220, 20);
+		txtCedula.setBounds(135, 163, 220, 20);
 		contentPanel.add(txtCedula);
 		txtCedula.setColumns(10);
 
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setForeground(Color.WHITE);
 		lblNombre.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblNombre.setBounds(10, 70, 80, 14);
+		lblNombre.setBounds(371, 166, 80, 14);
 		contentPanel.add(lblNombre);
 
 		txtNombre = new JTextField();
-		txtNombre.setBounds(116, 70, 220, 20);
+		txtNombre.setBounds(476, 163, 220, 20);
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 
 		JLabel lblApellido = new JLabel("Apellido:");
 		lblApellido.setForeground(Color.WHITE);
 		lblApellido.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblApellido.setBounds(10, 110, 80, 14);
+		lblApellido.setBounds(723, 166, 80, 14);
 		contentPanel.add(lblApellido);
 
 		txtApellido = new JTextField();
-		txtApellido.setBounds(116, 108, 220, 20);
+		txtApellido.setBounds(819, 163, 220, 20);
 		contentPanel.add(txtApellido);
 		txtApellido.setColumns(10);
 
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblTelefono.setBounds(10, 195, 80, 14);
+		lblTelefono.setBounds(371, 225, 80, 14);
 		contentPanel.add(lblTelefono);
 
 		txtTelefono = new JTextField();
-		txtTelefono.setBounds(116, 190, 220, 20);
+		txtTelefono.setBounds(476, 219, 220, 20);
 		contentPanel.add(txtTelefono);
 		txtTelefono.setColumns(10);
 
 		JLabel lblDireccion = new JLabel("Dirección:");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblDireccion.setBounds(10, 150, 80, 14);
+		lblDireccion.setBounds(28, 222, 80, 14);
 		contentPanel.add(lblDireccion);
 
 		txtDireccion = new JTextField();
-		txtDireccion.setBounds(116, 148, 220, 20);
+		txtDireccion.setBounds(135, 219, 220, 20);
 		contentPanel.add(txtDireccion);
 		txtDireccion.setColumns(10);
 
 		JLabel lblFecha = new JLabel("Fecha Nac:");
 		lblFecha.setForeground(Color.WHITE);
 		lblFecha.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblFecha.setBounds(10, 235, 80, 14);
+		lblFecha.setBounds(723, 225, 80, 14);
 		contentPanel.add(lblFecha);
 
 		dateChooser = new JDateChooser();
-		dateChooser.setBounds(116, 230, 220, 20);
+		dateChooser.setBounds(819, 219, 220, 20);
 		contentPanel.add(dateChooser);
 
 		JLabel lblEspecialidad = new JLabel("Especialidad:");
 		lblEspecialidad.setForeground(Color.WHITE);
 		lblEspecialidad.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblEspecialidad.setBounds(10, 275, 100, 14);
+		lblEspecialidad.setBounds(371, 278, 100, 14);
 		contentPanel.add(lblEspecialidad);
 
 		cbxEspecialidad = new JComboBox<>();
-		cbxEspecialidad.setBounds(116, 270, 220, 20);
+		cbxEspecialidad.setBounds(478, 275, 220, 20);
 		contentPanel.add(cbxEspecialidad);
 
 		// BOTON EXTRA PARA ESPECIALIDAD
@@ -177,25 +178,25 @@ public class RegMedico extends JDialog {
 				cargarEspecialidades();
 			}
 		});
-		btnAddEsp.setBounds(346, 270, 45, 23);
+		btnAddEsp.setBounds(723, 274, 45, 23);
 		contentPanel.add(btnAddEsp);
 
 		JLabel lblMaxCitas = new JLabel("Citas Diarias:");
 		lblMaxCitas.setForeground(Color.WHITE);
 		lblMaxCitas.setFont(new Font("Bahnschrift", Font.BOLD, 14));
-		lblMaxCitas.setBounds(10, 315, 100, 14);
+		lblMaxCitas.setBounds(28, 275, 100, 14);
 		contentPanel.add(lblMaxCitas);
 
 		spnMaxCitas = new JSpinner();
 		spnMaxCitas.setModel(new SpinnerNumberModel(10, 1, 100, 1));
-		spnMaxCitas.setBounds(120, 310, 60, 20);
+		spnMaxCitas.setBounds(135, 272, 67, 20);
 		contentPanel.add(spnMaxCitas);
 		{
 			okButton = new JButton("Registrar");
 
 			Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
 
-			okButton.setBounds(361, 340, 110, 35); 
+			okButton.setBounds(221, 409, 110, 35); 
 			contentPanel.add(okButton);
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -210,7 +211,7 @@ public class RegMedico extends JDialog {
 
 			Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
 
-			cancelButton.setBounds(631, 340, 110, 35);
+			cancelButton.setBounds(723, 409, 110, 35);
 			contentPanel.add(cancelButton);
 
 			cancelButton.addActionListener(new ActionListener() {
@@ -235,22 +236,48 @@ public class RegMedico extends JDialog {
 
 		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
 
-		btnLimpiar.setBounds(492, 340, 110, 35);
+		btnLimpiar.setBounds(565, 409, 110, 35);
 		contentPanel.add(btnLimpiar);
 
-		JLabel label = new JLabel("");
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		label.setIcon(new ImageIcon(RegMedico.class.getResource("/img/receta.png")));
-		label.setForeground(Color.WHITE);
-		label.setFont(new Font("Bahnschrift", Font.BOLD, 22));
-		label.setBounds(472, 49, 226, 273);
-		contentPanel.add(label);
+		JButton btnListado = new JButton("Listado");
+		Estilos.estilarBoton(btnListado, new Color(110, 140, 251), Color.WHITE);
 
+		
+		btnListado.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				txtCedula.setText("");
+				txtNombre.setText("");
+				txtApellido.setText("");
+				txtTelefono.setText("");
+				txtDireccion.setText("");
+		
+				ConsultarMedicos frame = new ConsultarMedicos();
+			
+				frame.setLocationRelativeTo(contentPanel);
+				frame.setModal(true);
+				frame.setVisible(true);
+			
+			}
+		});
+		btnListado.setBounds(400, 409, 110, 35);
+		contentPanel.add(btnListado);
+		
 		JLabel lblBienvenida = new JLabel("Registrar Medico");
 		lblBienvenida.setForeground(Color.WHITE);
-		lblBienvenida.setFont(new Font("Bahnschrift", Font.BOLD, 22));
-		lblBienvenida.setBounds(462, -16, 281, 100);
+		lblBienvenida.setFont(new Font("Bahnschrift", Font.BOLD, 40));
+		lblBienvenida.setBounds(10, -7, 342, 100);
 		contentPanel.add(lblBienvenida);
+		
+		JSeparator separator = new JSeparator();
+		separator.setBounds(10, 91, 635, 2);
+		contentPanel.add(separator);
+		
+		JLabel label = new JLabel("");
+		label.setIcon(new ImageIcon(RegMedico.class.getResource("/img/custom_resized_ffde04b9-ae4a-43dd-8c6e-2c67d4183e19.png")));
+		label.setForeground(Color.WHITE);
+		label.setFont(new Font("Bahnschrift", Font.PLAIN, 40));
+		label.setBounds(702, -7, 366, 131);
+		contentPanel.add(label);
 
 		cargarEspecialidades();
 	}
