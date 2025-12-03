@@ -240,8 +240,20 @@ public class Principal extends JFrame {
 			}
 		});
 		menuGestionEspecialidades.add(itemListarEspecialidades);
-
 		menuAdministracion.add(menuGestionEspecialidades);
+
+		JMenuItem itemGestionarVacunas = new JMenuItem("Gestionar Vacunas");
+		itemGestionarVacunas.setFont(new Font("Bahnschrift", Font.PLAIN, 20)); 
+		//itemGestionarVacunas.setIcon(new ImageIcon(Principal.class.getResource("/img/vacuna.png"))); 
+		itemGestionarVacunas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConsultarVacunas consulta = new ConsultarVacunas();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
+		});
+
+		menuAdministracion.add(itemGestionarVacunas);
 
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
@@ -335,9 +347,6 @@ public class Principal extends JFrame {
 		panelGrafico.setBackground(Color.WHITE);
 
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-
-
 
 		LocalDate hoy = LocalDate.now();
 		DateTimeFormatter formateador = DateTimeFormatter.ofPattern("MMMM", new Locale("es", "ES"));
