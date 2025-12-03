@@ -58,74 +58,131 @@ public class RegUser extends JDialog {
 	 * Create the dialog.
 	 */
 	public RegUser() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage("/img/seguro-de-salud.png"));
-		setBounds(100, 100, 636, 412);
+		setTitle("Registrar Usuarios");
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegUser.class.getResource("/img/perfil(2).png")));
+		setBounds(100, 100, 563, 446);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(60, 70, 123));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
 		JLabel lblNombreUsuario = new JLabel("Nombre Usuario:");
-		lblNombreUsuario.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblNombreUsuario.setForeground(Color.BLACK);
-		lblNombreUsuario.setBounds(20, 26, 127, 14);
+		lblNombreUsuario.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblNombreUsuario.setForeground(Color.WHITE ) ;
+		lblNombreUsuario.setBounds(69, 27, 127, 14);
 		contentPanel.add(lblNombreUsuario);
 
 		textField = new JTextField();
-		textField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		textField.setBounds(20, 65, 127, 20);
+		textField.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		textField.setBounds(69, 66, 147, 20);
 		contentPanel.add(textField);
 		textField.setColumns(10);
 
 		JLabel lblPassword = new JLabel("Password:");
-		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblPassword.setForeground(Color.BLACK);
-		lblPassword.setBounds(20, 147, 97, 14);
+		lblPassword.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblPassword.setForeground(Color.WHITE);
+		lblPassword.setBounds(69, 152, 97, 14);
 		contentPanel.add(lblPassword);
 
 		passField_1 = new JPasswordField();
-		passField_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		passField_1.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		passField_1.setColumns(10);
-		passField_1.setBounds(20, 199, 147, 20);
+		passField_1.setBounds(69, 204, 147, 20);
 		contentPanel.add(passField_1);
 
 		JLabel lblTipo = new JLabel("Tipo:");
-		lblTipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblTipo.setForeground(Color.BLACK);
-		lblTipo.setBounds(216, 23, 97, 20);
+		lblTipo.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblTipo.setForeground(Color.WHITE);
+		lblTipo.setBounds(265, 24, 97, 20);
 		contentPanel.add(lblTipo);
 
 		comboBox = new JComboBox();
-		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		comboBox.setModel(
-				new DefaultComboBoxModel(new String[] { "<Seleccione>", "Administrador", "Asistente", "Medico" }));
-		comboBox.setBounds(216, 65, 127, 20);
+		comboBox.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		comboBox.setModel(new DefaultComboBoxModel(new String[] { "<Seleccione>", "Administrador", "Asistente", "Medico" }));
+		comboBox.setBounds(265, 66, 147, 20);
 		contentPanel.add(comboBox);
 
 		JLabel lblConfirmarPassword = new JLabel("Confirmar Password:");
-		lblConfirmarPassword.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblConfirmarPassword.setForeground(Color.BLACK);
-		lblConfirmarPassword.setBounds(214, 147, 167, 14);
+		lblConfirmarPassword.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblConfirmarPassword.setForeground(Color.WHITE);
+		lblConfirmarPassword.setBounds(263, 152, 167, 14);
 		contentPanel.add(lblConfirmarPassword);
 
 		passField_2 = new JPasswordField();
-		passField_2.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		passField_2.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		passField_2.setColumns(10);
-		passField_2.setBounds(216, 199, 147, 20);
+		passField_2.setBounds(265, 204, 147, 20);
 		contentPanel.add(passField_2);
 
 		JLabel lblCedulaLink = new JLabel("Cédula (Solo Médicos):");
-		lblCedulaLink.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblCedulaLink.setBounds(20, 250, 180, 20);
+		lblCedulaLink.setForeground(Color.WHITE);
+		lblCedulaLink.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		lblCedulaLink.setBounds(69, 255, 180, 20);
 		contentPanel.add(lblCedulaLink);
 
 		txtCedulaEnlace = new JTextField();
-		txtCedulaEnlace.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		txtCedulaEnlace.setBounds(216, 250, 147, 20);
+		txtCedulaEnlace.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+		txtCedulaEnlace.setBounds(265, 255, 147, 20);
 		txtCedulaEnlace.setVisible(false); 
 		lblCedulaLink.setVisible(false);
 		contentPanel.add(txtCedulaEnlace);
+				{
+					JButton okButton = new JButton("Registrar");
+					Estilos.estilarBoton(okButton, new Color(99, 163, 97), Color.WHITE);
+
+					okButton.setBounds(69, 331, 97, 35);
+					contentPanel.add(okButton);
+					okButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							String pass1 = new String(passField_1.getPassword());
+							String pass2 = new String(passField_2.getPassword());
+		
+							if (!pass1.equals(pass2)) {
+								JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+							String tipo = comboBox.getSelectedItem().toString();
+							String cedulaLink = "";
+		
+							if (tipo.equalsIgnoreCase("Medico")) {
+								cedulaLink = txtCedulaEnlace.getText().trim();
+								if (cedulaLink.isEmpty()) {
+									JOptionPane.showMessageDialog(contentPanel, "Cédula obligatoria para médicos.");
+									return;
+								}
+								Medico med = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedulaLink);
+								if (med == null) {
+									JOptionPane.showMessageDialog(contentPanel, "No existe médico con esa cédula en el Servidor.");
+									return;
+								}
+							}
+							User user = new User(tipo, textField.getText(), pass1, cedulaLink);
+							boolean respuesta = (boolean) ClienteSocket.enviar("REG_USER", user);
+		
+							if (respuesta) {
+								JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado en el Servidor!");
+								dispose();
+							} else {
+								JOptionPane.showMessageDialog(contentPanel, "Error al guardar en el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
+							}
+						}
+					});
+					okButton.setActionCommand("OK");
+					getRootPane().setDefaultButton(okButton);
+				}
+				{
+					JButton cancelButton = new JButton("Cancel");
+					cancelButton.setBounds(315, 331, 97, 35);
+					contentPanel.add(cancelButton);
+					cancelButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							dispose();
+						}
+					});
+					cancelButton.setActionCommand("Cancel");
+				}
 
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -141,72 +198,5 @@ public class RegUser extends JDialog {
 				}
 			}
 		});
-
-
-
-		JLabel lblFondoIcon = new JLabel("");
-		lblFondoIcon.setVerticalAlignment(SwingConstants.TOP);
-		lblFondoIcon.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblFondoIcon.setBackground(Color.WHITE);
-		lblFondoIcon.setIcon(new ImageIcon("/img/logo.png"));
-		lblFondoIcon.setBounds(-191, -142, 801, 533);
-		contentPanel.add(lblFondoIcon);
-
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						String pass1 = new String(passField_1.getPassword());
-						String pass2 = new String(passField_2.getPassword());
-
-						if (!pass1.equals(pass2)) {
-							JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
-							return;
-						}
-						String tipo = comboBox.getSelectedItem().toString();
-						String cedulaLink = "";
-
-						if (tipo.equalsIgnoreCase("Medico")) {
-							cedulaLink = txtCedulaEnlace.getText().trim();
-							if (cedulaLink.isEmpty()) {
-								JOptionPane.showMessageDialog(contentPanel, "Cédula obligatoria para médicos.");
-								return;
-							}
-							Medico med = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedulaLink);
-							if (med == null) {
-								JOptionPane.showMessageDialog(contentPanel, "No existe médico con esa cédula en el Servidor.");
-								return;
-							}
-						}
-						User user = new User(tipo, textField.getText(), pass1, cedulaLink);
-						boolean respuesta = (boolean) ClienteSocket.enviar("REG_USER", user);
-
-						if (respuesta) {
-							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado en el Servidor!");
-							dispose();
-						} else {
-							JOptionPane.showMessageDialog(contentPanel, "Error al guardar en el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
-						}
-					}
-				});
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
-		}
 	}
 }

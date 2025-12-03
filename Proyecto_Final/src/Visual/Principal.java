@@ -116,7 +116,7 @@ public class Principal extends JFrame {
 		menuBar.setBackground(new Color(60, 70, 123));
 		setJMenuBar(menuBar);
 
-		/* MENU DE CITAS */
+		/* MENU DE CITAS */	
 		menuCitas = new JMenu("  Gesti\u00F3n Citas  ");
 		menuCitas.setForeground(Color.WHITE);
 		try { menuCitas.setIcon(new ImageIcon(Principal.class.getResource("/img/cita.png"))); } catch (Exception e) {}
@@ -354,7 +354,8 @@ public class Principal extends JFrame {
 	private JPanel crearPanelEstadistico() {
 		JPanel panelDashboard = new JPanel(new BorderLayout());
 		panelDashboard.setBackground(Color.WHITE);
-		panelDashboard.setBorder(new TitledBorder("Estadísticas en Tiempo Real"));
+		panelDashboard.setBorder(new TitledBorder("Estadísticas en Tiempo Real"));
+
 		JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		panelBotones.setBackground(Color.WHITE);
 
@@ -391,10 +392,13 @@ public class Principal extends JFrame {
 			int pendientes = 0;
 			int completadas = 0;
 
-			if(citas != null) {
-				for(Cita c : citas) {
-					if(c.getEstado().equalsIgnoreCase("Pendiente")) pendientes++;
-					if(c.getEstado().equalsIgnoreCase("Completada")) completadas++;
+			if (citas != null) {
+				for (Cita c : citas) {
+
+					if (c.getEstado() != null) {
+						if (c.getEstado().equalsIgnoreCase("Pendiente")) pendientes++;
+						if (c.getEstado().equalsIgnoreCase("Completada")) completadas++;
+					}
 				}
 			}
 			dataset.setValue("Pendientes", pendientes);
@@ -404,6 +408,7 @@ public class Principal extends JFrame {
 
 			PiePlot plot = (PiePlot) chart.getPlot();
 			plot.setBackgroundPaint(Color.WHITE);
+
 			plot.setSectionPaint("Pendientes", new Color(231, 76, 60));
 			plot.setSectionPaint("Completadas", new Color(46, 204, 113));
 
@@ -415,14 +420,26 @@ public class Principal extends JFrame {
 
 			if (clientes != null) {
 				for (Cliente cli : clientes) {
-					for (Consulta con : cli.getHistorial().getConsultas()) {
-						for (Enfermedad enf : con.getEnfermedadesDiag()) {
-							String nombre = enf.getNombre();
-							conteo.put(nombre, conteo.getOrDefault(nombre, 0) + 1);
+
+					if (cli.getHistorial() != null) {
+
+						if (cli.getHistorial().getConsultas() != null) {
+
+							for (Consulta con : cli.getHistorial().getConsultas()) {
+								if (con.getEnfermedadesDiag() != null) {
+
+									for (Enfermedad enf : con.getEnfermedadesDiag()) {
+										String nombre = enf.getNombre();
+										conteo.put(nombre, conteo.getOrDefault(nombre, 0) + 1);
+									}
+								}
+							}
 						}
 					}
+				
 				}
 			}
+
 			for (String key : conteo.keySet()) {
 				dataset.addValue(conteo.get(key), "Casos", key);
 			}
@@ -444,3 +461,4 @@ public class Principal extends JFrame {
 		panelGrafico.repaint();
 	}
 }
+
