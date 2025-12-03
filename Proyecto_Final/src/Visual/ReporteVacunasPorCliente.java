@@ -50,7 +50,7 @@ public class ReporteVacunasPorCliente extends JDialog {
 					for (RegistroVacunacion r : c.getRegVacunas()) {
 						modelo.addRow(
 								new Object[] { r.getFecha(), (r.getVacuna() != null ? r.getVacuna().getNombre() : ""),
-										(r.getMedico() != null
+										(r.getMedico()!= null
 												? r.getMedico().getNombre() + " " + r.getMedico().getApellido()
 												: "") });
 					}

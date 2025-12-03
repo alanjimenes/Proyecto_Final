@@ -10,13 +10,15 @@ public class RegistroVacunacion implements Serializable {
 	private Cliente cliente;
 	private Vacuna vacuna;
 	private LocalDate fecha;
+	private Medico medico;
 	private boolean aplicada;
 
-	public RegistroVacunacion(Cliente cliente, Vacuna vacuna, LocalDate fecha, boolean aplicada) {
+	public RegistroVacunacion(Cliente cliente, Vacuna vacuna, LocalDate fecha, Medico medico, boolean aplicada) {
 		super(); 
 		this.cliente = cliente;
 		this.vacuna = vacuna;
 		this.fecha = fecha;
+		this.medico = medico;
 		this.aplicada = aplicada;
 	}
 
@@ -58,5 +60,13 @@ public class RegistroVacunacion implements Serializable {
 
 	public void setAplicada(boolean aplicada) {
 		this.aplicada = aplicada;
+	}
+
+	public Medico getMedico() {
+		return medico;
+	}
+
+	public void setMedico(Medico medico) {
+		this.medico = medico;
 	}
 }
