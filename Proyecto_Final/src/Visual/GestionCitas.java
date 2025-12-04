@@ -65,7 +65,6 @@ public class GestionCitas extends JPanel {
 		 panelFormulario.setLayout(null);
 		 add(panelFormulario);
 
-		 // CLIENTE
 		 JLabel lblCodCliente = new JLabel("Cód. Cliente:");
 		 lblCodCliente.setForeground(Color.WHITE);
 		 lblCodCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -489,18 +488,16 @@ public class GestionCitas extends JPanel {
 		 lblNombreMedico.setText("Médico: (Busque un médico)");
 		 dateChooser.setDate(null);
 		 cbxHora.setSelectedIndex(0);
-
-		 // Limpiar motivo
+	
 		 txtMotivo.setText("");
-
 		 clienteSeleccionado = null;
 		 medicoSeleccionado = null;
 		 citaSeleccionada = null;
 		 tablaCitas.clearSelection();
 
-		 // Resetear botones
+		 
 		 btnCrearCita.setEnabled(true);
-		 btnModificarCita.setEnabled(false); // Deshabilitar modificar porque no hay selección
-		 btnCancelarCita.setEnabled(false); // Deshabilitar cancelar porque no hay selección
+		 btnModificarCita.setEnabled(false); 
+		 btnCancelarCita.setEnabled(false); 
 	 }
 }
