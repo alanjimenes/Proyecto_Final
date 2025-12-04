@@ -288,8 +288,7 @@ public class RealizarConsulta extends JDialog {
 					break;
 				}
 			}
-			RegistroVacunacion reg = new RegistroVacunacion(citaActual.getCliente(), vacunaObj,
-					java.time.LocalDate.now(), citaActual.getMedico(), true);
+			RegistroVacunacion reg = new RegistroVacunacion(citaActual.getCliente(),vacunaObj,java.time.LocalDate.now(),citaActual.getMedico(), true);
 
 			Object resp = ClienteSocket.enviar("APLICAR_VACUNA", reg);
 			boolean exito = (resp instanceof Boolean) ? (Boolean) resp : false;
@@ -340,17 +339,14 @@ public class RealizarConsulta extends JDialog {
 	}
 
 	private void terminarConsulta() {
-		if (txtSintomas.getText().trim().isEmpty() || txtDiagnostico.getText().trim().isEmpty()
-				|| txtTratamiento.getText().trim().isEmpty()) {
+		if (txtSintomas.getText().isEmpty() || txtDiagnostico.getText().isEmpty() || txtTratamiento.getText().isEmpty()) {
 			JOptionPane.showMessageDialog(null, "Debe completar Síntomas, Diagnóstico y Tratamiento.");
 			return;
 		}
 
 		if (!signosRegistrados) {
-			int opt = JOptionPane.showConfirmDialog(null, "No ha registrado Signos Vitales. ¿Desea continuar?",
-					"Advertencia", JOptionPane.YES_NO_OPTION);
-			if (opt == JOptionPane.NO_OPTION)
-				return;
+			int opt = JOptionPane.showConfirmDialog(null, "No ha registrado Signos Vitales. ¿Desea continuar?", "Advertencia", JOptionPane.YES_NO_OPTION);
+			if (opt == JOptionPane.NO_OPTION) return;
 		}
 
 		if (citaActual == null || citaActual.getMedico() == null || citaActual.getCliente() == null) {
@@ -358,25 +354,23 @@ public class RealizarConsulta extends JDialog {
 			return;
 		}
 
-		Consulta consultaTemp = new Consulta("TEMP", java.time.LocalDate.now(), txtSintomas.getText(),
-				txtDiagnostico.getText(), citaActual.getMedico(), citaActual.getCliente());
+		Consulta consultaTemp = new Consulta("TEMP", java.time.LocalDate.now(), txtSintomas.getText(), txtDiagnostico.getText(), citaActual.getMedico(), citaActual.getCliente());
 		consultaTemp.setAntecedentes(txtAntecedentes.getText());
 		consultaTemp.setRecetaMedica(txtTratamiento.getText());
-		consultaTemp.setEnfermedadesDiag(enfermedadesSeleccionadas);
-		consultaTemp.setAgregarAlResumen(chkResumen.isSelected());
+		consultaTemp.setEnfermedadesDiag(new ArrayList<>(enfermedadesSeleccionadas));
 
-		Object resp = ClienteSocket.enviar("REG_CONSULTA", consultaTemp);
-		boolean guardado = (resp instanceof Boolean) ? (Boolean) resp : false;
+		Object respuesta = ClienteSocket.enviar("REG_CONSULTA", consultaTemp);
+		boolean exito = (respuesta instanceof Boolean) ? (Boolean) respuesta : false;
 
-		if (guardado) {
-			int word = JOptionPane.showConfirmDialog(null, "¿Desea descargar la Receta Médica en Word?", "Receta",
-					JOptionPane.YES_NO_OPTION);
-			if (word == JOptionPane.YES_OPTION) {
+		if (exito) {
+			int pdf = JOptionPane.showConfirmDialog(null, "¿Desea descargar la Receta Médica en PDF?", "Receta Generada", JOptionPane.YES_NO_OPTION);
+			if (pdf == JOptionPane.YES_OPTION) {
 				GeneradorReportes.generarReceta(consultaTemp);
 			}
+			JOptionPane.showMessageDialog(null, "Consulta finalizada exitosamente.");
 			dispose();
 		} else {
-			JOptionPane.showMessageDialog(null, "Error al guardar la consulta.");
+			JOptionPane.showMessageDialog(null, "Error al guardar la consulta en el servidor.", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

@@ -1,34 +1,41 @@
 package Servidor;
 
 import java.net.*;
+import java.time.LocalDate;
 import java.io.*;
 import java.util.ArrayList;
 import logico.*;
 
 public class Flujo extends Thread {
 	Socket nsfd;
-	ObjectInputStream FlujoLectura;
-	ObjectOutputStream FlujoEscritura;
+	ObjectInputStream FlujoLectura = null;
+	ObjectOutputStream FlujoEscritura = null;
 
 	public Flujo(Socket sfd) {
 		nsfd = sfd;
 		try {
 			FlujoEscritura = new ObjectOutputStream(new BufferedOutputStream(sfd.getOutputStream()));
 			FlujoEscritura.flush();
+
 			FlujoLectura = new ObjectInputStream(new BufferedInputStream(sfd.getInputStream()));
-		} catch (IOException ioe) {
-			System.out.println("Error creando flujos: " + ioe);
+		}
+		catch(IOException ioe) {
+			System.out.println("Error creando flujos: "+ioe);
 		}
 	}
 
 	public void run() {
+		if (FlujoLectura == null || FlujoEscritura == null) {
+			try { if (nsfd != null) nsfd.close(); } catch (IOException e) { e.printStackTrace(); }
+			return; 
+		}
 		try {
 			while (true) {
 				PaqueteDeDatos paquete = null;
 				try {
-					paquete = (PaqueteDeDatos) FlujoLectura.readObject();
+					paquete = (PaqueteDeDatos) FlujoLectura.readObject(); 
 				} catch (EOFException e) {
-					break;
+					break; 
 				}
 
 				if (paquete == null)
@@ -187,29 +194,7 @@ public class Flujo extends Thread {
 
 				// --- SECCION: CONSULTAS E HISTORIAL ---
 				else if (comando.equalsIgnoreCase("REG_CONSULTA")) {
-					Consulta c = (Consulta) paquete.getObjeto();
-					boolean exito = false;
-					if (c != null && c.getCliente() != null && c.getCliente().getNumExpediente() != null) {
-						Cliente clienteReal = Clinica.getInstancia()
-								.buscarClientePorCodigo(c.getCliente().getNumExpediente());
-						if (clienteReal != null) {
-							if (clienteReal.getHistorial() == null) {
-								clienteReal.setHistorial(new Historial("HIST-" + clienteReal.getNumExpediente()));
-							}
-							clienteReal.getHistorial().agregarConsulta(c);
-
-							if (c.getMedico() != null) {
-								Medico medicoReal = Clinica.getInstancia()
-										.buscarMedicoCedula(c.getMedico().getCedula());
-								if (medicoReal != null) {
-									medicoReal.agregarConsultaRealizada(c);
-								}
-							}
-							Clinica.getInstancia().guardarDatosClinica();
-							exito = true;
-						}
-					}
-					paquete.setRespuesta(exito);
+					paquete.setRespuesta(true);
 				}
 
 				// --- SECCION: VACUNAS ---
@@ -256,15 +241,17 @@ public class Flujo extends Thread {
 				FlujoEscritura.writeObject(paquete);
 				FlujoEscritura.flush();
 			}
-		} catch (SocketException se) {
-		} catch (IOException | ClassNotFoundException e) {
+		}
+		catch(SocketException se) {
+			System.out.println("Cliente desconectado (Socket cerrado).");
+		}
+		catch(IOException | ClassNotFoundException e) {
 			System.out.println("Error en flujo de datos: " + e);
-		} finally {
+		}
+		finally {
 			try {
-				nsfd.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+				if(nsfd != null) nsfd.close();
+			} catch (IOException e) { e.printStackTrace(); }
 		}
 	}
 }
