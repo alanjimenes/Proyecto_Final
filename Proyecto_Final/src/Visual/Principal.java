@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Panel;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import org.jfree.chart.ChartFactory;
@@ -45,8 +45,8 @@ import logico.Cliente;
 import logico.Consulta;
 import logico.Enfermedad;
 import logico.Medico;
+import logico.RegistroVacunacion;
 import logico.User;
-import javax.swing.border.EmptyBorder; 
 
 public class Principal extends JFrame {
 
@@ -66,226 +66,283 @@ public class Principal extends JFrame {
 	private ChartPanel chartPanel;
 
 	public Principal(User usuarioLogueado) {
-		LocalDate hoy = LocalDate.now();
-		DateTimeFormatter formateador = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", new Locale("es", "ES"));
-		String fechaTexto = hoy.format(formateador);
-
-		try {
-			setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
-		} catch (Exception e) { }
-
 		this.usuarioActual = usuarioLogueado;
 
-		iniciarTodo();
-		configurarAccesosPorRol();
-
-		panel_1 = new JPanel(); 
-		panel_1.setBackground(new Color(60, 70, 123));
-		panel_1.setLayout(new BorderLayout());
-
-		panel_1.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5)); 
-		contentPane.add(panel_1, BorderLayout.SOUTH);
-
-
-		lblReloj = new JLabel("00:00:00");
-		lblReloj.setForeground(Color.WHITE);
-		lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 36));
-		lblReloj.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 20, 0, 0)); 
-		panel_1.add(lblReloj, BorderLayout.WEST);
-
-
-		JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		panelBoton.setOpaque(false); 
-
-		JButton btnLogout = new JButton("Cerrar Sesión");
-		btnLogout.setFont(new Font("Bahnschrift", Font.BOLD, 16));
-
-
-		Estilos.estilarBoton(btnLogout, new Color(231, 76, 60), Color.WHITE); 
-
-
-		btnLogout.addActionListener(e -> {
-			int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?", "Cerrar Sesión", JOptionPane.YES_NO_OPTION);
-			if (confirm == JOptionPane.YES_OPTION) {
-				dispose();
-				Login login = new Login(); 
-				login.setVisible(true); 
-			}
-		});
-
-		panelBoton.add(btnLogout);
-		panel_1.add(panelBoton, BorderLayout.EAST);
-		fechaTexto = fechaTexto.substring(0, 1).toUpperCase() + fechaTexto.substring(1);
-
-		iniciarReloj();
-	}
-
-	private void iniciarTodo() {
-		setTitle("Hospital");
+		// CONFIGURACIÓN BÁSICA DE LA VENTANA
+		try {
+			setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
+		} catch (Exception e) {
+		}
+		setTitle("Sistema de Gestión Hospitalaria - Usuario: " + usuarioActual.getUsuario());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		dim = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(dim.width, dim.height);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setLocationRelativeTo(null);
 
+		// BARRA DE MENÚ
 		menuBar = new JMenuBar();
 		menuBar.setForeground(Color.WHITE);
 		menuBar.setBackground(new Color(60, 70, 123));
 		setJMenuBar(menuBar);
 
-
-		// CITAS
-		menuCitas = new JMenu("  Gesti\u00F3n Citas  ");
+		// --- MENÚ CITAS ---
+		menuCitas = new JMenu("  Gestión Citas  ");
 		menuCitas.setForeground(Color.WHITE);
-		try { menuCitas.setIcon(new ImageIcon(Principal.class.getResource("/img/cita.png"))); } catch (Exception e) {}
-		menuCitas.setFont(new Font("Bahnschrift", Font.BOLD, 25));
+		try {
+			menuCitas.setIcon(new ImageIcon(Principal.class.getResource("/img/cita.png")));
+		} catch (Exception e) {
+		}
+		menuCitas.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuCitas);
 
 		JMenuItem itemCrearCita = new JMenuItem("Crear/Modificar Cita");
-		itemCrearCita.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		itemCrearCita.addActionListener(e -> abrirDialogoDeCitas());
+		itemCrearCita.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		itemCrearCita.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				abrirDialogoDeCitas();
+			}
+		});
 		menuCitas.add(itemCrearCita);
 
-		// PACIENTES
-		menuPacientes = new JMenu("  Gesti\u00F3n de Pacientes  ");
+		// --- MENÚ PACIENTES ---
+		menuPacientes = new JMenu("  Gestión Pacientes  ");
 		menuPacientes.setForeground(Color.WHITE);
-		try { menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/img/gestion-de-clientes.png"))); } catch (Exception e) {}
-		menuPacientes.setFont(new Font("Bahnschrift", Font.BOLD, 25));
+		try {
+			menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/img/gestion-de-clientes.png")));
+		} catch (Exception e) {
+		}
+		menuPacientes.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuPacientes);
 
 		JMenuItem itemRegPaciente = new JMenuItem("Registrar Paciente");
-		itemRegPaciente.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-		itemRegPaciente.addActionListener(e -> {
-			RegClientes reg = new RegClientes();
-			reg.setModal(true);
-			reg.setVisible(true);
+		itemRegPaciente.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemRegPaciente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegClientes reg = new RegClientes();
+				reg.setModal(true);
+				reg.setVisible(true);
+			}
 		});
 		menuPacientes.add(itemRegPaciente);
 
 		JMenuItem itemListarPacientes = new JMenuItem("Listado de Pacientes");
-		itemListarPacientes.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-		itemListarPacientes.addActionListener(e -> {
-			ConsultarClientes consulta = new ConsultarClientes();
-			consulta.setModal(true);
-			consulta.setVisible(true);
+		itemListarPacientes.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemListarPacientes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConsultarClientes consulta = new ConsultarClientes();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
 		});
 		menuPacientes.add(itemListarPacientes);
 
-		// CONSULTAS
+		// --- MENÚ CONSULTAS ---
 		menuConsulta = new JMenu("  Consultas  ");
 		menuConsulta.setForeground(Color.WHITE);
-		try { menuConsulta.setIcon(new ImageIcon(Principal.class.getResource("/img/dato-de-registro.png"))); } catch (Exception e) {}
-		menuConsulta.setFont(new Font("Bahnschrift", Font.BOLD, 25));
+		try {
+			menuConsulta.setIcon(new ImageIcon(Principal.class.getResource("/img/dato-de-registro.png")));
+		} catch (Exception e) {
+		}
+		menuConsulta.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuConsulta);
 
 		JMenuItem itemVerMisCitas = new JMenuItem("Ver Citas de Hoy");
-		itemVerMisCitas.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-		itemVerMisCitas.addActionListener(e -> {
-			MisCitas misCitas = new MisCitas(usuarioActual);
-			misCitas.setModal(true);
-			misCitas.setVisible(true);
+		itemVerMisCitas.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemVerMisCitas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MisCitas misCitas = new MisCitas(usuarioActual);
+				misCitas.setModal(true);
+				misCitas.setVisible(true);
+			}
 		});
 		menuConsulta.add(itemVerMisCitas);
 
-		// ADMINISTRACIÓN
-		menuAdministracion = new JMenu("  Administraci\u00F3n");
+		// --- MENÚ ADMINISTRACIÓN ---
+		menuAdministracion = new JMenu("  Administración");
 		menuAdministracion.setForeground(Color.WHITE);
-		try { menuAdministracion.setIcon(new ImageIcon(Principal.class.getResource("/img/doctor.png"))); } catch (Exception e) {}
-		menuAdministracion.setFont(new Font("Bahnschrift", Font.BOLD, 25));
+		try {
+			menuAdministracion.setIcon(new ImageIcon(Principal.class.getResource("/img/doctor.png")));
+		} catch (Exception e) {
+		}
+		menuAdministracion.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		menuBar.add(menuAdministracion);
 
 		JMenuItem itemGestionarUser = new JMenuItem("Gestionar Usuarios");
-		itemGestionarUser.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-		itemGestionarUser.addActionListener(e -> {
-			RegUser reg = new RegUser();
-			reg.setModal(true); 
-			reg.setVisible(true);
-		});		
+		itemGestionarUser.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemGestionarUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegUser reg = new RegUser();
+				reg.setModal(true);
+				reg.setVisible(true);
+			}
+		});
 		menuAdministracion.add(itemGestionarUser);
 
 		JMenuItem itemReportes = new JMenuItem("Reportes Generales");
-		itemReportes.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-		itemReportes.addActionListener(e -> {
-			ReportesGenerales rep = new ReportesGenerales();
-			rep.setVisible(true);
+		itemReportes.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemReportes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReportesGenerales rep = new ReportesGenerales();
+				rep.setVisible(true);
+			}
 		});
 		menuAdministracion.add(itemReportes);
 
 		JMenu menuGestionMedicos = new JMenu("Gestionar Médicos");
-		menuGestionMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
+		menuGestionMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+
 		JMenuItem itemRegMedico = new JMenuItem("Registrar Médico");
-		itemRegMedico.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-		itemRegMedico.addActionListener(e -> {
-			RegMedico regMedico = new RegMedico();
-			regMedico.setModal(true);
-			regMedico.setVisible(true);
+		itemRegMedico.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemRegMedico.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegMedico regMedico = new RegMedico();
+				regMedico.setModal(true);
+				regMedico.setVisible(true);
+			}
 		});
 		menuGestionMedicos.add(itemRegMedico);
+
 		JMenuItem itemListarMedicos = new JMenuItem("Listar Médicos");
-		itemListarMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-		itemListarMedicos.addActionListener(e -> {
-			ConsultarMedicos consulta = new ConsultarMedicos();
-			consulta.setModal(true);
-			consulta.setVisible(true);
+		itemListarMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemListarMedicos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConsultarMedicos consulta = new ConsultarMedicos();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
 		});
 		menuGestionMedicos.add(itemListarMedicos);
 		menuAdministracion.add(menuGestionMedicos);
 
 		JMenu menuGestionEspecialidades = new JMenu("Gestionar Especialidades");
-		menuGestionEspecialidades.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
+		menuGestionEspecialidades.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+
 		JMenuItem itemRegEspecialidad = new JMenuItem("Registrar Especialidad");
-		itemRegEspecialidad.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-		itemRegEspecialidad.addActionListener(e -> {
-			RegEspecialidad regEsp = new RegEspecialidad();
-			regEsp.setModal(true);
-			regEsp.setVisible(true);
+		itemRegEspecialidad.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemRegEspecialidad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegEspecialidad regEsp = new RegEspecialidad();
+				regEsp.setModal(true);
+				regEsp.setVisible(true);
+			}
 		});
 		menuGestionEspecialidades.add(itemRegEspecialidad);
+
 		JMenuItem itemListarEspecialidades = new JMenuItem("Consultar Especialidades");
-		itemListarEspecialidades.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-		itemListarEspecialidades.addActionListener(e -> {
-			ConsultarEspecialidades consulta = new ConsultarEspecialidades();
-			consulta.setModal(true);
-			consulta.setVisible(true);
+		itemListarEspecialidades.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemListarEspecialidades.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConsultarEspecialidades consulta = new ConsultarEspecialidades();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
 		});
 		menuGestionEspecialidades.add(itemListarEspecialidades);
 		menuAdministracion.add(menuGestionEspecialidades);
 
 		JMenuItem itemGestionarVacunas = new JMenuItem("Gestionar Vacunas");
-		itemGestionarVacunas.setFont(new Font("Bahnschrift", Font.PLAIN, 20)); 
-		itemGestionarVacunas.addActionListener(e -> {
-			ConsultarVacunas consulta = new ConsultarVacunas();
-			consulta.setModal(true);
-			consulta.setVisible(true);
+		itemGestionarVacunas.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemGestionarVacunas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConsultarVacunas consulta = new ConsultarVacunas();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
 		});
 		menuAdministracion.add(itemGestionarVacunas);
 
+		JMenuItem itemGestionarEnf = new JMenuItem("Gestionar Enfermedades");
+		itemGestionarEnf.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+		itemGestionarEnf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConsultarEnfermedades consulta = new ConsultarEnfermedades();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
+		});
+		menuAdministracion.add(itemGestionarEnf);
+
+		// USUARIO LABEL (Derecha)
+		menuBar.add(javax.swing.Box.createHorizontalGlue());
+		lblUsuario = new JLabel("Usuario: " + usuarioActual.getUsuario() + " (" + usuarioActual.getRol() + ")  ");
+		lblUsuario.setForeground(Color.WHITE);
+		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 16));
+		try {
+			lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/perfil(2).png")));
+		} catch (Exception e) {
+		}
+		menuBar.add(lblUsuario);
+
+		// PANEL PRINCIPAL
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
-		contentPane.setForeground(Color.WHITE);
 		contentPane.setBorder(null);
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 
+		// PANEL DASHBOARD CENTRAL
 		JPanel panelDashboardCentral = new JPanel();
 		panelDashboardCentral.setBackground(Color.WHITE);
 		panelDashboardCentral.setLayout(new GridLayout(1, 1, 20, 0));
-
-		panelDashboardCentral.add(crearPanelEstadistico());      
-
 		contentPane.add(panelDashboardCentral, BorderLayout.CENTER);
 
-		menuBar.add(javax.swing.Box.createHorizontalGlue());
-		lblUsuario = new JLabel("Usuario: " + usuarioActual.getUsuario() + " (" + usuarioActual.getRol() + ")  "); 
-		lblUsuario.setForeground(Color.WHITE);
-		lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 25)); 
-		try { lblUsuario.setIcon(new ImageIcon(Principal.class.getResource("/img/perfil(2).png"))); } catch (Exception e) {}
+		// INYECCION DE GRÁFICOS (Mantenemos la lógica pero dentro del constructor)
+		panelDashboardCentral.add(crearPanelEstadistico());
 
-		menuBar.add(lblUsuario);
+		// PANEL INFERIOR (RELOJ Y LOGOUT)
+		panel_1 = new JPanel();
+		panel_1.setBackground(new Color(60, 70, 123));
+		panel_1.setLayout(new BorderLayout());
+		panel_1.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.add(panel_1, BorderLayout.SOUTH);
+
+		lblReloj = new JLabel("00:00:00");
+		lblReloj.setForeground(Color.WHITE);
+		lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 36));
+		lblReloj.setBorder(new EmptyBorder(0, 20, 0, 0));
+		panel_1.add(lblReloj, BorderLayout.WEST);
+
+		JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		panelBoton.setOpaque(false);
+
+		JButton btnLogout = new JButton("Cerrar Sesión");
+		btnLogout.setFont(new Font("Bahnschrift", Font.BOLD, 16));
+		// Asegúrate de que Estilos exista, si no, borra esta línea
+		try {
+			Estilos.estilarBoton(btnLogout, new Color(231, 76, 60), Color.WHITE);
+		} catch (Exception e) {
+			btnLogout.setBackground(Color.RED);
+			btnLogout.setForeground(Color.WHITE);
+		}
+
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?",
+						"Cerrar Sesión", JOptionPane.YES_NO_OPTION);
+				if (confirm == JOptionPane.YES_OPTION) {
+					dispose();
+					Login login = new Login();
+					login.setVisible(true);
+				}
+			}
+		});
+
+		panelBoton.add(btnLogout);
+		panel_1.add(panelBoton, BorderLayout.EAST);
+
+		// INICIAR RELOJ E HILOS
+		iniciarReloj();
+		configurarAccesosPorRol();
 	}
 
+	// --------------------------------------------------------------------------------
+	// MÉTODOS AUXILIARES (LÓGICA)
+	// --------------------------------------------------------------------------------
+
 	private void configurarAccesosPorRol() {
-		if (menuCitas == null) return;
+		if (menuCitas == null)
+			return;
 		String rol = this.usuarioActual.getRol();
 
 		menuCitas.setVisible(false);
@@ -293,29 +350,19 @@ public class Principal extends JFrame {
 		menuAdministracion.setVisible(false);
 		menuPacientes.setVisible(false);
 
-		switch (rol) {
-		case "Administrador":
+		if (rol.equalsIgnoreCase("Administrador")) {
 			menuCitas.setVisible(true);
 			menuConsulta.setVisible(true);
 			menuAdministracion.setVisible(true);
 			menuPacientes.setVisible(true);
-			break;
-
-		case "Asistente":
+		} else if (rol.equalsIgnoreCase("Asistente")) {
 			menuCitas.setVisible(true);
-			break;
-
-		case "Medico":
 			menuPacientes.setVisible(true);
+		} else if (rol.equalsIgnoreCase("Medico")) {
 			menuConsulta.setVisible(true);
-			break;
-
-		default:
-
-			System.exit(0);
-			break;
+			menuPacientes.setVisible(true);
 		}
-	} 
+	}
 
 	private void abrirDialogoDeCitas() {
 		JDialog dialogCitas = new JDialog(Principal.this, "Gestión de Citas", true);
@@ -324,20 +371,29 @@ public class Principal extends JFrame {
 		dialogCitas.setSize(1130, 750);
 		dialogCitas.setResizable(false);
 		dialogCitas.setLocationRelativeTo(Principal.this);
-		try { dialogCitas.setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png"))); } catch (Exception e) {}
+		try {
+			dialogCitas.setIconImage(
+					Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
+		} catch (Exception e) {
+		}
 		dialogCitas.setVisible(true);
 	}
 
 	private void iniciarReloj() {
-		javax.swing.Timer timer = new javax.swing.Timer(1000, e -> {
-			String hora = java.time.LocalDateTime.now()
-					.format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
-			if (lblReloj != null) lblReloj.setText(hora);
+		javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String hora = java.time.LocalDateTime.now()
+						.format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+				if (lblReloj != null)
+					lblReloj.setText(hora);
+			}
 		});
 		timer.setRepeats(true);
 		timer.start();
 	}
 
+	// CREACIÓN DEL DASHBOARD (Lógica de gráficos)
 	private JPanel crearPanelEstadistico() {
 		JPanel panelDashboard = new JPanel(new BorderLayout());
 		panelDashboard.setBackground(Color.WHITE);
@@ -345,30 +401,30 @@ public class Principal extends JFrame {
 		String rol = usuarioActual.getRol();
 
 		if (rol.equalsIgnoreCase("Medico")) {
-
 			JPanel panelMedico = new JPanel(new GridLayout(1, 2, 10, 10));
 			panelMedico.setBackground(Color.WHITE);
 
 			JTable tableAgenda = new JTable();
-			DefaultTableModel modelAgenda = new DefaultTableModel(new String[]{"Hora", "Paciente", "Estado"}, 0);
+			DefaultTableModel modelAgenda = new DefaultTableModel(new String[] { "Hora", "Paciente", "Estado" }, 0);
 			tableAgenda.setModel(modelAgenda);
 
-			if(usuarioActual.getCedula() != null) {
-				Medico yo = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
-				if(yo != null) {
+			if (usuarioActual.getCedula() != null) {
+				Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
+				if (resp instanceof Medico) {
+					Medico yo = (Medico) resp;
 					int completadas = 0;
 					int pendientes = 0;
-					for(Cita c : yo.getCitasAsignadas()) {
-						if(c.getFechaHora().toLocalDate().equals(LocalDate.now())) {
-							if(c.getEstado().equalsIgnoreCase("Pendiente")) {
-								modelAgenda.addRow(new Object[]{
-										c.getFechaHora().toLocalTime().toString(),
-										c.getCliente().getNombre() + " " + c.getCliente().getApellido(),
-										c.getEstado()
-								});
-								pendientes++;
-							} else if (c.getEstado().equalsIgnoreCase("Completada")) {
-								completadas++;
+					if (yo.getCitasAsignadas() != null) {
+						for (Cita c : yo.getCitasAsignadas()) {
+							if (c.getFechaHora().toLocalDate().equals(LocalDate.now())) {
+								if (c.getEstado().equalsIgnoreCase("Pendiente")) {
+									modelAgenda.addRow(new Object[] { c.getFechaHora().toLocalTime().toString(),
+											c.getCliente().getNombre() + " " + c.getCliente().getApellido(),
+											c.getEstado() });
+									pendientes++;
+								} else if (c.getEstado().equalsIgnoreCase("Completada")) {
+									completadas++;
+								}
 							}
 						}
 					}
@@ -388,32 +444,34 @@ public class Principal extends JFrame {
 			}
 			panelMedico.add(new JScrollPane(tableAgenda));
 			panelDashboard.add(panelMedico, BorderLayout.CENTER);
-		}
-		else if (rol.equalsIgnoreCase("Asistente")) {
-	
+		} else if (rol.equalsIgnoreCase("Asistente")) {
 			panelDashboard.setLayout(new BorderLayout());
 			JLabel lblLogo = new JLabel("");
 			lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
 			try {
 				lblLogo.setIcon(new ImageIcon(Principal.class.getResource("/img/Logo-Azul.png")));
 			} catch (Exception e) {
-				lblLogo.setText("");
+				lblLogo.setText("Bienvenido Asistente");
+				lblLogo.setFont(new Font("Tahoma", Font.BOLD, 30));
 			}
 			panelDashboard.add(lblLogo, BorderLayout.CENTER);
-		}
-		else {
-			// --- AQUÍ ESTÁN LOS CAMBIOS PARA EL ADMINISTRADOR ---
+		} else {
+			// ADMINISTRADOR
 			JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
 			panelBotones.setBackground(Color.WHITE);
 
-			// ELIMINADO EL BOTÓN DE CITAS
-
 			JButton btnEnf = new JButton("Enfermedades");
-			Estilos.estilarBoton(btnEnf, Color.WHITE, Color.BLACK);
+			try {
+				Estilos.estilarBoton(btnEnf, Color.WHITE, Color.BLACK);
+			} catch (Exception e) {
+			}
 			btnEnf.addActionListener(e -> actualizarGrafico("ENFERMEDADES"));
 
 			JButton btnVac = new JButton("Vacunación");
-			Estilos.estilarBoton(btnVac, Color.WHITE, Color.BLACK);
+			try {
+				Estilos.estilarBoton(btnVac, Color.WHITE, Color.BLACK);
+			} catch (Exception e) {
+			}
 			btnVac.addActionListener(e -> actualizarGrafico("VACUNAS"));
 
 			panelBotones.add(btnEnf);
@@ -425,22 +483,20 @@ public class Principal extends JFrame {
 			panelGrafico.setBackground(Color.WHITE);
 			panelDashboard.add(panelGrafico, BorderLayout.CENTER);
 
-
 			actualizarGrafico("ENFERMEDADES");
 		}
-
 		return panelDashboard;
 	}
 
 	@SuppressWarnings("unchecked")
 	private void actualizarGrafico(String tipo) {
-		if (panelGrafico == null) return;
+		if (panelGrafico == null)
+			return;
 		panelGrafico.removeAll();
 
-		panelGrafico.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		panelGrafico.setBorder(new EmptyBorder(20, 20, 20, 20));
 
 		JFreeChart chart = null;
-		java.util.Random random = new java.util.Random(); 
 
 		Font fontTitulo = new Font("Bahnschrift", Font.BOLD, 20);
 		Font fontEjes = new Font("Bahnschrift", Font.PLAIN, 14);
@@ -450,94 +506,73 @@ public class Principal extends JFrame {
 		if (tipo.equals("ENFERMEDADES")) {
 			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-			// =============================================================
-			// BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
-			// =============================================================
-			String[] enfermedadesPrueba = {"Gripe A", "Covid-19", "Diabetes T2", "Hipertensión", "Gastritis", "Asma"};
-			for (String enf : enfermedadesPrueba) {
-				dataset.addValue(random.nextInt(45) + 5, "Casos", enf);
+			ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
+			java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
+			if (clientes != null) {
+				for (Cliente cli : clientes) {
+					if (cli.getHistorial() != null && cli.getHistorial().getConsultas() != null) {
+						for (Consulta con : cli.getHistorial().getConsultas()) {
+							if (con.getEnfermedadesDiag() != null) {
+								for (Enfermedad enf : con.getEnfermedadesDiag()) {
+									conteo.put(enf.getNombre(), conteo.getOrDefault(enf.getNombre(), 0) + 1);
+								}
+							}
+						}
+					}
+				}
+			}
+			if (conteo.isEmpty())
+				dataset.addValue(0, "Sin Datos", "N/A");
+
+			for (String key : conteo.keySet()) {
+				dataset.addValue(conteo.get(key), "Casos", key);
 			}
 
-			// =============================================================
-			// BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
-			// (Para usar: Borra el Bloque 1 y descomenta este bloque)
-			// =============================================================
-			/*
-            ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
-            java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
-            if (clientes != null) {
-                for (Cliente cli : clientes) {
-                    if (cli.getHistorial() != null && cli.getHistorial().getConsultas() != null) {
-                        for (Consulta con : cli.getHistorial().getConsultas()) {
-                            if (con.getEnfermedadesDiag() != null) {
-                                for (Enfermedad enf : con.getEnfermedadesDiag()) {
-                                    conteo.put(enf.getNombre(), conteo.getOrDefault(enf.getNombre(), 0) + 1);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            for (String key : conteo.keySet()) {
-                dataset.addValue(conteo.get(key), "Casos", key);
-            }
-			 */
-
-			chart = ChartFactory.createBarChart("Enfermedades Diagnosticadas", "Enfermedad", "Casos", dataset, PlotOrientation.VERTICAL, false, true, false);
+			chart = ChartFactory.createBarChart("Enfermedades Diagnosticadas", "Enfermedad", "Casos", dataset,
+					PlotOrientation.VERTICAL, false, true, false);
 
 			CategoryPlot plot = chart.getCategoryPlot();
 			BarRenderer renderer = (BarRenderer) plot.getRenderer();
-
-			renderer.setSeriesPaint(0, new Color(60, 70, 123)); 
+			renderer.setSeriesPaint(0, new Color(60, 70, 123));
 
 			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
 
 		} else if (tipo.equals("VACUNAS")) {
 			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-			// =============================================================
-			// BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
-			// =============================================================
-			String[] vacunasPrueba = {"Pfizer", "Sinovac", "AstraZeneca", "Moderna", "Influenza"};
-			for (String vac : vacunasPrueba) {
-				dataset.addValue(random.nextInt(70) + 10, "Dosis", vac);
+			ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
+			java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
+			if (clientes != null) {
+				for (Cliente cli : clientes) {
+					if (cli.getRegVacunas() != null) {
+						for (RegistroVacunacion reg : cli.getRegVacunas()) {
+							if (reg.getVacuna() != null) {
+								String nombre = reg.getVacuna().getNombre();
+								conteo.put(nombre, conteo.getOrDefault(nombre, 0) + 1);
+							}
+						}
+					}
+				}
+			}
+			if (conteo.isEmpty())
+				dataset.addValue(0, "Sin Datos", "N/A");
+
+			for (String key : conteo.keySet()) {
+				dataset.addValue(conteo.get(key), "Dosis", key);
 			}
 
-			// =============================================================
-			// BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
-			// (Para usar: Borra el Bloque 1 y descomenta este bloque)
-			// =============================================================
-			/*
-            ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
-            java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
-            if (clientes != null) {
-                for (Cliente cli : clientes) {
-                    if (cli.getRegVacunas() != null) {
-                        for (logico.RegistroVacunacion reg : cli.getRegVacunas()) {
-                            String nombre = reg.getVacuna().getNombre();
-                            conteo.put(nombre, conteo.getOrDefault(nombre, 0) + 1);
-                        }
-                    }
-                }
-            }
-            for (String key : conteo.keySet()) {
-                dataset.addValue(conteo.get(key), "Dosis", key);
-            }
-			 */
-			// =============================================================
-
-			chart = ChartFactory.createBarChart("Vacunas Aplicadas", "Vacuna", "Total Dosis", dataset, PlotOrientation.HORIZONTAL, false, true, false);
-
+			chart = ChartFactory.createBarChart("Vacunas Aplicadas", "Vacuna", "Total Dosis", dataset,
+					PlotOrientation.HORIZONTAL, false, true, false);
 			CategoryPlot plot = chart.getCategoryPlot();
 			BarRenderer renderer = (BarRenderer) plot.getRenderer();
-			renderer.setSeriesPaint(0, new Color(0, 150, 136)); 
+			renderer.setSeriesPaint(0, new Color(0, 150, 136));
 
 			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
 		}
 
 		if (chart != null) {
-			chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
+			chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
+					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			chartPanel = new ChartPanel(chart);
 			chartPanel.setBackground(Color.WHITE);
 			panelGrafico.add(chartPanel, BorderLayout.CENTER);
@@ -547,7 +582,8 @@ public class Principal extends JFrame {
 		panelGrafico.repaint();
 	}
 
-	private void configurarPlotYRenderer(JFreeChart chart, CategoryPlot plot, BarRenderer renderer, Font fTitulo, Font fEjes, Font fEtiquetas, Font fValores) {
+	private void configurarPlotYRenderer(JFreeChart chart, CategoryPlot plot, BarRenderer renderer, Font fTitulo,
+			Font fEjes, Font fEtiquetas, Font fValores) {
 		chart.setBackgroundPaint(Color.WHITE);
 		chart.getTitle().setFont(fTitulo);
 
@@ -560,14 +596,11 @@ public class Principal extends JFrame {
 		plot.getRangeAxis().setLabelFont(fEjes);
 		plot.getRangeAxis().setTickLabelFont(fEtiquetas);
 
-
 		renderer.setBarPainter(new org.jfree.chart.renderer.category.StandardBarPainter());
-		renderer.setShadowVisible(false); 
+		renderer.setShadowVisible(false);
 		renderer.setDrawBarOutline(false);
 		renderer.setBaseItemLabelGenerator(new org.jfree.chart.labels.StandardCategoryItemLabelGenerator());
 		renderer.setBaseItemLabelsVisible(true);
 		renderer.setBaseItemLabelFont(fValores);
 	}
-
-
 }

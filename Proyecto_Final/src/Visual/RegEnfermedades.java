@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -21,8 +20,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import logico.Enfermedad;
-
-
 
 public class RegEnfermedades extends JDialog {
 
@@ -111,23 +108,22 @@ public class RegEnfermedades extends JDialog {
 	}
 
 	private void registrar() {
-		if(txtNombre.getText().isEmpty()) {
+		if (txtNombre.getText().isEmpty()) {
 			JOptionPane.showMessageDialog(null, "El nombre es obligatorio.");
 			return;
 		}
 
 		if (enfermedadActual == null) {
-
 			String codigo = "ENF-" + System.currentTimeMillis() % 10000;
-
-			Enfermedad nueva = new Enfermedad(codigo, txtNombre.getText(), txtDescripcion.getText(), chkVigilancia.isSelected());
+			Enfermedad nueva = new Enfermedad(codigo, txtNombre.getText(), txtDescripcion.getText(),
+					chkVigilancia.isSelected());
 
 			boolean exito = (boolean) ClienteSocket.enviar("REG_ENFERMEDAD", nueva);
-			if(exito) {
+			if (exito) {
 				JOptionPane.showMessageDialog(null, "Enfermedad registrada.");
 				dispose();
 			} else {
-				JOptionPane.showMessageDialog(null, "Error: Ya existe una enfermedad con ese código.");
+				JOptionPane.showMessageDialog(null, "Error al registrar en el servidor.");
 			}
 		} else {
 			enfermedadActual.setNombre(txtNombre.getText());
@@ -135,7 +131,7 @@ public class RegEnfermedades extends JDialog {
 			enfermedadActual.setVigilancia(chkVigilancia.isSelected());
 
 			boolean exito = (boolean) ClienteSocket.enviar("UPDATE_ENFERMEDAD", enfermedadActual);
-			if(exito) {
+			if (exito) {
 				JOptionPane.showMessageDialog(null, "Enfermedad actualizada.");
 				dispose();
 			}

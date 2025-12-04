@@ -1,21 +1,24 @@
 package Visual;
 
 import java.awt.BorderLayout;
-
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
@@ -25,13 +28,6 @@ import com.toedter.calendar.JDateChooser;
 
 import logico.Especialidad;
 import logico.Medico;
-
-import java.awt.Font;
-import java.awt.Color;
-import javax.swing.ImageIcon;
-
-import java.awt.Toolkit;
-import javax.swing.JSeparator;
 
 public class RegMedico extends JDialog {
 
@@ -49,7 +45,10 @@ public class RegMedico extends JDialog {
 
 	public RegMedico() {
 		setResizable(false);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(RegMedico.class.getResource("/img/doctor.png")));
+		try {
+			setIconImage(Toolkit.getDefaultToolkit().getImage(RegMedico.class.getResource("/img/doctor.png")));
+		} catch (Exception e) {
+		}
 		initComponents();
 		this.medicoActual = null;
 	}
@@ -98,7 +97,6 @@ public class RegMedico extends JDialog {
 		contentPanel.add(txtCedula);
 		txtCedula.setColumns(10);
 
-	
 		txtCedula.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyTyped(java.awt.event.KeyEvent e) {
 				char c = e.getKeyChar();
@@ -111,10 +109,7 @@ public class RegMedico extends JDialog {
 					return;
 				}
 				if (c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-					if (txtCedula.getText().length() == 3) {
-						txtCedula.setText(txtCedula.getText() + "-");
-					}
-					else if (txtCedula.getText().length() == 11) {
+					if (txtCedula.getText().length() == 3 || txtCedula.getText().length() == 11) {
 						txtCedula.setText(txtCedula.getText() + "-");
 					}
 				}
@@ -132,13 +127,11 @@ public class RegMedico extends JDialog {
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 
-		
 		txtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyTyped(java.awt.event.KeyEvent e) {
 				char c = e.getKeyChar();
 				if (!Character.isLetter(c) && c != ' ' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
 					e.consume();
-					java.awt.Toolkit.getDefaultToolkit().beep();
 				}
 			}
 		});
@@ -154,13 +147,11 @@ public class RegMedico extends JDialog {
 		contentPanel.add(txtApellido);
 		txtApellido.setColumns(10);
 
-
 		txtApellido.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyTyped(java.awt.event.KeyEvent e) {
 				char c = e.getKeyChar();
 				if (!Character.isLetter(c) && c != ' ' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
 					e.consume();
-					java.awt.Toolkit.getDefaultToolkit().beep();
 				}
 			}
 		});
@@ -176,7 +167,6 @@ public class RegMedico extends JDialog {
 		contentPanel.add(txtTelefono);
 		txtTelefono.setColumns(10);
 
-
 		txtTelefono.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyTyped(java.awt.event.KeyEvent e) {
 				char c = e.getKeyChar();
@@ -189,10 +179,7 @@ public class RegMedico extends JDialog {
 					return;
 				}
 				if (c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-					if (txtTelefono.getText().length() == 3) {
-						txtTelefono.setText(txtTelefono.getText() + "-");
-					}
-					else if (txtTelefono.getText().length() == 7) {
+					if (txtTelefono.getText().length() == 3 || txtTelefono.getText().length() == 7) {
 						txtTelefono.setText(txtTelefono.getText() + "-");
 					}
 				}
@@ -230,10 +217,8 @@ public class RegMedico extends JDialog {
 		cbxEspecialidad.setBounds(478, 275, 220, 20);
 		contentPanel.add(cbxEspecialidad);
 
-		
 		JButton btnAddEsp = new JButton("+");
-		Estilos.estilarBoton(btnAddEsp, new Color(127, 140, 141), Color.WHITE); 
-
+		Estilos.estilarBoton(btnAddEsp, new Color(127, 140, 141), Color.WHITE);
 		btnAddEsp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				RegEspecialidad regEsp = new RegEspecialidad();
@@ -257,10 +242,8 @@ public class RegMedico extends JDialog {
 		contentPanel.add(spnMaxCitas);
 		{
 			okButton = new JButton("Registrar");
-
 			Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
-
-			okButton.setBounds(221, 409, 110, 35); 
+			okButton.setBounds(221, 409, 110, 35);
 			contentPanel.add(okButton);
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -272,12 +255,9 @@ public class RegMedico extends JDialog {
 		}
 		{
 			JButton cancelButton = new JButton("Cancelar");
-
 			Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
-
 			cancelButton.setBounds(723, 409, 110, 35);
 			contentPanel.add(cancelButton);
-
 			cancelButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					dispose();
@@ -287,37 +267,24 @@ public class RegMedico extends JDialog {
 		}
 
 		JButton btnLimpiar = new JButton("Limpiar");
-
-		// --- ACCIÓN DEL BOTÓN LIMPIAR ---
 		btnLimpiar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				limpiarCampos();
 			}
 		});
-
-		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
-
+		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE);
 		btnLimpiar.setBounds(565, 409, 110, 35);
 		contentPanel.add(btnLimpiar);
 
 		JButton btnListado = new JButton("Listado");
 		Estilos.estilarBoton(btnListado, new Color(110, 140, 251), Color.WHITE);
-
-
 		btnListado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				txtCedula.setText("");
-				txtNombre.setText("");
-				txtApellido.setText("");
-				txtTelefono.setText("");
-				txtDireccion.setText("");
-
+				limpiarCampos();
 				ConsultarMedicos frame = new ConsultarMedicos();
-
 				frame.setLocationRelativeTo(contentPanel);
 				frame.setModal(true);
 				frame.setVisible(true);
-
 			}
 		});
 		btnListado.setBounds(400, 409, 110, 35);
@@ -334,7 +301,11 @@ public class RegMedico extends JDialog {
 		contentPanel.add(separator);
 
 		JLabel label = new JLabel("");
-		label.setIcon(new ImageIcon(RegMedico.class.getResource("/img/custom_resized_ffde04b9-ae4a-43dd-8c6e-2c67d4183e19.png")));
+		try {
+			label.setIcon(new ImageIcon(
+					RegMedico.class.getResource("/img/custom_resized_ffde04b9-ae4a-43dd-8c6e-2c67d4183e19.png")));
+		} catch (Exception e) {
+		}
 		label.setForeground(Color.WHITE);
 		label.setFont(new Font("Bahnschrift", Font.PLAIN, 40));
 		label.setBounds(702, -7, 366, 131);
@@ -347,9 +318,9 @@ public class RegMedico extends JDialog {
 	private void cargarEspecialidades() {
 		cbxEspecialidad.removeAllItems();
 		cbxEspecialidad.addItem("<Seleccione>");
-		ArrayList<Especialidad> lista = (ArrayList<Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
-
-		if(lista != null) {
+		Object resp = ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
+		if (resp != null && resp instanceof ArrayList) {
+			ArrayList<Especialidad> lista = (ArrayList<Especialidad>) resp;
 			for (Especialidad esp : lista) {
 				cbxEspecialidad.addItem(esp.getNombre());
 			}
@@ -384,7 +355,7 @@ public class RegMedico extends JDialog {
 
 			boolean exito = (boolean) ClienteSocket.enviar("REG_MEDICO", nuevoMedico);
 
-			if(exito) {
+			if (exito) {
 				JOptionPane.showMessageDialog(null, "Médico registrado en el Servidor.");
 				limpiarCampos();
 			} else {
@@ -401,7 +372,7 @@ public class RegMedico extends JDialog {
 
 			boolean exito = (boolean) ClienteSocket.enviar("UPDATE_MEDICO", medicoActual);
 
-			if(exito) {
+			if (exito) {
 				JOptionPane.showMessageDialog(null, "Médico actualizado.");
 				dispose();
 			} else {
@@ -410,7 +381,6 @@ public class RegMedico extends JDialog {
 		}
 	}
 
-	
 	private void limpiarCampos() {
 		txtCedula.setText("");
 		txtNombre.setText("");
@@ -418,9 +388,12 @@ public class RegMedico extends JDialog {
 		txtTelefono.setText("");
 		txtDireccion.setText("");
 
-		if(dateChooser != null) dateChooser.setDate(null);
-		if(cbxEspecialidad != null) cbxEspecialidad.setSelectedIndex(0);
-		if(spnMaxCitas != null) spnMaxCitas.setValue(10);
+		if (dateChooser != null)
+			dateChooser.setDate(null);
+		if (cbxEspecialidad != null)
+			cbxEspecialidad.setSelectedIndex(0);
+		if (spnMaxCitas != null)
+			spnMaxCitas.setValue(10);
 
 		medicoActual = null;
 		txtCedula.setEditable(true);

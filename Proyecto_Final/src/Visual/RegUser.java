@@ -32,9 +32,6 @@ public class RegUser extends JDialog {
 	private JComboBox<String> cbMedicos;
 	private JLabel lblCedulaLink;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		try {
 			RegUser dialog = new RegUser();
@@ -45,12 +42,12 @@ public class RegUser extends JDialog {
 		}
 	}
 
-	/**
-	 * Create the dialog.
-	 */
 	public RegUser() {
 		setTitle("Registrar Usuarios");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(RegUser.class.getResource("/img/perfil(2).png")));
+		try {
+			setIconImage(Toolkit.getDefaultToolkit().getImage(RegUser.class.getResource("/img/perfil(2).png")));
+		} catch (Exception e) {
+		}
 		setBounds(100, 100, 563, 446);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -137,12 +134,18 @@ public class RegUser extends JDialog {
 								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
+
+					if (comboBox.getSelectedIndex() == 0) {
+						JOptionPane.showMessageDialog(contentPanel, "Seleccione un tipo de usuario.");
+						return;
+					}
+
 					String tipo = comboBox.getSelectedItem().toString();
 					String cedulaLink = "";
 
 					if (tipo.equalsIgnoreCase("Medico")) {
 						if (cbMedicos.getSelectedItem() == null
-								|| cbMedicos.getSelectedItem().toString().equals("<Seleccione Médico>")) {
+								|| cbMedicos.getSelectedItem().toString().startsWith("<Seleccione")) {
 							JOptionPane.showMessageDialog(contentPanel, "Debe seleccionar un médico de la lista.");
 							return;
 						}
@@ -153,7 +156,7 @@ public class RegUser extends JDialog {
 							int fin = seleccion.lastIndexOf(")");
 							cedulaLink = seleccion.substring(inicio, fin);
 						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(contentPanel, "Error al leer la cédula seleccionada.");
+							JOptionPane.showMessageDialog(contentPanel, "Error al procesar la cédula seleccionada.");
 							return;
 						}
 					}
@@ -165,14 +168,8 @@ public class RegUser extends JDialog {
 						JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado en el Servidor!");
 						dispose();
 					} else {
-						if (respuestaServidor == null) {
-							JOptionPane.showMessageDialog(contentPanel, "Error: Servidor apagado o sin conexión.",
-									"Error Fatal", JOptionPane.ERROR_MESSAGE);
-						} else {
-							JOptionPane.showMessageDialog(contentPanel,
-									"Error al guardar (Usuario duplicado o fallo lógico).", "Error",
-									JOptionPane.ERROR_MESSAGE);
-						}
+						JOptionPane.showMessageDialog(contentPanel, "Error al guardar (¿Usuario duplicado?).", "Error",
+								JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			});
@@ -199,9 +196,7 @@ public class RegUser extends JDialog {
 				if (seleccionado.equalsIgnoreCase("Medico")) {
 					cbMedicos.setVisible(true);
 					lblCedulaLink.setVisible(true);
-
 					cargarListaMedicos();
-
 				} else {
 					cbMedicos.setVisible(false);
 					lblCedulaLink.setVisible(false);
@@ -210,18 +205,17 @@ public class RegUser extends JDialog {
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	private void cargarListaMedicos() {
 		cbMedicos.removeAllItems();
 		cbMedicos.addItem("<Seleccione Médico>");
 		Object respuesta = ClienteSocket.enviar("LISTAR_MEDICOS", null);
 
 		if (respuesta != null && respuesta instanceof java.util.ArrayList) {
-			java.util.ArrayList<Medico> lista = (java.util.ArrayList<Medico>) respuesta;
+			ArrayList<Medico> lista = (ArrayList<Medico>) respuesta;
 			for (Medico med : lista) {
 				cbMedicos.addItem(med.getNombre() + " (" + med.getCedula() + ")");
 			}
-		} else {
-			System.out.println("No se pudo cargar la lista de médicos.");
 		}
 	}
 }

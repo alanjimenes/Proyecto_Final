@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -22,7 +22,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import logico.Cita;
-import logico.Clinica;
 import logico.Medico;
 import logico.User;
 
@@ -35,6 +34,7 @@ public class MisCitas extends JDialog {
 	private Cita citaSeleccionada = null;
 	private JButton btnAtender;
 	private User usuarioMedico;
+	private Medico medicoActual;
 
 	public MisCitas(User usuario) {
 		this.usuarioMedico = usuario;
@@ -50,11 +50,13 @@ public class MisCitas extends JDialog {
 		panelNorte.setBackground(new Color(60, 70, 123));
 		contentPanel.add(panelNorte, BorderLayout.NORTH);
 
+		// Cargamos el médico asociado al usuario
 		String nombreMedico = "Desconocido";
-		if(usuario.getCedula() != null && !usuario.getCedula().isEmpty()) {
-			Medico m = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", usuario.getCedula());
-			if (m != null) {
-				nombreMedico = m.getNombre() + " " + m.getApellido();
+		if (usuario.getCedula() != null) {
+			Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuario.getCedula());
+			if (resp instanceof Medico) {
+				medicoActual = (Medico) resp;
+				nombreMedico = medicoActual.getNombre() + " " + medicoActual.getApellido();
 			}
 		}
 
@@ -86,8 +88,7 @@ public class MisCitas extends JDialog {
 			}
 		};
 
-		String[] headers = {"Código", "Hora", "Paciente", "Cédula Paciente", "Estado"};
-		model.setColumnIdentifiers(headers);
+		model.setColumnIdentifiers(new String[] { "Código", "Hora", "Paciente", "Cédula Paciente", "Estado" });
 		table.setModel(model);
 		scrollPane.setViewportView(table);
 
@@ -112,11 +113,7 @@ public class MisCitas extends JDialog {
 		buttonPane.add(btnAtender);
 
 		JButton btnCerrar = new JButton("Cerrar");
-		btnCerrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
+		btnCerrar.addActionListener(e -> dispose());
 		buttonPane.add(btnCerrar);
 
 		cargarCitasHoy();
@@ -125,27 +122,25 @@ public class MisCitas extends JDialog {
 	private void cargarCitasHoy() {
 		model.setRowCount(0);
 		row = new Object[5];
-		String cedulaMedico = usuarioMedico.getCedula();
 
-		if(cedulaMedico == null || cedulaMedico.isEmpty()) {
-			return; 
-		}
-		Medico medicoActual = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedulaMedico);
-		if (medicoActual == null) {
-			JOptionPane.showMessageDialog(null, "Error: No se encontró la información del médico en el servidor.");
+		if (medicoActual == null)
 			return;
-		}
-		for (Cita cita : medicoActual.getCitasAsignadas()) {
 
-			boolean esHoy = cita.getFechaHora().toLocalDate().equals(LocalDate.now());
-			boolean esPendiente = cita.getEstado().equalsIgnoreCase("Pendiente");
-			if (esHoy && esPendiente) {
-				row[0] = cita.getCodigo_cita();
-				row[1] = cita.getFechaHora().toLocalTime().toString();
-				row[2] = cita.getCliente().getNombre() + " " + cita.getCliente().getApellido();
-				row[3] = cita.getCliente().getCedula();
-				row[4] = cita.getEstado();
-				model.addRow(row);
+		medicoActual = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", medicoActual.getCedula());
+
+		if (medicoActual != null && medicoActual.getCitasAsignadas() != null) {
+			for (Cita cita : medicoActual.getCitasAsignadas()) {
+				boolean esHoy = cita.getFechaHora().toLocalDate().equals(LocalDate.now());
+				boolean esPendiente = cita.getEstado().equalsIgnoreCase("Pendiente");
+
+				if (esHoy && esPendiente) {
+					row[0] = cita.getCodigo_cita();
+					row[1] = cita.getFechaHora().toLocalTime().toString();
+					row[2] = cita.getCliente().getNombre() + " " + cita.getCliente().getApellido();
+					row[3] = cita.getCliente().getCedula();
+					row[4] = cita.getEstado();
+					model.addRow(row);
+				}
 			}
 		}
 	}

@@ -2,7 +2,6 @@ package Visual;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -30,7 +29,6 @@ public class RegVacuna extends JDialog {
 
 	public RegVacuna() {
 		setResizable(false);
-		//setIconImage(Toolkit.getDefaultToolkit().getImage(RegVacuna.class.getResource("/img/vacuna.png")));
 		setTitle("Registrar Vacuna");
 		setBounds(100, 100, 490, 350);
 		setLocationRelativeTo(null);
@@ -65,23 +63,26 @@ public class RegVacuna extends JDialog {
 		txtDescripcion.setLineWrap(true);
 		scrollPane.setViewportView(txtDescripcion);
 
-
 		{
 			JButton okButton = new JButton("Registrar");
 			contentPanel.add(okButton);
 			Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
 			okButton.setBounds(22, 250, 110, 35);
 			okButton.addActionListener(new ActionListener() {
+				@SuppressWarnings("unchecked")
 				public void actionPerformed(ActionEvent e) {
-					if(!txtNombre.getText().isEmpty()) {
-						ArrayList<Vacuna> lista = (ArrayList<Vacuna>) ClienteSocket.enviar("LISTAR_VACUNAS", null);
-						int id = (lista != null) ? lista.size() + 1 : 1;
+					if (!txtNombre.getText().isEmpty()) {
+						Object resp = ClienteSocket.enviar("LISTAR_VACUNAS", null);
+						ArrayList<Vacuna> lista = (resp instanceof ArrayList) ? (ArrayList<Vacuna>) resp
+								: new ArrayList<>();
+
+						int id = lista.size() + 1;
 						String codigo = "VAC-" + id;
 
 						Vacuna aux = new Vacuna(codigo, txtNombre.getText(), txtDescripcion.getText());
 						boolean exito = (boolean) ClienteSocket.enviar("REG_VACUNA", aux);
 
-						if(exito) {
+						if (exito) {
 							JOptionPane.showMessageDialog(null, "Vacuna creada con éxito.");
 							dispose();
 						} else {
