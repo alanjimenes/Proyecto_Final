@@ -7,12 +7,14 @@ public class Vacuna implements Serializable {
 	private String codigo_vacun;
 	private String nombre;
 	private String descripcion;
+	private boolean activo;
 
 	public Vacuna(String codigo_vacun, String nombre, String descripcion) {
 		super();
 		this.codigo_vacun = codigo_vacun;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
+		this.activo = true;
 	}
 
 	public String getCodigo_vacun() {
@@ -35,8 +37,16 @@ public class Vacuna implements Serializable {
 		this.descripcion = descripcion;
 	}
 
+	public boolean isActivo() { 
+		return activo;
+	}
+
+	public void setActivo(boolean activo) { 
+		this.activo = activo; 
+	}
+
 	@Override
 	public String toString() {
-		return nombre; // VITAL PARA LA INTERFAZ
+		return nombre;
 	}
 }

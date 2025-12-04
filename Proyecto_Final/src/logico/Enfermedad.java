@@ -9,6 +9,7 @@ public class Enfermedad implements Serializable {
 	private String nombre;
 	private String descripcion;
 	private boolean vigilancia;
+	private boolean activo;
 
 	public Enfermedad(String codigo_sick, String nombre, String descripcion, boolean vigilancia) {
 		super();
@@ -16,6 +17,7 @@ public class Enfermedad implements Serializable {
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.vigilancia = vigilancia;
+		this.activo = true;
 	}
 
 	public String getCodigo_sick() {
@@ -53,6 +55,12 @@ public class Enfermedad implements Serializable {
 	@Override
 	public String toString() {
 		return nombre; 
+	}
+	public boolean isActivo() { 
+		return activo; 
+	}
+	public void setActivo(boolean activo) { 
+		this.activo = activo; 
 	}
 
 	@Override

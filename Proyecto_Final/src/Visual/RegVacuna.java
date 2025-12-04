@@ -127,7 +127,8 @@ public class RegVacuna extends JDialog {
 			String codigo = "VAC-" + id;
 
 			Vacuna aux = new Vacuna(codigo, txtNombre.getText(), txtDescripcion.getText());
-			boolean exito = (boolean) ClienteSocket.enviar("REG_VACUNA", aux);
+			Object respuesta = ClienteSocket.enviar("REG_VACUNA", aux);
+			boolean exito = (respuesta != null && (boolean) respuesta);
 
 			if(exito) {
 				JOptionPane.showMessageDialog(null, "Vacuna creada en el Servidor.");

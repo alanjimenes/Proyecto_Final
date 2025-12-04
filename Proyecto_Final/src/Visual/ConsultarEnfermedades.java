@@ -4,22 +4,19 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -35,30 +32,39 @@ public class ConsultarEnfermedades extends JDialog {
 	private JButton btnDelete;
 
 	public ConsultarEnfermedades() {
-		try {
-			//setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarEnfermedades.class.getResource("/img/seguro-de-salud.png")));
-		} catch (Exception e) {}
-
 		setTitle("Catálogo de Enfermedades");
-		setBounds(100, 100, 700, 500);
+		setBounds(100, 100, 750, 500);
 		setLocationRelativeTo(null);
 		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
+
+		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
-		JPanel panel = new JPanel();
-		panel.setBackground(SystemColor.desktop);
-		panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		contentPanel.add(panel, BorderLayout.CENTER);
-		panel.setLayout(new BorderLayout(0, 0));
+		JPanel panelNorte = new JPanel();
+		panelNorte.setBackground(new Color(60, 70, 123));
+		panelNorte.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 10));
+		contentPanel.add(panelNorte, BorderLayout.NORTH);
+
+		JLabel lblTitulo = new JLabel("Gestión de Enfermedades");
+		lblTitulo.setForeground(Color.WHITE);
+		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
+		panelNorte.add(lblTitulo);
 
 		JScrollPane scrollPane = new JScrollPane();
-		panel.add(scrollPane, BorderLayout.CENTER);
+		scrollPane.getViewport().setBackground(Color.WHITE);
+		scrollPane.setBorder(null);
+		contentPanel.add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
-		table.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		table.setRowHeight(30);
+		table.setShowVerticalLines(false);
+		table.setGridColor(new Color(230, 230, 230));
+		table.setSelectionBackground(new Color(232, 246, 255));
+		table.setSelectionForeground(Color.BLACK);
+		table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -67,7 +73,6 @@ public class ConsultarEnfermedades extends JDialog {
 				if (index >= 0) {
 					String codigo = table.getValueAt(index, 0).toString();
 					seleccionado = buscarEnfermedadLocal(codigo);
-
 					btnUpdate.setEnabled(true);
 					btnDelete.setEnabled(true);
 				}
@@ -82,19 +87,34 @@ public class ConsultarEnfermedades extends JDialog {
 		table.setModel(model);
 
 		JTableHeader header = table.getTableHeader();
-		header.setBackground(new Color(60, 70, 123));
-		header.setForeground(Color.WHITE);
-		header.setOpaque(true);
+		header.setDefaultRenderer(new DefaultTableCellRenderer() {
+			@Override
+			public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+				super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				setBackground(new Color(60, 70, 123));
+				setForeground(Color.WHITE);
+				setFont(new Font("Bahnschrift", Font.BOLD, 14));
+				setHorizontalAlignment(JLabel.CENTER);
+				setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 1, Color.WHITE));
+				return this;
+			}
+		});
+
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+		}
 
 		scrollPane.setViewportView(table);
 
 		JPanel buttonPane = new JPanel();
-		buttonPane.setBackground(new Color(60, 70, 123));
+		buttonPane.setBackground(Color.WHITE);
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		JButton btnNueva = new JButton("Nueva");
-		Estilos.estilarBoton(btnNueva, new Color(176, 206, 136), Color.WHITE);
+		Estilos.estilarBoton(btnNueva, new Color(0, 150, 136), Color.WHITE);
 		btnNueva.addActionListener(e -> {
 			RegEnfermedades reg = new RegEnfermedades();
 			reg.setModal(true);
@@ -108,7 +128,7 @@ public class ConsultarEnfermedades extends JDialog {
 		Estilos.estilarBoton(btnUpdate, new Color(41, 128, 185), Color.WHITE);
 		btnUpdate.setEnabled(false);
 		btnUpdate.addActionListener(e -> {
-			if(seleccionado != null) {
+			if (seleccionado != null) {
 				RegEnfermedades reg = new RegEnfermedades(seleccionado);
 				reg.setModal(true);
 				reg.setVisible(true);
@@ -118,20 +138,22 @@ public class ConsultarEnfermedades extends JDialog {
 		});
 		buttonPane.add(btnUpdate);
 
-		btnDelete = new JButton("Eliminar");
+		btnDelete = new JButton("Desactivar");
 		Estilos.estilarBoton(btnDelete, new Color(231, 76, 60), Color.WHITE);
 		btnDelete.setEnabled(false);
 		btnDelete.addActionListener(e -> {
-			if(seleccionado != null) {
-				int opt = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar la enfermedad " + seleccionado.getNombre() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
-				if(opt == JOptionPane.YES_OPTION) {
-					boolean exito = (boolean) ClienteSocket.enviar("DELETE_ENFERMEDAD", seleccionado);
-					if(exito) {
-						JOptionPane.showMessageDialog(null, "Eliminado correctamente.");
+			if (seleccionado != null) {
+				int opt = JOptionPane.showConfirmDialog(null, 
+						"¿Seguro desea desactivar la enfermedad " + seleccionado.getNombre() + "?", 
+						"Confirmar", JOptionPane.YES_NO_OPTION);
+				if (opt == JOptionPane.YES_OPTION) {
+					seleccionado.setActivo(false); 
+					boolean exito = (boolean) ClienteSocket.enviar("UPDATE_ENFERMEDAD", seleccionado);
+
+					if (exito) {
+						JOptionPane.showMessageDialog(null, "Enfermedad desactivada.");
 						cargarEnfermedades();
 						resetBotones();
-					} else {
-						JOptionPane.showMessageDialog(null, "Error al eliminar.");
 					}
 				}
 			}
@@ -153,8 +175,10 @@ public class ConsultarEnfermedades extends JDialog {
 
 		if (lista != null) {
 			for (Enfermedad enf : lista) {
-				String vig = enf.isVigilancia() ? "SÍ (ALERTA)" : "No";
-				model.addRow(new Object[] { enf.getCodigo_sick(), enf.getNombre(), vig });
+				if (enf.isActivo()) {
+					String vig = enf.isVigilancia() ? "SÍ (ALERTA)" : "No";
+					model.addRow(new Object[] { enf.getCodigo_sick(), enf.getNombre(), vig });
+				}
 			}
 		}
 	}
@@ -162,9 +186,9 @@ public class ConsultarEnfermedades extends JDialog {
 	@SuppressWarnings("unchecked")
 	private Enfermedad buscarEnfermedadLocal(String codigo) {
 		ArrayList<Enfermedad> lista = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
-		if(lista != null) {
-			for(Enfermedad e : lista) {
-				if(e.getCodigo_sick().equals(codigo)) return e;
+		if (lista != null) {
+			for (Enfermedad e : lista) {
+				if (e.getCodigo_sick().equals(codigo)) return e;
 			}
 		}
 		return null;

@@ -20,16 +20,18 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import logico.Enfermedad;
+import java.awt.Toolkit;
 
 public class RegEnfermedades extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtNombre;
-	private JTextArea txtDescripcion; 
+	private JTextArea txtDescripcion;
 	private JCheckBox chkVigilancia;
 	private Enfermedad enfermedadActual = null;
 
 	public RegEnfermedades() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegEnfermedades.class.getResource("/img/receta.png")));
 		init();
 	}
 
@@ -93,11 +95,12 @@ public class RegEnfermedades extends JDialog {
 		contentPanel.add(lblTitulo);
 
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(60,70,123));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		JButton okButton = new JButton(enfermedadActual == null ? "Registrar" : "Actualizar");
-		Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+		Estilos.estilarBoton(okButton, new Color(0, 150, 136), Color.WHITE);
 		okButton.addActionListener(e -> registrar());
 		buttonPane.add(okButton);
 
@@ -117,8 +120,9 @@ public class RegEnfermedades extends JDialog {
 			String codigo = "ENF-" + System.currentTimeMillis() % 10000;
 			Enfermedad nueva = new Enfermedad(codigo, txtNombre.getText(), txtDescripcion.getText(),
 					chkVigilancia.isSelected());
+			Object respuesta = ClienteSocket.enviar("REG_ENFERMEDAD", nueva);
+			boolean exito = (respuesta != null && (boolean) respuesta);
 
-			boolean exito = (boolean) ClienteSocket.enviar("REG_ENFERMEDAD", nueva);
 			if (exito) {
 				JOptionPane.showMessageDialog(null, "Enfermedad registrada.");
 				dispose();
