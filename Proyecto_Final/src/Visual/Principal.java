@@ -66,58 +66,58 @@ public class Principal extends JFrame {
 	private ChartPanel chartPanel;
 
 	public Principal(User usuarioLogueado) {
-	    LocalDate hoy = LocalDate.now();
-	    DateTimeFormatter formateador = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", new Locale("es", "ES"));
-	    String fechaTexto = hoy.format(formateador);
+		LocalDate hoy = LocalDate.now();
+		DateTimeFormatter formateador = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", new Locale("es", "ES"));
+		String fechaTexto = hoy.format(formateador);
 
-	    try {
-	        setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
-	    } catch (Exception e) { }
+		try {
+			setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
+		} catch (Exception e) { }
 
-	    this.usuarioActual = usuarioLogueado;
+		this.usuarioActual = usuarioLogueado;
 
-	    iniciarTodo();
-	    configurarAccesosPorRol();
+		iniciarTodo();
+		configurarAccesosPorRol();
 
-	    panel_1 = new JPanel(); 
-	    panel_1.setBackground(new Color(60, 70, 123));
-	    panel_1.setLayout(new BorderLayout());
-	    
-	    panel_1.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5)); 
-	    contentPane.add(panel_1, BorderLayout.SOUTH);
+		panel_1 = new JPanel(); 
+		panel_1.setBackground(new Color(60, 70, 123));
+		panel_1.setLayout(new BorderLayout());
 
-	
-	    lblReloj = new JLabel("00:00:00");
-	    lblReloj.setForeground(Color.WHITE);
-	    lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 36));
-	    lblReloj.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 20, 0, 0)); 
-	    panel_1.add(lblReloj, BorderLayout.WEST);
+		panel_1.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5)); 
+		contentPane.add(panel_1, BorderLayout.SOUTH);
 
-	   
-	    JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-	    panelBoton.setOpaque(false); 
 
-	    JButton btnLogout = new JButton("Cerrar Sesión");
-	    btnLogout.setFont(new Font("Bahnschrift", Font.BOLD, 16));
-	    
-	    
-	    Estilos.estilarBoton(btnLogout, new Color(231, 76, 60), Color.WHITE); 
-	    
-	   
-	    btnLogout.addActionListener(e -> {
-	        int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?", "Cerrar Sesión", JOptionPane.YES_NO_OPTION);
-	        if (confirm == JOptionPane.YES_OPTION) {
-	            dispose();
-	            Login login = new Login(); 
-	            login.setVisible(true); 
-	        }
-	    });
+		lblReloj = new JLabel("00:00:00");
+		lblReloj.setForeground(Color.WHITE);
+		lblReloj.setFont(new Font("Bahnschrift", Font.BOLD, 36));
+		lblReloj.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 20, 0, 0)); 
+		panel_1.add(lblReloj, BorderLayout.WEST);
 
-	    panelBoton.add(btnLogout);
-	    panel_1.add(panelBoton, BorderLayout.EAST);
-	    fechaTexto = fechaTexto.substring(0, 1).toUpperCase() + fechaTexto.substring(1);
-	    
-	    iniciarReloj();
+
+		JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		panelBoton.setOpaque(false); 
+
+		JButton btnLogout = new JButton("Cerrar Sesión");
+		btnLogout.setFont(new Font("Bahnschrift", Font.BOLD, 16));
+
+
+		Estilos.estilarBoton(btnLogout, new Color(231, 76, 60), Color.WHITE); 
+
+
+		btnLogout.addActionListener(e -> {
+			int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?", "Cerrar Sesión", JOptionPane.YES_NO_OPTION);
+			if (confirm == JOptionPane.YES_OPTION) {
+				dispose();
+				Login login = new Login(); 
+				login.setVisible(true); 
+			}
+		});
+
+		panelBoton.add(btnLogout);
+		panel_1.add(panelBoton, BorderLayout.EAST);
+		fechaTexto = fechaTexto.substring(0, 1).toUpperCase() + fechaTexto.substring(1);
+
+		iniciarReloj();
 	}
 
 	private void iniciarTodo() {
@@ -287,6 +287,7 @@ public class Principal extends JFrame {
 	private void configurarAccesosPorRol() {
 		if (menuCitas == null) return;
 		String rol = this.usuarioActual.getRol();
+
 		menuCitas.setVisible(false);
 		menuConsulta.setVisible(false);
 		menuAdministracion.setVisible(false);
@@ -299,18 +300,22 @@ public class Principal extends JFrame {
 			menuAdministracion.setVisible(true);
 			menuPacientes.setVisible(true);
 			break;
+
 		case "Asistente":
 			menuCitas.setVisible(true);
 			break;
+
 		case "Medico":
 			menuPacientes.setVisible(true);
 			menuConsulta.setVisible(true);
 			break;
+
 		default:
+
 			System.exit(0);
 			break;
 		}
-	}
+	} 
 
 	private void abrirDialogoDeCitas() {
 		JDialog dialogCitas = new JDialog(Principal.this, "Gestión de Citas", true);
@@ -385,7 +390,7 @@ public class Principal extends JFrame {
 			panelDashboard.add(panelMedico, BorderLayout.CENTER);
 		}
 		else if (rol.equalsIgnoreCase("Asistente")) {
-			// ... (Lógica del asistente se mantiene igual) ...
+	
 			panelDashboard.setLayout(new BorderLayout());
 			JLabel lblLogo = new JLabel("");
 			lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -428,36 +433,36 @@ public class Principal extends JFrame {
 	}
 
 	@SuppressWarnings("unchecked")
-    private void actualizarGrafico(String tipo) {
-        if (panelGrafico == null) return;
-        panelGrafico.removeAll();
-       
-        panelGrafico.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        JFreeChart chart = null;
-        java.util.Random random = new java.util.Random(); 
+	private void actualizarGrafico(String tipo) {
+		if (panelGrafico == null) return;
+		panelGrafico.removeAll();
 
-        Font fontTitulo = new Font("Bahnschrift", Font.BOLD, 20);
-        Font fontEjes = new Font("Bahnschrift", Font.PLAIN, 14);
-        Font fontEtiquetas = new Font("Bahnschrift", Font.PLAIN, 12);
-        Font fontValores = new Font("Bahnschrift", Font.BOLD, 12);
+		panelGrafico.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        if (tipo.equals("ENFERMEDADES")) {
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		JFreeChart chart = null;
+		java.util.Random random = new java.util.Random(); 
 
-            // =============================================================
-            // BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
-            // =============================================================
-            String[] enfermedadesPrueba = {"Gripe A", "Covid-19", "Diabetes T2", "Hipertensión", "Gastritis", "Asma"};
-            for (String enf : enfermedadesPrueba) {
-                dataset.addValue(random.nextInt(45) + 5, "Casos", enf);
-            }
+		Font fontTitulo = new Font("Bahnschrift", Font.BOLD, 20);
+		Font fontEjes = new Font("Bahnschrift", Font.PLAIN, 14);
+		Font fontEtiquetas = new Font("Bahnschrift", Font.PLAIN, 12);
+		Font fontValores = new Font("Bahnschrift", Font.BOLD, 12);
 
-            // =============================================================
-            // BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
-            // (Para usar: Borra el Bloque 1 y descomenta este bloque)
-            // =============================================================
-            /*
+		if (tipo.equals("ENFERMEDADES")) {
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+			// =============================================================
+			// BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
+			// =============================================================
+			String[] enfermedadesPrueba = {"Gripe A", "Covid-19", "Diabetes T2", "Hipertensión", "Gastritis", "Asma"};
+			for (String enf : enfermedadesPrueba) {
+				dataset.addValue(random.nextInt(45) + 5, "Casos", enf);
+			}
+
+			// =============================================================
+			// BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
+			// (Para usar: Borra el Bloque 1 y descomenta este bloque)
+			// =============================================================
+			/*
             ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
             java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
             if (clientes != null) {
@@ -476,33 +481,33 @@ public class Principal extends JFrame {
             for (String key : conteo.keySet()) {
                 dataset.addValue(conteo.get(key), "Casos", key);
             }
-            */
+			 */
 
-            chart = ChartFactory.createBarChart("Enfermedades Diagnosticadas", "Enfermedad", "Casos", dataset, PlotOrientation.VERTICAL, false, true, false);
+			chart = ChartFactory.createBarChart("Enfermedades Diagnosticadas", "Enfermedad", "Casos", dataset, PlotOrientation.VERTICAL, false, true, false);
 
-            CategoryPlot plot = chart.getCategoryPlot();
-            BarRenderer renderer = (BarRenderer) plot.getRenderer();
-            
-            renderer.setSeriesPaint(0, new Color(60, 70, 123)); 
+			CategoryPlot plot = chart.getCategoryPlot();
+			BarRenderer renderer = (BarRenderer) plot.getRenderer();
 
-            configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
+			renderer.setSeriesPaint(0, new Color(60, 70, 123)); 
 
-        } else if (tipo.equals("VACUNAS")) {
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
 
-            // =============================================================
-            // BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
-            // =============================================================
-            String[] vacunasPrueba = {"Pfizer", "Sinovac", "AstraZeneca", "Moderna", "Influenza"};
-            for (String vac : vacunasPrueba) {
-                dataset.addValue(random.nextInt(70) + 10, "Dosis", vac);
-            }
+		} else if (tipo.equals("VACUNAS")) {
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-            // =============================================================
-            // BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
-            // (Para usar: Borra el Bloque 1 y descomenta este bloque)
-            // =============================================================
-            /*
+			// =============================================================
+			// BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
+			// =============================================================
+			String[] vacunasPrueba = {"Pfizer", "Sinovac", "AstraZeneca", "Moderna", "Influenza"};
+			for (String vac : vacunasPrueba) {
+				dataset.addValue(random.nextInt(70) + 10, "Dosis", vac);
+			}
+
+			// =============================================================
+			// BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
+			// (Para usar: Borra el Bloque 1 y descomenta este bloque)
+			// =============================================================
+			/*
             ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
             java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
             if (clientes != null) {
@@ -518,49 +523,51 @@ public class Principal extends JFrame {
             for (String key : conteo.keySet()) {
                 dataset.addValue(conteo.get(key), "Dosis", key);
             }
-            */
-            // =============================================================
+			 */
+			// =============================================================
 
-            chart = ChartFactory.createBarChart("Vacunas Aplicadas", "Vacuna", "Total Dosis", dataset, PlotOrientation.HORIZONTAL, false, true, false);
+			chart = ChartFactory.createBarChart("Vacunas Aplicadas", "Vacuna", "Total Dosis", dataset, PlotOrientation.HORIZONTAL, false, true, false);
 
-            CategoryPlot plot = chart.getCategoryPlot();
-            BarRenderer renderer = (BarRenderer) plot.getRenderer();
-            renderer.setSeriesPaint(0, new Color(0, 150, 136)); 
+			CategoryPlot plot = chart.getCategoryPlot();
+			BarRenderer renderer = (BarRenderer) plot.getRenderer();
+			renderer.setSeriesPaint(0, new Color(0, 150, 136)); 
 
-            configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
-        }
+			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
+		}
 
-        if (chart != null) {
-            chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            
-            chartPanel = new ChartPanel(chart);
-            chartPanel.setBackground(Color.WHITE);
-            panelGrafico.add(chartPanel, BorderLayout.CENTER);
-        }
+		if (chart != null) {
+			chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        panelGrafico.revalidate();
-        panelGrafico.repaint();
-    }
+			chartPanel = new ChartPanel(chart);
+			chartPanel.setBackground(Color.WHITE);
+			panelGrafico.add(chartPanel, BorderLayout.CENTER);
+		}
 
-    private void configurarPlotYRenderer(JFreeChart chart, CategoryPlot plot, BarRenderer renderer, Font fTitulo, Font fEjes, Font fEtiquetas, Font fValores) {
-        chart.setBackgroundPaint(Color.WHITE);
-        chart.getTitle().setFont(fTitulo);
+		panelGrafico.revalidate();
+		panelGrafico.repaint();
+	}
 
-        plot.setBackgroundPaint(new Color(250, 250, 250));
-        plot.setOutlineVisible(false);
-        plot.setRangeGridlinePaint(new Color(220, 220, 220));
+	private void configurarPlotYRenderer(JFreeChart chart, CategoryPlot plot, BarRenderer renderer, Font fTitulo, Font fEjes, Font fEtiquetas, Font fValores) {
+		chart.setBackgroundPaint(Color.WHITE);
+		chart.getTitle().setFont(fTitulo);
 
-        plot.getDomainAxis().setLabelFont(fEjes);
-        plot.getDomainAxis().setTickLabelFont(fEtiquetas);
-        plot.getRangeAxis().setLabelFont(fEjes);
-        plot.getRangeAxis().setTickLabelFont(fEtiquetas);
+		plot.setBackgroundPaint(new Color(250, 250, 250));
+		plot.setOutlineVisible(false);
+		plot.setRangeGridlinePaint(new Color(220, 220, 220));
 
-   
-        renderer.setBarPainter(new org.jfree.chart.renderer.category.StandardBarPainter());
-        renderer.setShadowVisible(false); 
-        renderer.setDrawBarOutline(false);
-        renderer.setBaseItemLabelGenerator(new org.jfree.chart.labels.StandardCategoryItemLabelGenerator());
-        renderer.setBaseItemLabelsVisible(true);
-        renderer.setBaseItemLabelFont(fValores);
-    }
+		plot.getDomainAxis().setLabelFont(fEjes);
+		plot.getDomainAxis().setTickLabelFont(fEtiquetas);
+		plot.getRangeAxis().setLabelFont(fEjes);
+		plot.getRangeAxis().setTickLabelFont(fEtiquetas);
+
+
+		renderer.setBarPainter(new org.jfree.chart.renderer.category.StandardBarPainter());
+		renderer.setShadowVisible(false); 
+		renderer.setDrawBarOutline(false);
+		renderer.setBaseItemLabelGenerator(new org.jfree.chart.labels.StandardCategoryItemLabelGenerator());
+		renderer.setBaseItemLabelsVisible(true);
+		renderer.setBaseItemLabelFont(fValores);
+	}
+
+
 }

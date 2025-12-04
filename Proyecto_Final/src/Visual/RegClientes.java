@@ -36,7 +36,7 @@ public class RegClientes extends JDialog {
     private JTextField txtApellido;
     private JTextField txtTelefono;
     private JTextField txtDireccion;
-    // Agregamos el JDateChooser
+
     private JDateChooser txtFechaNac; 
     private Cliente clienteActual = null;
     private JButton okButton;
@@ -63,7 +63,7 @@ public class RegClientes extends JDialog {
         txtDireccion.setText(clienteEditar.getDireccion());
         cbxGenero.setSelectedItem(clienteEditar.getGenero());
 
-        // Cargar fecha de nacimiento al editar
+ 
         if (clienteEditar.getFechaNacimiento() != null) {
             Date date = Date.from(clienteEditar.getFechaNacimiento().atStartOfDay(ZoneId.systemDefault()).toInstant());
             txtFechaNac.setDate(date);
@@ -72,7 +72,7 @@ public class RegClientes extends JDialog {
 
     private void initComponents() {
         setTitle("Registrar Paciente");
-        setBounds(100, 100, 1054, 550); // Aumenté un poco la altura para que quepa bien la fecha
+        setBounds(100, 100, 1054, 550); 
         setLocationRelativeTo(null);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBackground(new Color(60, 70, 123));
@@ -92,7 +92,7 @@ public class RegClientes extends JDialog {
         contentPanel.add(txtCedula);
         txtCedula.setColumns(10);
         
-        // KeyListener de Cedula...
+   
         txtCedula.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent e) {
                 char c = e.getKeyChar();
@@ -335,7 +335,7 @@ public class RegClientes extends JDialog {
                 txtNombre.getText(), 
                 txtApellido.getText(),
                 txtTelefono.getText(), 
-                fechaNacimiento, // <--- Nueva fecha
+                fechaNacimiento, 
                 txtDireccion.getText(), 
                 true, 
                 null, 
