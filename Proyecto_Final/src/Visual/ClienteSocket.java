@@ -23,15 +23,21 @@ public class ClienteSocket {
 			PaqueteDeDatos paquete = new PaqueteDeDatos(comando, dato);
 			SalidaSocket.writeObject(paquete);
 			SalidaSocket.flush();
+
 			PaqueteDeDatos paqueteRecibido = (PaqueteDeDatos) EntradaSocket.readObject();
 			respuesta = paqueteRecibido.getRespuesta();
 
-		}
-		catch (Exception e) {
-			System.out.println("Error en Cliente: " + e);
-		}
-		finally {
-			try { if(sfd!=null) sfd.close(); } catch(Exception e) {}
+		} catch (ConnectException e) {
+			respuesta = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			respuesta = null;
+		} finally {
+			try {
+				if (sfd != null)
+					sfd.close();
+			} catch (Exception e) {
+			}
 		}
 
 		return respuesta;
