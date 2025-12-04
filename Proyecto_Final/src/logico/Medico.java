@@ -9,6 +9,7 @@ public class Medico extends Persona implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Especialidad especialidad;
+	
 	private int maxCitasPorDia;
 	private ArrayList<Consulta> consultasRealizadas;
 	private ArrayList<Cita> citasAsignadas;
@@ -55,4 +56,12 @@ public class Medico extends Persona implements Serializable {
 	public int hashCode() {
 		return Objects.hash(getCedula());
 	}
+	public Especialidad getEspecialidad() {
+		return especialidad;
+	}
+
+	public void setEspecialidad(Especialidad especialidad) {
+		this.especialidad = especialidad;
+	}
+
 }

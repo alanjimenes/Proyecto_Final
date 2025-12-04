@@ -132,7 +132,7 @@ public class RegUser extends JDialog {
 					JButton okButton = new JButton("Registrar");
 					Estilos.estilarBoton(okButton, new Color(99, 163, 97), Color.WHITE);
 
-					okButton.setBounds(69, 331, 97, 35);
+					okButton.setBounds(69, 331, 127, 35);
 					contentPanel.add(okButton);
 					okButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -174,7 +174,8 @@ public class RegUser extends JDialog {
 				}
 				{
 					JButton cancelButton = new JButton("Cancel");
-					cancelButton.setBounds(315, 331, 97, 35);
+					Estilos.estilarBoton(cancelButton, new Color(191, 26, 26), Color.WHITE);
+					cancelButton.setBounds(285, 331, 127, 35);
 					contentPanel.add(cancelButton);
 					cancelButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
