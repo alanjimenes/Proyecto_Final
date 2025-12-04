@@ -5,6 +5,26 @@ import java.util.ArrayList;
 
 public class Control implements Serializable {
 
+	public ArrayList<User> getMisUsuarios() {
+		return misUsuarios;
+	}
+
+	public void setMisUsuarios(ArrayList<User> misUsuarios) {
+		this.misUsuarios = misUsuarios;
+	}
+
+	public static Control getControl() {
+		return control;
+	}
+
+	public static void setControl(Control control) {
+		Control.control = control;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	private static final long serialVersionUID = 1L;
 	private ArrayList<User> misUsuarios;
 	private static Control control;
