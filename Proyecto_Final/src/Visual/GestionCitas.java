@@ -4,12 +4,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+import com.toedter.calendar.IDateEvaluator;
 import com.toedter.calendar.JDateChooser;
 
 import logico.Cita;
@@ -49,6 +53,7 @@ public class GestionCitas extends JPanel {
 	private Medico medicoSeleccionado = null;
 	private Cita citaSeleccionada = null;
 	private JTextArea txtMotivo;
+	private PropertyChangeListener dateChangeListener;
 
 	public GestionCitas() {
 		setBackground(new Color(60, 70, 123));
@@ -108,6 +113,9 @@ public class GestionCitas extends JPanel {
 		dateChooser = new JDateChooser();
 		dateChooser.setBounds(120, 120, 149, 20);
 		dateChooser.getJCalendar().setMinSelectableDate(new Date());
+
+		dateChooser.getJCalendar().getDayChooser().addDateEvaluator(new BloqueoDomingos());
+
 		panelFormulario.add(dateChooser);
 
 		JLabel lblHora = new JLabel("Hora:");
@@ -120,9 +128,10 @@ public class GestionCitas extends JPanel {
 		cbxHora.setBounds(120, 163, 149, 20);
 		panelFormulario.add(cbxHora);
 
-		dateChooser.addPropertyChangeListener("date", e -> {
+		dateChangeListener = e -> {
 			actualizarHorasDisponibles();
-		});
+		};
+		dateChooser.addPropertyChangeListener("date", dateChangeListener);
 
 		actualizarHorasDisponibles();
 
@@ -226,7 +235,14 @@ public class GestionCitas extends JPanel {
 		tablaCitas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				seleccionarDeTabla();
+				int fila = tablaCitas.rowAtPoint(e.getPoint());
+
+				if (fila < 0) {
+					tablaCitas.clearSelection();
+					limpiarCampos();
+				} else {
+					seleccionarDeTabla();
+				}
 			}
 		});
 
@@ -240,6 +256,13 @@ public class GestionCitas extends JPanel {
 		}
 		if (txtMotivo.getText().trim().isEmpty()) {
 			JOptionPane.showMessageDialog(null, "Debe especificar el motivo.");
+			return;
+		}
+
+		LocalDateTime fechaParaValidar = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+				.atStartOfDay();
+		if (fechaParaValidar.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			JOptionPane.showMessageDialog(null, "No se permiten citas los domingos.");
 			return;
 		}
 
@@ -268,6 +291,13 @@ public class GestionCitas extends JPanel {
 	private void modificarCita() {
 		if (citaSeleccionada == null || dateChooser.getDate() == null || medicoSeleccionado == null) {
 			JOptionPane.showMessageDialog(null, "Faltan datos para modificar.");
+			return;
+		}
+
+		LocalDateTime fechaParaValidar = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+				.atStartOfDay();
+		if (fechaParaValidar.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			JOptionPane.showMessageDialog(null, "No se permiten citas los domingos.");
 			return;
 		}
 
@@ -323,8 +353,10 @@ public class GestionCitas extends JPanel {
 
 			LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-			if (cbxHora.getSelectedItem() == null)
+			if (cbxHora.getSelectedItem() == null) {
+				JOptionPane.showMessageDialog(null, "Debe seleccionar una hora válida.");
 				return null;
+			}
 
 			String seleccion = cbxHora.getSelectedItem().toString();
 
@@ -350,35 +382,68 @@ public class GestionCitas extends JPanel {
 	private void seleccionarDeTabla() {
 		int fila = tablaCitas.getSelectedRow();
 		if (fila >= 0) {
-			String codigo = model.getValueAt(fila, 0).toString();
+
+			Object valorCodigo = model.getValueAt(fila, 0);
+			if (valorCodigo == null)
+				return;
+			String codigo = valorCodigo.toString();
+
 			citaSeleccionada = (Cita) ClienteSocket.enviar("BUSCAR_CITA", codigo);
 
 			if (citaSeleccionada != null) {
 				clienteSeleccionado = citaSeleccionada.getCliente();
 				medicoSeleccionado = citaSeleccionada.getMedico();
 
-				txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
-				txtCedulaMedico.setText(medicoSeleccionado.getCedula());
-				lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre());
-				lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre());
+				if (clienteSeleccionado != null) {
+					txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
+					lblNombreCliente.setText(
+							"Paciente: " + clienteSeleccionado.getNombre() + " " + clienteSeleccionado.getApellido());
+				} else {
+					txtCodCliente.setText("N/A");
+					lblNombreCliente.setText("Paciente: [No encontrado]");
+				}
+
+				if (medicoSeleccionado != null) {
+					txtCedulaMedico.setText(medicoSeleccionado.getCedula());
+					lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre());
+				} else {
+					txtCedulaMedico.setText("N/A");
+					lblNombreMedico.setText("Médico: [No encontrado]");
+				}
+
 				txtMotivo.setText(citaSeleccionada.getMotivo());
 
-				dateChooser
-						.setDate(Date.from(citaSeleccionada.getFechaHora().atZone(ZoneId.systemDefault()).toInstant()));
+				dateChooser.removePropertyChangeListener("date", dateChangeListener);
 
-				int h = citaSeleccionada.getFechaHora().getHour();
-				int m = citaSeleccionada.getFechaHora().getMinute();
-				String ampm = (h < 12) ? "AM" : "PM";
-				int hora12 = (h > 12) ? (h - 12) : ((h == 0 || h == 12) ? 12 : h);
-				String textoHoraCita = String.format("%02d:%02d %s", hora12, m, ampm);
+				if (citaSeleccionada.getFechaHora() != null) {
+					dateChooser.setDate(
+							Date.from(citaSeleccionada.getFechaHora().atZone(ZoneId.systemDefault()).toInstant()));
 
-				cbxHora.setSelectedItem(textoHoraCita);
+					actualizarHorasDisponibles();
+
+					if (cbxHora.getItemCount() > 0) {
+						int h = citaSeleccionada.getFechaHora().getHour();
+						int m = citaSeleccionada.getFechaHora().getMinute();
+						String ampm = (h < 12) ? "AM" : "PM";
+						int hora12 = (h > 12) ? (h - 12) : ((h == 0 || h == 12) ? 12 : h);
+						String textoHoraCita = String.format("%02d:%02d %s", hora12, m, ampm);
+						cbxHora.setSelectedItem(textoHoraCita);
+					}
+				}
+
+				dateChooser.addPropertyChangeListener("date", dateChangeListener);
 
 				boolean activa = !citaSeleccionada.getEstado().equalsIgnoreCase("Completada")
 						&& !citaSeleccionada.getEstado().equalsIgnoreCase("Cancelada");
+
+				if (clienteSeleccionado == null || medicoSeleccionado == null)
+					activa = false;
+
 				btnModificarCita.setEnabled(activa);
 				btnCancelarCita.setEnabled(activa);
 				btnCrearCita.setEnabled(false);
+			} else {
+				limpiarCampos();
 			}
 		}
 	}
@@ -431,6 +496,10 @@ public class GestionCitas extends JPanel {
 
 		LocalDate fechaSeleccionada = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
+		if (fechaSeleccionada.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			return;
+		}
+
 		LocalDate hoy = LocalDate.now();
 		LocalTime ahora = LocalTime.now();
 
@@ -462,5 +531,50 @@ public class GestionCitas extends JPanel {
 		if (cbxHora.getItemCount() > 0) {
 			cbxHora.setSelectedIndex(0);
 		}
+	}
+}
+
+class BloqueoDomingos implements IDateEvaluator {
+
+	@Override
+	public boolean isSpecial(Date date) {
+		return false;
+	}
+
+	@Override
+	public Color getSpecialForegroundColor() {
+		return null;
+	}
+
+	@Override
+	public Color getSpecialBackroundColor() {
+		return null;
+	}
+
+	@Override
+	public String getSpecialTooltip() {
+		return null;
+	}
+
+	@Override
+	public boolean isInvalid(Date date) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		return c.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY;
+	}
+
+	@Override
+	public Color getInvalidForegroundColor() {
+		return Color.RED;
+	}
+
+	@Override
+	public Color getInvalidBackroundColor() {
+		return null;
+	}
+
+	@Override
+	public String getInvalidTooltip() {
+		return "No laboramos los domingos";
 	}
 }

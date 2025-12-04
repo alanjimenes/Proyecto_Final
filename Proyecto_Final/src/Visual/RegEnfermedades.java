@@ -20,6 +20,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import logico.Enfermedad;
+import java.awt.Toolkit;
 
 public class RegEnfermedades extends JDialog {
 
@@ -30,6 +31,7 @@ public class RegEnfermedades extends JDialog {
 	private Enfermedad enfermedadActual = null;
 
 	public RegEnfermedades() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(RegEnfermedades.class.getResource("/img/receta.png")));
 		init();
 	}
 
@@ -93,11 +95,12 @@ public class RegEnfermedades extends JDialog {
 		contentPanel.add(lblTitulo);
 
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(60,70,123));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		JButton okButton = new JButton(enfermedadActual == null ? "Registrar" : "Actualizar");
-		Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+		Estilos.estilarBoton(okButton, new Color(0, 150, 136), Color.WHITE);
 		okButton.addActionListener(e -> registrar());
 		buttonPane.add(okButton);
 
