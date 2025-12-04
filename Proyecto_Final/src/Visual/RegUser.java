@@ -213,7 +213,6 @@ public class RegUser extends JDialog {
 	private void cargarListaMedicos() {
 		cbMedicos.removeAllItems();
 		cbMedicos.addItem("<Seleccione Médico>");
-
 		Object respuesta = ClienteSocket.enviar("LISTAR_MEDICOS", null);
 
 		if (respuesta != null && respuesta instanceof java.util.ArrayList) {
