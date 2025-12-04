@@ -25,7 +25,7 @@ public class RegEnfermedades extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtNombre;
-	private JTextArea txtDescripcion;
+	private JTextArea txtDescripcion; 
 	private JCheckBox chkVigilancia;
 	private Enfermedad enfermedadActual = null;
 

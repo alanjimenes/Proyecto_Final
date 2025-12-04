@@ -31,10 +31,10 @@ public class ConsultarEspecialidades extends JDialog {
 	private Object[] row;
 
 	public ConsultarEspecialidades() {
-		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(ConsultarEspecialidades.class.getResource("/img/seguro-de-salud.png")));
+		//setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarEspecialidades.class.getResource("/img/seguro-de-salud.png")));
+
 		setTitle("Gestión de Especialidades");
-		setBounds(100, 100, 700, 500);
+		setBounds(100, 100, 700, 500); 
 		setResizable(false);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
