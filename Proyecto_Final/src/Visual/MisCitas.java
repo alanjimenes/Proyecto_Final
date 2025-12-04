@@ -52,7 +52,7 @@ public class MisCitas extends JDialog {
 
 		String nombreMedico = "Desconocido";
 		if(usuario.getCedula() != null && !usuario.getCedula().isEmpty()) {
-			Medico m = Clinica.getInstancia().buscarMedicoCedula(usuario.getCedula());
+			Medico m = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", usuario.getCedula());
 			if (m != null) {
 				nombreMedico = m.getNombre() + " " + m.getApellido();
 			}
@@ -73,7 +73,7 @@ public class MisCitas extends JDialog {
 				int index = table.getSelectedRow();
 				if (index >= 0) {
 					String codigo = table.getValueAt(index, 0).toString();
-					citaSeleccionada = Clinica.getInstancia().buscarCita(codigo);
+					citaSeleccionada = (Cita) ClienteSocket.enviar("BUSCAR_CITA", codigo);
 					btnAtender.setEnabled(true);
 				}
 			}
