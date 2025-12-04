@@ -15,10 +15,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import logico.Enfermedad;
 
@@ -30,6 +33,8 @@ public class ConsultarEnfermedades extends JDialog {
 	private Enfermedad seleccionado = null;
 	private JButton btnUpdate;
 	private JButton btnDelete;
+	private ArrayList<Enfermedad> listaEnfermedadesGlobal;
+	private JTextField txtFiltro;
 
 	public ConsultarEnfermedades() {
 		setTitle("Catálogo de Enfermedades");
@@ -52,6 +57,22 @@ public class ConsultarEnfermedades extends JDialog {
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
 		panelNorte.add(lblTitulo);
+
+		JLabel lblFiltro = new JLabel("Filtrar por Nombre:");
+		lblFiltro.setForeground(Color.WHITE);
+		lblFiltro.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+		panelNorte.add(lblFiltro);
+
+		txtFiltro = new JTextField();
+		txtFiltro.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtFiltro.setColumns(15);
+		txtFiltro.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				filtrarLocal(txtFiltro.getText()); //
+			}
+		});
+		panelNorte.add(txtFiltro);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.getViewport().setBackground(Color.WHITE);
@@ -119,7 +140,7 @@ public class ConsultarEnfermedades extends JDialog {
 			RegEnfermedades reg = new RegEnfermedades();
 			reg.setModal(true);
 			reg.setVisible(true);
-			cargarEnfermedades();
+			cargarEnfermedadesServer();
 			resetBotones();
 		});
 		buttonPane.add(btnNueva);
@@ -132,7 +153,7 @@ public class ConsultarEnfermedades extends JDialog {
 				RegEnfermedades reg = new RegEnfermedades(seleccionado);
 				reg.setModal(true);
 				reg.setVisible(true);
-				cargarEnfermedades();
+				cargarEnfermedadesServer();
 				resetBotones();
 			}
 		});
@@ -152,7 +173,7 @@ public class ConsultarEnfermedades extends JDialog {
 
 					if (exito) {
 						JOptionPane.showMessageDialog(null, "Enfermedad desactivada.");
-						cargarEnfermedades();
+						cargarEnfermedadesServer();
 						resetBotones();
 					}
 				}
@@ -165,31 +186,33 @@ public class ConsultarEnfermedades extends JDialog {
 		btnCerrar.addActionListener(e -> dispose());
 		buttonPane.add(btnCerrar);
 
-		cargarEnfermedades();
+		cargarEnfermedadesServer();
 	}
 
 	@SuppressWarnings("unchecked")
-	private void cargarEnfermedades() {
-		model.setRowCount(0);
-		ArrayList<Enfermedad> lista = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
+	public void cargarEnfermedadesServer() {
+		listaEnfermedadesGlobal = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null); 
+		if (listaEnfermedadesGlobal == null)
+			listaEnfermedadesGlobal = new ArrayList<>();
 
-		if (lista != null) {
-			for (Enfermedad enf : lista) {
-				if (enf.isActivo()) {
-					String vig = enf.isVigilancia() ? "SÍ (ALERTA)" : "No";
-					model.addRow(new Object[] { enf.getCodigo_sick(), enf.getNombre(), vig });
-				}
+		filtrarLocal(txtFiltro.getText());
+	}
+
+	private void filtrarLocal(String texto) {
+		model.setRowCount(0);
+		String filtro = texto.toLowerCase();
+
+		for (Enfermedad enf : listaEnfermedadesGlobal) {
+			if (enf.isActivo() && (filtro.isEmpty() || enf.getNombre().toLowerCase().contains(filtro))) {
+				String vig = enf.isVigilancia() ? "SÍ (ALERTA)" : "No";
+				model.addRow(new Object[] { enf.getCodigo_sick(), enf.getNombre(), vig });
 			}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private Enfermedad buscarEnfermedadLocal(String codigo) {
-		ArrayList<Enfermedad> lista = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
-		if (lista != null) {
-			for (Enfermedad e : lista) {
-				if (e.getCodigo_sick().equals(codigo)) return e;
-			}
+		for (Enfermedad e : listaEnfermedadesGlobal) {
+			if (e.getCodigo_sick().equals(codigo)) return e;
 		}
 		return null;
 	}
@@ -199,5 +222,6 @@ public class ConsultarEnfermedades extends JDialog {
 		btnUpdate.setEnabled(false);
 		btnDelete.setEnabled(false);
 		table.clearSelection();
+		txtFiltro.setText("");
 	}
 }
