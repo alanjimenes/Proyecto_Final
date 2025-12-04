@@ -246,7 +246,6 @@ public class Flujo extends Thread {
 				FlujoEscritura.flush();
 			}
 		} catch (SocketException se) {
-			// Cliente cerrado
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Error en flujo de datos: " + e);
 		} finally {

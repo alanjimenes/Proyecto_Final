@@ -43,7 +43,10 @@ public class Login extends JFrame {
 
 	public Login() {
 		setTitle("Login - Sistema Clínico");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/img/seguro-de-salud.png")));
+		try {
+			setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/img/seguro-de-salud.png")));
+		} catch (Exception e) {
+		}
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1006, 562);
 		setResizable(false);
@@ -127,6 +130,7 @@ public class Login extends JFrame {
 	}
 
 	private void intentarLogin() {
+		// TRIM() ES LA CLAVE: Borra espacios al principio y final
 		String usuario = textField.getText().trim();
 		String clave = new String(passwordField.getPassword());
 
@@ -145,8 +149,7 @@ public class Login extends JFrame {
 			dispose();
 			frame.setVisible(true);
 		} else {
-			JOptionPane.showMessageDialog(contentPane, "Credenciales incorrectas o error de conexión.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(contentPane, "Credenciales incorrectas.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

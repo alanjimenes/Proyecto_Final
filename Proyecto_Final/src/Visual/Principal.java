@@ -449,7 +449,7 @@ public class Principal extends JFrame {
 			JLabel lblLogo = new JLabel("");
 			lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
 			try {
-				lblLogo.setIcon(new ImageIcon(Principal.class.getResource("/img/Logo-Azul.png")));
+				lblLogo.setIcon(new ImageIcon(Principal.class.getResource("/img/logo.png")));
 			} catch (Exception e) {
 				lblLogo.setText("Bienvenido Asistente");
 				lblLogo.setFont(new Font("Tahoma", Font.BOLD, 30));
@@ -494,13 +494,11 @@ public class Principal extends JFrame {
             return;
         panelGrafico.removeAll();
 
-        // Padding estético
         panelGrafico.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         JFreeChart chart = null;
-        java.util.Random random = new java.util.Random(); // Generador de aleatorios
+        java.util.Random random = new java.util.Random(); 
 
-        // Definición de Fuentes
         Font fontTitulo = new Font("Bahnschrift", Font.BOLD, 20);
         Font fontEjes = new Font("Bahnschrift", Font.PLAIN, 14);
         Font fontEtiquetas = new Font("Bahnschrift", Font.PLAIN, 12);
@@ -544,13 +542,13 @@ public class Principal extends JFrame {
             */
             // =============================================================
 
-            chart = ChartFactory.createBarChart("Enfermedades Diagnosticadas (Demo)", "Enfermedad", "Casos", dataset,
+            chart = ChartFactory.createBarChart("Enfermedades Diagnosticada", "Enfermedad", "Casos", dataset,
                     PlotOrientation.VERTICAL, false, true, false);
 
             CategoryPlot plot = chart.getCategoryPlot();
             BarRenderer renderer = (BarRenderer) plot.getRenderer();
             
-            // COLOR AZUL INSTITUCIONAL
+      
             renderer.setSeriesPaint(0, new Color(60, 70, 123));
 
             configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
