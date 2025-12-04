@@ -393,101 +393,159 @@ public class Principal extends JFrame {
 		timer.start();
 	}
 
-	// CREACIÓN DEL DASHBOARD (Lógica de gráficos)
-	private JPanel crearPanelEstadistico() {
-		JPanel panelDashboard = new JPanel(new BorderLayout());
-		panelDashboard.setBackground(Color.WHITE);
 
-		String rol = usuarioActual.getRol();
+    private JPanel crearPanelEstadistico() {
+        JPanel panelDashboard = new JPanel(new BorderLayout());
+        panelDashboard.setBackground(Color.WHITE);
 
-		if (rol.equalsIgnoreCase("Medico")) {
-			JPanel panelMedico = new JPanel(new GridLayout(1, 2, 10, 10));
-			panelMedico.setBackground(Color.WHITE);
+        String rol = usuarioActual.getRol();
 
-			JTable tableAgenda = new JTable();
-			DefaultTableModel modelAgenda = new DefaultTableModel(new String[] { "Hora", "Paciente", "Estado" }, 0);
-			tableAgenda.setModel(modelAgenda);
+        if (rol.equalsIgnoreCase("Medico")) {
+            
+            JPanel panelMedico = new JPanel(new GridLayout(1, 2, 20, 0)); // 20px de espacio horizontal
+            panelMedico.setBackground(Color.WHITE);
+            panelMedico.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-			if (usuarioActual.getCedula() != null) {
-				Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
-				if (resp instanceof Medico) {
-					Medico yo = (Medico) resp;
-					int completadas = 0;
-					int pendientes = 0;
-					if (yo.getCitasAsignadas() != null) {
-						for (Cita c : yo.getCitasAsignadas()) {
-							if (c.getFechaHora().toLocalDate().equals(LocalDate.now())) {
-								if (c.getEstado().equalsIgnoreCase("Pendiente")) {
-									modelAgenda.addRow(new Object[] { c.getFechaHora().toLocalTime().toString(),
-											c.getCliente().getNombre() + " " + c.getCliente().getApellido(),
-											c.getEstado() });
-									pendientes++;
-								} else if (c.getEstado().equalsIgnoreCase("Completada")) {
-									completadas++;
-								}
-							}
-						}
-					}
-					DefaultPieDataset dataset = new DefaultPieDataset();
-					dataset.setValue("Pendientes (" + pendientes + ")", pendientes);
-					dataset.setValue("Completadas (" + completadas + ")", completadas);
+            JTable tableAgenda = new JTable();
+            tableAgenda.setRowHeight(30); // Filas más altas
+            tableAgenda.setShowVerticalLines(false); // Diseño limpio
+            tableAgenda.setGridColor(new Color(230, 230, 230));
+            tableAgenda.setSelectionBackground(new Color(232, 246, 255));
+            tableAgenda.setSelectionForeground(Color.BLACK);
+            tableAgenda.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-					JFreeChart chart = ChartFactory.createPieChart("Mi Progreso Diario", dataset, true, true, false);
-					PiePlot plot = (PiePlot) chart.getPlot();
-					plot.setBackgroundPaint(Color.WHITE);
-					plot.setSectionPaint("Pendientes (" + pendientes + ")", new Color(231, 76, 60));
-					plot.setSectionPaint("Completadas (" + completadas + ")", new Color(46, 204, 113));
+            javax.swing.table.JTableHeader header = tableAgenda.getTableHeader();
+            header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+                @Override
+                public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                        boolean hasFocus, int row, int column) {
+                    super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                    setBackground(new Color(60, 70, 123)); // Azul Institucional
+                    setForeground(Color.WHITE);
+                    setFont(new Font("Bahnschrift", Font.BOLD, 14));
+                    setHorizontalAlignment(JLabel.CENTER);
+                    setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 1, Color.WHITE));
+                    return this;
+                }
+            });
 
-					ChartPanel chartPanel = new ChartPanel(chart);
-					panelMedico.add(chartPanel);
-				}
-			}
-			panelMedico.add(new JScrollPane(tableAgenda));
-			panelDashboard.add(panelMedico, BorderLayout.CENTER);
-		} else if (rol.equalsIgnoreCase("Asistente")) {
-			panelDashboard.setLayout(new BorderLayout());
-			JLabel lblLogo = new JLabel("");
-			lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
-			try {
-				lblLogo.setIcon(new ImageIcon(Principal.class.getResource("/img/logo.png")));
-			} catch (Exception e) {
-				lblLogo.setText("Bienvenido Asistente");
-				lblLogo.setFont(new Font("Tahoma", Font.BOLD, 30));
-			}
-			panelDashboard.add(lblLogo, BorderLayout.CENTER);
-		} else {
-			// ADMINISTRADOR
-			JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			panelBotones.setBackground(Color.WHITE);
+            javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-			JButton btnEnf = new JButton("Enfermedades");
-			try {
-				Estilos.estilarBoton(btnEnf, Color.WHITE, Color.BLACK);
-			} catch (Exception e) {
-			}
-			btnEnf.addActionListener(e -> actualizarGrafico("ENFERMEDADES"));
+            DefaultTableModel modelAgenda = new DefaultTableModel(new String[] { "Hora", "Paciente", "Estado" }, 0) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+            tableAgenda.setModel(modelAgenda);
 
-			JButton btnVac = new JButton("Vacunación");
-			try {
-				Estilos.estilarBoton(btnVac, Color.WHITE, Color.BLACK);
-			} catch (Exception e) {
-			}
-			btnVac.addActionListener(e -> actualizarGrafico("VACUNAS"));
+            for (int i = 0; i < tableAgenda.getColumnCount(); i++) {
+                tableAgenda.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
 
-			panelBotones.add(btnEnf);
-			panelBotones.add(btnVac);
+            if (usuarioActual.getCedula() != null) {
+                Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
+                if (resp instanceof Medico) {
+                    Medico yo = (Medico) resp;
+                    int completadas = 0;
+                    int pendientes = 0;
 
-			panelDashboard.add(panelBotones, BorderLayout.NORTH);
+                    if (yo.getCitasAsignadas() != null) {
+                        for (Cita c : yo.getCitasAsignadas()) {
+                            if (c.getFechaHora().toLocalDate().equals(LocalDate.now())) {
+                                
+                                if (c.getEstado().equalsIgnoreCase("Pendiente")) {
+                                    modelAgenda.addRow(new Object[] { 
+                                        c.getFechaHora().toLocalTime().toString(),
+                                        c.getCliente().getNombre() + " " + c.getCliente().getApellido(),
+                                        c.getEstado() 
+                                    });
+                                    pendientes++;
+                                } else if (c.getEstado().equalsIgnoreCase("Completada")) {
+                                   
+                                    modelAgenda.addRow(new Object[] { 
+                                        c.getFechaHora().toLocalTime().toString(),
+                                        c.getCliente().getNombre() + " " + c.getCliente().getApellido(),
+                                        c.getEstado() 
+                                    });
+                                    completadas++;
+                                }
+                            }
+                        }
+                    }
+                    DefaultPieDataset dataset = new DefaultPieDataset();
+                    dataset.setValue("Pendientes (" + pendientes + ")", pendientes);
+                    dataset.setValue("Completadas (" + completadas + ")", completadas);
 
-			panelGrafico = new JPanel(new BorderLayout());
-			panelGrafico.setBackground(Color.WHITE);
-			panelDashboard.add(panelGrafico, BorderLayout.CENTER);
+                    JFreeChart chart = ChartFactory.createPieChart("Mi Progreso Diario", dataset, true, true, false);
 
-			actualizarGrafico("ENFERMEDADES");
-		}
-		return panelDashboard;
-	}
+                    chart.setBackgroundPaint(Color.WHITE);
+                    chart.getTitle().setFont(new Font("Bahnschrift", Font.BOLD, 20));
 
+                    PiePlot plot = (PiePlot) chart.getPlot();
+                    plot.setBackgroundPaint(Color.WHITE);
+                    plot.setOutlineVisible(false);
+                    plot.setLabelFont(new Font("Bahnschrift", Font.PLAIN, 12));
+                    plot.setShadowPaint(null);
+                    plot.setSectionPaint("Pendientes (" + pendientes + ")", new Color(231, 76, 60)); 
+                    plot.setSectionPaint("Completadas (" + completadas + ")", new Color(60, 70, 123)); 
+
+                    ChartPanel chartPanel = new ChartPanel(chart);
+                    chartPanel.setBorder(null);
+                    panelMedico.add(chartPanel);
+                }
+            }
+
+            JScrollPane scrollPane = new JScrollPane(tableAgenda);
+            scrollPane.getViewport().setBackground(Color.WHITE);
+            scrollPane.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(230, 230, 230), 1));
+            
+            panelMedico.add(scrollPane);
+            panelDashboard.add(panelMedico, BorderLayout.CENTER);
+
+        } else if (rol.equalsIgnoreCase("Asistente")) {
+            panelDashboard.setLayout(new BorderLayout());
+            JLabel lblLogo = new JLabel("");
+            lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
+            try {
+                lblLogo.setIcon(new ImageIcon(Principal.class.getResource("/img/Logo-Azul.png")));
+            } catch (Exception e) {
+                lblLogo.setText("Bienvenido Asistente");
+                lblLogo.setFont(new Font("Tahoma", Font.BOLD, 30));
+            }
+            panelDashboard.add(lblLogo, BorderLayout.CENTER);
+        } else {
+            JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panelBotones.setBackground(Color.WHITE);
+
+            JButton btnEnf = new JButton("Enfermedades");
+            try {
+                Estilos.estilarBoton(btnEnf, Color.WHITE, Color.BLACK);
+            } catch (Exception e) {
+            }
+            btnEnf.addActionListener(e -> actualizarGrafico("ENFERMEDADES"));
+
+            JButton btnVac = new JButton("Vacunación");
+            try {
+                Estilos.estilarBoton(btnVac, Color.WHITE, Color.BLACK);
+            } catch (Exception e) {
+            }
+            btnVac.addActionListener(e -> actualizarGrafico("VACUNAS"));
+
+            panelBotones.add(btnEnf);
+            panelBotones.add(btnVac);
+
+            panelDashboard.add(panelBotones, BorderLayout.NORTH);
+
+            panelGrafico = new JPanel(new BorderLayout());
+            panelGrafico.setBackground(Color.WHITE);
+            panelDashboard.add(panelGrafico, BorderLayout.CENTER);
+
+            actualizarGrafico("ENFERMEDADES");
+        }
+        return panelDashboard;
+    }
 	@SuppressWarnings("unchecked")
     private void actualizarGrafico(String tipo) {
         if (panelGrafico == null)

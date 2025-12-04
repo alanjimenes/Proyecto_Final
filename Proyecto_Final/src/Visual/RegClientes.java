@@ -215,7 +215,7 @@ public class RegClientes extends JDialog {
 
 		{
 			okButton = new JButton("Registrar");
-			Estilos.estilarBoton(okButton, new Color(99, 163, 97), Color.WHITE);
+			Estilos.estilarBoton(okButton, new Color(0, 150, 136), Color.WHITE);
 			okButton.setBounds(234, 430, 110, 35);
 			contentPanel.add(okButton);
 			okButton.addActionListener(new ActionListener() {

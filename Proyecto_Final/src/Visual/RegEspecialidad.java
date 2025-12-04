@@ -68,7 +68,7 @@ public class RegEspecialidad extends JDialog {
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		okButton = new JButton("Registrar");
-		Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+		Estilos.estilarBoton(okButton, new Color(0, 150, 136), Color.WHITE);
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gestionar();

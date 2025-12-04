@@ -242,7 +242,7 @@ public class RegMedico extends JDialog {
 		contentPanel.add(spnMaxCitas);
 		{
 			okButton = new JButton("Registrar");
-			Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+			Estilos.estilarBoton(okButton, new Color(0, 150, 136), Color.WHITE);
 			okButton.setBounds(221, 409, 110, 35);
 			contentPanel.add(okButton);
 			okButton.addActionListener(new ActionListener() {
