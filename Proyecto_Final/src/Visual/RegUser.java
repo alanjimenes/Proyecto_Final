@@ -2,35 +2,25 @@ package Visual;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import logico.Clinica;
-import logico.Control;
-import logico.Medico;
-import logico.User;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.awt.event.ActionEvent;
-import javax.swing.ImageIcon;
-import java.awt.Font;
-import javax.swing.SwingConstants;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import java.awt.Toolkit;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import logico.Medico;
+import logico.User;
 
 public class RegUser extends JDialog {
 
@@ -38,8 +28,9 @@ public class RegUser extends JDialog {
 	private JTextField textField;
 	private JPasswordField passField_1;
 	private JPasswordField passField_2;
-	private JComboBox comboBox;
-	private JTextField txtCedulaEnlace;
+	private JComboBox<String> comboBox;
+	private JComboBox<String> cbMedicos;
+	private JLabel lblCedulaLink;
 
 	/**
 	 * Launch the application.
@@ -70,7 +61,7 @@ public class RegUser extends JDialog {
 
 		JLabel lblNombreUsuario = new JLabel("Nombre Usuario:");
 		lblNombreUsuario.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		lblNombreUsuario.setForeground(Color.WHITE ) ;
+		lblNombreUsuario.setForeground(Color.WHITE);
 		lblNombreUsuario.setBounds(69, 27, 127, 14);
 		contentPanel.add(lblNombreUsuario);
 
@@ -89,7 +80,7 @@ public class RegUser extends JDialog {
 		passField_1 = new JPasswordField();
 		passField_1.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		passField_1.setColumns(10);
-		passField_1.setBounds(69, 204, 147, 20);
+		passField_1.setBounds(69, 179, 167, 20);
 		contentPanel.add(passField_1);
 
 		JLabel lblTipo = new JLabel("Tipo:");
@@ -98,106 +89,140 @@ public class RegUser extends JDialog {
 		lblTipo.setBounds(265, 24, 97, 20);
 		contentPanel.add(lblTipo);
 
-		comboBox = new JComboBox();
+		comboBox = new JComboBox<String>();
 		comboBox.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		comboBox.setModel(new DefaultComboBoxModel(new String[] { "<Seleccione>", "Administrador", "Asistente", "Medico" }));
+		comboBox.setModel(new DefaultComboBoxModel<String>(
+				new String[] { "<Seleccione>", "Administrador", "Asistente", "Medico" }));
 		comboBox.setBounds(265, 66, 147, 20);
 		contentPanel.add(comboBox);
 
 		JLabel lblConfirmarPassword = new JLabel("Confirmar Password:");
 		lblConfirmarPassword.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblConfirmarPassword.setForeground(Color.WHITE);
-		lblConfirmarPassword.setBounds(263, 152, 167, 14);
+		lblConfirmarPassword.setBounds(264, 152, 167, 14);
 		contentPanel.add(lblConfirmarPassword);
 
 		passField_2 = new JPasswordField();
 		passField_2.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		passField_2.setColumns(10);
-		passField_2.setBounds(265, 204, 147, 20);
+		passField_2.setBounds(265, 179, 180, 20);
 		contentPanel.add(passField_2);
 
-		JLabel lblCedulaLink = new JLabel("Cédula (Solo Médicos):");
+		lblCedulaLink = new JLabel("Seleccione Médico:");
 		lblCedulaLink.setForeground(Color.WHITE);
 		lblCedulaLink.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		lblCedulaLink.setBounds(69, 255, 180, 20);
+		lblCedulaLink.setBounds(69, 254, 180, 20);
+		lblCedulaLink.setVisible(false);
 		contentPanel.add(lblCedulaLink);
 
-		txtCedulaEnlace = new JTextField();
-		txtCedulaEnlace.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		txtCedulaEnlace.setBounds(265, 255, 147, 20);
-		txtCedulaEnlace.setVisible(false); 
-		lblCedulaLink.setVisible(false);
-		contentPanel.add(txtCedulaEnlace);
-				{
-					JButton okButton = new JButton("Registrar");
-					Estilos.estilarBoton(okButton, new Color(99, 163, 97), Color.WHITE);
+		cbMedicos = new JComboBox<String>();
+		cbMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+		cbMedicos.setBounds(265, 255, 180, 20);
+		cbMedicos.setVisible(false);
+		contentPanel.add(cbMedicos);
 
-					okButton.setBounds(69, 331, 127, 35);
-					contentPanel.add(okButton);
-					okButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							String pass1 = new String(passField_1.getPassword());
-							String pass2 = new String(passField_2.getPassword());
-		
-							if (!pass1.equals(pass2)) {
-								JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
-								return;
-							}
-							String tipo = comboBox.getSelectedItem().toString();
-							String cedulaLink = "";
-		
-							if (tipo.equalsIgnoreCase("Medico")) {
-								cedulaLink = txtCedulaEnlace.getText().trim();
-								if (cedulaLink.isEmpty()) {
-									JOptionPane.showMessageDialog(contentPanel, "Cédula obligatoria para médicos.");
-									return;
-								}
-								Medico med = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedulaLink);
-								if (med == null) {
-									JOptionPane.showMessageDialog(contentPanel, "No existe médico con esa cédula en el Servidor.");
-									return;
-								}
-							}
-							User user = new User(tipo, textField.getText(), pass1, cedulaLink);
-							boolean respuesta = (boolean) ClienteSocket.enviar("REG_USER", user);
-		
-							if (respuesta) {
-								JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado en el Servidor!");
-								dispose();
-							} else {
-								JOptionPane.showMessageDialog(contentPanel, "Error al guardar en el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
-							}
+		{
+			JButton okButton = new JButton("Registrar");
+			Estilos.estilarBoton(okButton, new Color(99, 163, 97), Color.WHITE);
+
+			okButton.setBounds(69, 331, 127, 35);
+			contentPanel.add(okButton);
+			okButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String pass1 = new String(passField_1.getPassword());
+					String pass2 = new String(passField_2.getPassword());
+
+					if (!pass1.equals(pass2)) {
+						JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					String tipo = comboBox.getSelectedItem().toString();
+					String cedulaLink = "";
+
+					if (tipo.equalsIgnoreCase("Medico")) {
+						if (cbMedicos.getSelectedItem() == null
+								|| cbMedicos.getSelectedItem().toString().equals("<Seleccione Médico>")) {
+							JOptionPane.showMessageDialog(contentPanel, "Debe seleccionar un médico de la lista.");
+							return;
 						}
-					});
-					okButton.setActionCommand("OK");
-					getRootPane().setDefaultButton(okButton);
-				}
-				{
-					JButton cancelButton = new JButton("Cancel");
-					Estilos.estilarBoton(cancelButton, new Color(191, 26, 26), Color.WHITE);
-					cancelButton.setBounds(285, 331, 127, 35);
-					contentPanel.add(cancelButton);
-					cancelButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							dispose();
+
+						String seleccion = cbMedicos.getSelectedItem().toString();
+						try {
+							int inicio = seleccion.lastIndexOf("(") + 1;
+							int fin = seleccion.lastIndexOf(")");
+							cedulaLink = seleccion.substring(inicio, fin);
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(contentPanel, "Error al leer la cédula seleccionada.");
+							return;
 						}
-					});
-					cancelButton.setActionCommand("Cancel");
+					}
+
+					User user = new User(tipo, textField.getText(), pass1, cedulaLink);
+					Object respuestaServidor = ClienteSocket.enviar("REG_USER", user);
+
+					if (respuestaServidor instanceof Boolean && (boolean) respuestaServidor) {
+						JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado en el Servidor!");
+						dispose();
+					} else {
+						if (respuestaServidor == null) {
+							JOptionPane.showMessageDialog(contentPanel, "Error: Servidor apagado o sin conexión.",
+									"Error Fatal", JOptionPane.ERROR_MESSAGE);
+						} else {
+							JOptionPane.showMessageDialog(contentPanel,
+									"Error al guardar (Usuario duplicado o fallo lógico).", "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}
+					}
 				}
+			});
+			okButton.setActionCommand("OK");
+			getRootPane().setDefaultButton(okButton);
+		}
+		{
+			JButton cancelButton = new JButton("Cancel");
+			Estilos.estilarBoton(cancelButton, new Color(191, 26, 26), Color.WHITE);
+			cancelButton.setBounds(285, 331, 127, 35);
+			contentPanel.add(cancelButton);
+			cancelButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
+			cancelButton.setActionCommand("Cancel");
+		}
 
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String seleccionado = comboBox.getSelectedItem().toString();
 
 				if (seleccionado.equalsIgnoreCase("Medico")) {
-					txtCedulaEnlace.setVisible(true);
+					cbMedicos.setVisible(true);
 					lblCedulaLink.setVisible(true);
+
+					cargarListaMedicos();
+
 				} else {
-					txtCedulaEnlace.setVisible(false);
+					cbMedicos.setVisible(false);
 					lblCedulaLink.setVisible(false);
-					txtCedulaEnlace.setText(""); 
 				}
 			}
 		});
+	}
+
+	private void cargarListaMedicos() {
+		cbMedicos.removeAllItems();
+		cbMedicos.addItem("<Seleccione Médico>");
+
+		Object respuesta = ClienteSocket.enviar("LISTAR_MEDICOS", null);
+
+		if (respuesta != null && respuesta instanceof java.util.ArrayList) {
+			java.util.ArrayList<Medico> lista = (java.util.ArrayList<Medico>) respuesta;
+			for (Medico med : lista) {
+				cbMedicos.addItem(med.getNombre() + " (" + med.getCedula() + ")");
+			}
+		} else {
+			System.out.println("No se pudo cargar la lista de médicos.");
+		}
 	}
 }
