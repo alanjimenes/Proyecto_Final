@@ -1,12 +1,12 @@
 package logico;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Enfermedad implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 	private String codigo_sick;
-	private String nombre; 
+	private String nombre;
 	private String descripcion;
 	private boolean vigilancia;
 
@@ -50,5 +50,18 @@ public class Enfermedad implements Serializable {
 		this.vigilancia = vigilancia;
 	}
 
+	@Override
+	public String toString() {
+		return nombre; 
+	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Enfermedad))
+			return false;
+		Enfermedad that = (Enfermedad) o;
+		return Objects.equals(codigo_sick, that.codigo_sick);
+	}
 }

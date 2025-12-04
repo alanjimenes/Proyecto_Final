@@ -33,15 +33,24 @@ public class Historial implements Serializable {
 
 	public ArrayList<Consulta> getConsultasVisibleMedico(Medico medico) {
 		ArrayList<Consulta> consultasVisibles = new ArrayList<>();
+		if (this.consultas == null)
+			return consultasVisibles;
 
 		for (Consulta cons : this.consultas) {
-			boolean esSuConsulta = cons.getMedico().getCedula().equals(medico.getCedula());
+			if (cons == null)
+				continue;
+
+			boolean esSuConsulta = false;
+			if (cons.getMedico() != null && medico != null) {
+				esSuConsulta = cons.getMedico().getCedula().equals(medico.getCedula());
+			}
+
 			boolean esVigilancia = cons.bajoVigilancia();
+
 			if (esSuConsulta || esVigilancia) {
 				consultasVisibles.add(cons);
 			}
 		}
-
 		return consultasVisibles;
 	}
 

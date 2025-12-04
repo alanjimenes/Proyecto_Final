@@ -148,15 +148,19 @@ public class Clinica implements Serializable {
 	}
 
 	public boolean registrarNuevoCliente(Cliente cliente) {
-		if (cliente == null) {
+		if (cliente == null)
+			return false;
+
+		if (buscarIndiceClientePorCedula(cliente.getCedula()) != -1) {
 			return false;
 		}
-		if (buscarIndiceClientePorCedula(cliente.getCedula()) != -1) {
-			System.out.println("Error: Ya existe un cliente con esa cédula.");
+
+		if (cliente.getNombre().trim().isEmpty() || cliente.getCedula().trim().isEmpty()) {
 			return false;
 		}
 
 		insertarCliente(cliente);
+		guardarDatosClinica();
 		return true;
 	}
 
@@ -313,35 +317,29 @@ public class Clinica implements Serializable {
 	}
 
 	public boolean crearCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente, String motivo) {
-
 		Medico medico = buscarMedicoCedula(cedulaMedico);
-		if (medico == null) {
-			return false;
-		}
-
-		if (medico == null || !medico.isActivo()) {
-			return false;
-		}
-
 		Cliente cliente = buscarClientePorCodigo(codigoCliente);
-		if (cliente == null)
+
+		if (medico == null || cliente == null)
+			return false;
+		if (!medico.isActivo())
+			return false;
+		if (!cliente.isActivo())
 			return false;
 
-		for (Cita c : medico.getCitasAsignadas()) {
-			if (c.getFechaHora().equals(fechaHora)) {
-				return false;
-			}
+		if (fechaHora.isBefore(LocalDateTime.now()))
+			return false;
+
+		if (verificarSolapamiento(medico, fechaHora)) {
+			return false;
 		}
 
 		int citasDia = contarCitasPorDia(medico, fechaHora.toLocalDate());
-		if (citasDia >= medico.getMaxCitasPorDia()) {
+		if (citasDia >= medico.getMaxCitasPorDia())
 			return false;
-		}
 
 		Cita nuevaCita = new Cita(fechaHora, cliente, medico, "Pendiente", motivo);
-
-		String codigo = "CIT-" + System.currentTimeMillis();
-		nuevaCita.setCodigo_cita(codigo);
+		nuevaCita.setCodigo_cita("CIT-" + System.currentTimeMillis());
 
 		this.citas.add(nuevaCita);
 		medico.agregarCitaAsignada(nuevaCita);
@@ -420,13 +418,12 @@ public class Clinica implements Serializable {
 		if (medico == null)
 			return false;
 
-		for (Medico m : medicos) {
-			if (m.getCedula().equals(medico.getCedula())) {
-				return false;
-			}
+		if (buscarMedicoCedula(medico.getCedula()) != null) {
+			return false;
 		}
 
 		medicos.add(medico);
+		guardarDatosClinica();
 		return true;
 	}
 
@@ -606,8 +603,19 @@ public class Clinica implements Serializable {
 	}
 
 	// Metodos de cargas
+
 	public void refrescarRelaciones() {
+		if (this.citas == null)
+			this.citas = new ArrayList<>();
+		if (this.clientes == null)
+			this.clientes = new ArrayList<>();
+		if (this.medicos == null)
+			this.medicos = new ArrayList<>();
+
 		for (Cita c : this.citas) {
+			if (c == null)
+				continue;
+
 			if (c.getCliente() != null) {
 				Cliente clienteReal = buscarClientePorCodigo(c.getCliente().getNumExpediente());
 				if (clienteReal != null) {
@@ -618,15 +626,14 @@ public class Clinica implements Serializable {
 				Medico medicoReal = buscarMedicoCedula(c.getMedico().getCedula());
 				if (medicoReal != null) {
 					c.setMedico(medicoReal);
-					if (!medicoReal.getCitasAsignadas().contains(c)) {
+					if (medicoReal.getCitasAsignadas() != null && !medicoReal.getCitasAsignadas().contains(c)) {
 						medicoReal.agregarCitaAsignada(c);
 					}
 				}
 			}
 		}
-
 		for (Cliente cli : this.clientes) {
-			if (cli.getHistorial() != null) {
+			if (cli != null && cli.getHistorial() != null && cli.getHistorial().getConsultas() != null) {
 				for (Consulta cons : cli.getHistorial().getConsultas()) {
 					if (cons.getMedico() != null) {
 						Medico m = buscarMedicoCedula(cons.getMedico().getCedula());
@@ -638,7 +645,6 @@ public class Clinica implements Serializable {
 			}
 		}
 	}
-
 	// Metodos auxiliares para los reportes
 
 	// Consultas
@@ -1080,6 +1086,30 @@ public class Clinica implements Serializable {
 			System.out.println("No se encontro archivo de datos clinicos. Iniciando vacio.");
 		}
 
+	}
+
+	// Metods extras para validar
+
+	@SuppressWarnings("unused")
+	private boolean verificarSolapamiento(Medico medico, LocalDateTime fechaNueva) {
+		long duracionMinutos = 30;
+		LocalDateTime finNueva = fechaNueva.plusMinutes(duracionMinutos);
+
+		if (medico.getCitasAsignadas() == null)
+			return false;
+
+		for (Cita c : medico.getCitasAsignadas()) {
+			if (!c.getEstado().equalsIgnoreCase("Pendiente"))
+				continue;
+
+			LocalDateTime inicioExistente = c.getFechaHora();
+			LocalDateTime finExistente = inicioExistente.plusMinutes(duracionMinutos);
+
+			if (fechaNueva.isBefore(finExistente) && inicioExistente.isBefore(finNueva)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

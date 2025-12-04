@@ -3,7 +3,6 @@ package logico;
 import java.io.Serializable;
 
 public class Vacuna implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 	private String codigo_vacun;
 	private String nombre;
@@ -19,6 +18,7 @@ public class Vacuna implements Serializable {
 	public String getCodigo_vacun() {
 		return codigo_vacun;
 	}
+
 	public String getNombre() {
 		return nombre;
 	}
@@ -35,6 +35,8 @@ public class Vacuna implements Serializable {
 		this.descripcion = descripcion;
 	}
 
-
-
+	@Override
+	public String toString() {
+		return nombre; // VITAL PARA LA INTERFAZ
+	}
 }

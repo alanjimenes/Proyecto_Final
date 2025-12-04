@@ -3,38 +3,56 @@ package logico;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Control implements Serializable{
+public class Control implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private ArrayList<User> misUsuarios;
-	private static Control usuarios;
+	private static Control control;
 	private static User loginUser;
 
 	private Control() {
 		misUsuarios = new ArrayList<>();
 	}
 
-	public static Control getInstance(){
-		if(usuarios == null){
-			usuarios = new Control();
+	public static Control getInstance() {
+		if (control == null) {
+			control = new Control();
 		}
-		return usuarios;
+		return control;
 	}
 
-	public ArrayList<User> getMisUsuarios() {
-		return misUsuarios;
+	public void regUser(User user) {
+		if (user != null) {
+			misUsuarios.add(user);
+		}
 	}
 
-	public void setMisUsers(ArrayList<User> misUsers) {
-		this.misUsuarios = misUsers;
+	public boolean confirmLogin(String username, String password) {
+		if (username == null || password == null) {
+			return false;
+		}
+
+		boolean login = false;
+		for (User user : misUsuarios) {
+			if (user != null && user.getUsuario().equalsIgnoreCase(username) && user.getPassword().equals(password)) {
+				loginUser = user;
+				login = true;
+				break;
+			}
+		}
+		return login;
 	}
 
-	public static Control getUsuarios() {
-		return usuarios;
-	}
+	public boolean userExist(String username) {
+		if (username == null)
+			return false;
 
-	public static void setControl(Control control) {
-		Control.usuarios = control;
+		for (User user : misUsuarios) {
+			if (user.getUsuario().equalsIgnoreCase(username)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static User getLoginUser() {
@@ -43,31 +61,5 @@ public class Control implements Serializable{
 
 	public static void setLoginUser(User loginUser) {
 		Control.loginUser = loginUser;
-	}
-
-	public void regUser(User user) {
-		misUsuarios.add(user);
-
-	}	
-
-	public boolean confirmLogin(String text, String text2) {
-		boolean login = false;
-		for (User user : misUsuarios) {
-			if(user.getUsuario().equalsIgnoreCase(text) && user.getPassword().equals(text2)){
-				loginUser = user;
-				login = true;
-			}
-		}
-		return login;
-	}
-
-	
-	public boolean userExist(String username) {
-	    for (User user : misUsuarios) {
-	        if (user.getUsuario().equalsIgnoreCase(username)) {
-	            return true;
-	        }
-	    }
-	    return false;
 	}
 }
