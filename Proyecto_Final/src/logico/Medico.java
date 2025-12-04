@@ -180,21 +180,32 @@ public class Medico extends Persona implements Serializable {
 
 
 
+
 	public void diagnosticarEnfermedad(Consulta consulta, Enfermedad enfermedad) {
-
 		if (consulta == null || enfermedad == null)
-
 			return;
 
-
-
-
 		if (consulta.getEnfermedadesDiag() == null) {
-
 			consulta.setEnfermedadesDiag(new ArrayList<>());
-
 		}
+		if (!consulta.getEnfermedadesDiag().contains(enfermedad)) {
+			consulta.getEnfermedadesDiag().add(enfermedad);
+		}
+	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Medico))
+			return false;
+		Medico medico = (Medico) o;
+		return Objects.equals(getCedula(), medico.getCedula());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getCedula());
 
 	}
 }
