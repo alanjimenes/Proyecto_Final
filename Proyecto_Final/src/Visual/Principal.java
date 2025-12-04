@@ -489,99 +489,135 @@ public class Principal extends JFrame {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void actualizarGrafico(String tipo) {
-		if (panelGrafico == null)
-			return;
-		panelGrafico.removeAll();
+    private void actualizarGrafico(String tipo) {
+        if (panelGrafico == null)
+            return;
+        panelGrafico.removeAll();
 
-		panelGrafico.setBorder(new EmptyBorder(20, 20, 20, 20));
+        // Padding estético
+        panelGrafico.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-		JFreeChart chart = null;
+        JFreeChart chart = null;
+        java.util.Random random = new java.util.Random(); // Generador de aleatorios
 
-		Font fontTitulo = new Font("Bahnschrift", Font.BOLD, 20);
-		Font fontEjes = new Font("Bahnschrift", Font.PLAIN, 14);
-		Font fontEtiquetas = new Font("Bahnschrift", Font.PLAIN, 12);
-		Font fontValores = new Font("Bahnschrift", Font.BOLD, 12);
+        // Definición de Fuentes
+        Font fontTitulo = new Font("Bahnschrift", Font.BOLD, 20);
+        Font fontEjes = new Font("Bahnschrift", Font.PLAIN, 14);
+        Font fontEtiquetas = new Font("Bahnschrift", Font.PLAIN, 12);
+        Font fontValores = new Font("Bahnschrift", Font.BOLD, 12);
 
-		if (tipo.equals("ENFERMEDADES")) {
-			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        if (tipo.equals("ENFERMEDADES")) {
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-			ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
-			java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
-			if (clientes != null) {
-				for (Cliente cli : clientes) {
-					if (cli.getHistorial() != null && cli.getHistorial().getConsultas() != null) {
-						for (Consulta con : cli.getHistorial().getConsultas()) {
-							if (con.getEnfermedadesDiag() != null) {
-								for (Enfermedad enf : con.getEnfermedadesDiag()) {
-									conteo.put(enf.getNombre(), conteo.getOrDefault(enf.getNombre(), 0) + 1);
-								}
-							}
-						}
-					}
-				}
-			}
-			if (conteo.isEmpty())
-				dataset.addValue(0, "Sin Datos", "N/A");
+            // =============================================================
+            // BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
+            // =============================================================
+            String[] enfermedadesPrueba = { "Gripe A", "Covid-19", "Diabetes T2", "Hipertensión", "Gastritis", "Asma" };
+            for (String enf : enfermedadesPrueba) {
+                dataset.addValue(random.nextInt(45) + 5, "Casos", enf);
+            }
 
-			for (String key : conteo.keySet()) {
-				dataset.addValue(conteo.get(key), "Casos", key);
-			}
+            // =============================================================
+            // BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
+            // =============================================================
+            /*
+            ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
+            java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
+            if (clientes != null) {
+                for (Cliente cli : clientes) {
+                    if (cli.getHistorial() != null && cli.getHistorial().getConsultas() != null) {
+                        for (Consulta con : cli.getHistorial().getConsultas()) {
+                            if (con.getEnfermedadesDiag() != null) {
+                                for (Enfermedad enf : con.getEnfermedadesDiag()) {
+                                    conteo.put(enf.getNombre(), conteo.getOrDefault(enf.getNombre(), 0) + 1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (conteo.isEmpty()) dataset.addValue(0, "Sin Datos", "N/A");
+            
+            for (String key : conteo.keySet()) {
+                dataset.addValue(conteo.get(key), "Casos", key);
+            }
+            */
+            // =============================================================
 
-			chart = ChartFactory.createBarChart("Enfermedades Diagnosticadas", "Enfermedad", "Casos", dataset,
-					PlotOrientation.VERTICAL, false, true, false);
+            chart = ChartFactory.createBarChart("Enfermedades Diagnosticadas (Demo)", "Enfermedad", "Casos", dataset,
+                    PlotOrientation.VERTICAL, false, true, false);
 
-			CategoryPlot plot = chart.getCategoryPlot();
-			BarRenderer renderer = (BarRenderer) plot.getRenderer();
-			renderer.setSeriesPaint(0, new Color(60, 70, 123));
+            CategoryPlot plot = chart.getCategoryPlot();
+            BarRenderer renderer = (BarRenderer) plot.getRenderer();
+            
+            // COLOR AZUL INSTITUCIONAL
+            renderer.setSeriesPaint(0, new Color(60, 70, 123));
 
-			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
+            configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
 
-		} else if (tipo.equals("VACUNAS")) {
-			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        } else if (tipo.equals("VACUNAS")) {
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-			ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
-			java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
-			if (clientes != null) {
-				for (Cliente cli : clientes) {
-					if (cli.getRegVacunas() != null) {
-						for (RegistroVacunacion reg : cli.getRegVacunas()) {
-							if (reg.getVacuna() != null) {
-								String nombre = reg.getVacuna().getNombre();
-								conteo.put(nombre, conteo.getOrDefault(nombre, 0) + 1);
-							}
-						}
-					}
-				}
-			}
-			if (conteo.isEmpty())
-				dataset.addValue(0, "Sin Datos", "N/A");
+            // =============================================================
+            // BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
+            // =============================================================
+            String[] vacunasPrueba = { "Pfizer", "Sinovac", "AstraZeneca", "Moderna", "Influenza" };
+            for (String vac : vacunasPrueba) {
+                dataset.addValue(random.nextInt(70) + 10, "Dosis", vac);
+            }
 
-			for (String key : conteo.keySet()) {
-				dataset.addValue(conteo.get(key), "Dosis", key);
-			}
+            // =============================================================
+            // BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
+            // =============================================================
+            /*
+            ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
+            java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
+            if (clientes != null) {
+                for (Cliente cli : clientes) {
+                    if (cli.getRegVacunas() != null) {
+                        for (RegistroVacunacion reg : cli.getRegVacunas()) {
+                            if (reg.getVacuna() != null) {
+                                String nombre = reg.getVacuna().getNombre();
+                                conteo.put(nombre, conteo.getOrDefault(nombre, 0) + 1);
+                            }
+                        }
+                    }
+                }
+            }
+            if (conteo.isEmpty()) dataset.addValue(0, "Sin Datos", "N/A");
+            
+            for (String key : conteo.keySet()) {
+                dataset.addValue(conteo.get(key), "Dosis", key);
+            }
+            */
+            // =============================================================
 
-			chart = ChartFactory.createBarChart("Vacunas Aplicadas", "Vacuna", "Total Dosis", dataset,
-					PlotOrientation.HORIZONTAL, false, true, false);
-			CategoryPlot plot = chart.getCategoryPlot();
-			BarRenderer renderer = (BarRenderer) plot.getRenderer();
-			renderer.setSeriesPaint(0, new Color(0, 150, 136));
+            chart = ChartFactory.createBarChart("Vacunas Aplicadas (Demo)", "Vacuna", "Total Dosis", dataset,
+                    PlotOrientation.HORIZONTAL, false, true, false);
+            
+            CategoryPlot plot = chart.getCategoryPlot();
+            BarRenderer renderer = (BarRenderer) plot.getRenderer();
+            
+            // COLOR VERDE QUIRÚRGICO
+            renderer.setSeriesPaint(0, new Color(0, 150, 136));
 
-			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
-		}
+            configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
+        }
 
-		if (chart != null) {
-			chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			chartPanel = new ChartPanel(chart);
-			chartPanel.setBackground(Color.WHITE);
-			panelGrafico.add(chartPanel, BorderLayout.CENTER);
-		}
+        if (chart != null) {
+          
+            chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
+                    java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            
+            chartPanel = new ChartPanel(chart);
+            chartPanel.setBackground(Color.WHITE);
+            panelGrafico.add(chartPanel, BorderLayout.CENTER);
+        }
 
-		panelGrafico.revalidate();
-		panelGrafico.repaint();
-	}
-
+        panelGrafico.revalidate();
+        panelGrafico.repaint();
+    }
+	
 	private void configurarPlotYRenderer(JFreeChart chart, CategoryPlot plot, BarRenderer renderer, Font fTitulo,
 			Font fEjes, Font fEtiquetas, Font fValores) {
 		chart.setBackgroundPaint(Color.WHITE);
