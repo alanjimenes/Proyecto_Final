@@ -357,7 +357,6 @@ public class Principal extends JFrame {
 			menuPacientes.setVisible(true);
 		} else if (rol.equalsIgnoreCase("Asistente")) {
 			menuCitas.setVisible(true);
-			menuPacientes.setVisible(true);
 		} else if (rol.equalsIgnoreCase("Medico")) {
 			menuConsulta.setVisible(true);
 			menuPacientes.setVisible(true);
@@ -394,189 +393,176 @@ public class Principal extends JFrame {
 	}
 
 
-    private JPanel crearPanelEstadistico() {
-        JPanel panelDashboard = new JPanel(new BorderLayout());
-        panelDashboard.setBackground(Color.WHITE);
+	private JPanel crearPanelEstadistico() {
+		JPanel panelDashboard = new JPanel(new BorderLayout());
+		panelDashboard.setBackground(Color.WHITE);
 
-        String rol = usuarioActual.getRol();
+		String rol = usuarioActual.getRol();
 
-        if (rol.equalsIgnoreCase("Medico")) {
-            
-            JPanel panelMedico = new JPanel(new GridLayout(1, 2, 20, 0)); // 20px de espacio horizontal
-            panelMedico.setBackground(Color.WHITE);
-            panelMedico.setBorder(new EmptyBorder(20, 20, 20, 20));
+		if (rol.equalsIgnoreCase("Medico")) {
+			JPanel panelMedico = new JPanel(new GridLayout(1, 2, 20, 0));
+			panelMedico.setBackground(Color.WHITE);
+			panelMedico.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-            JTable tableAgenda = new JTable();
-            tableAgenda.setRowHeight(30); // Filas más altas
-            tableAgenda.setShowVerticalLines(false); // Diseño limpio
-            tableAgenda.setGridColor(new Color(230, 230, 230));
-            tableAgenda.setSelectionBackground(new Color(232, 246, 255));
-            tableAgenda.setSelectionForeground(Color.BLACK);
-            tableAgenda.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-            javax.swing.table.JTableHeader header = tableAgenda.getTableHeader();
-            header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
-                @Override
-                public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                        boolean hasFocus, int row, int column) {
-                    super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                    setBackground(new Color(60, 70, 123)); // Azul Institucional
-                    setForeground(Color.WHITE);
-                    setFont(new Font("Bahnschrift", Font.BOLD, 14));
-                    setHorizontalAlignment(JLabel.CENTER);
-                    setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 1, Color.WHITE));
-                    return this;
-                }
-            });
+			JTable tableAgenda = new JTable();
+			tableAgenda.setRowHeight(30);
+			tableAgenda.setShowVerticalLines(false);
+			tableAgenda.setGridColor(new Color(230, 230, 230));
+			tableAgenda.setSelectionBackground(new Color(232, 246, 255));
+			tableAgenda.setSelectionForeground(Color.BLACK);
+			tableAgenda.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-            javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
-            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+			javax.swing.table.JTableHeader header = tableAgenda.getTableHeader();
+			header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+				@Override
+				public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+					super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+					setBackground(new Color(60, 70, 123));
+					setForeground(Color.WHITE);
+					setFont(new Font("Bahnschrift", Font.BOLD, 14));
+					setHorizontalAlignment(JLabel.CENTER);
+					setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 1, Color.WHITE));
+					return this;
+				}
+			});
 
-            DefaultTableModel modelAgenda = new DefaultTableModel(new String[] { "Hora", "Paciente", "Estado" }, 0) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
-            tableAgenda.setModel(modelAgenda);
+			javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
+			centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-            for (int i = 0; i < tableAgenda.getColumnCount(); i++) {
-                tableAgenda.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-            }
+			DefaultTableModel modelAgenda = new DefaultTableModel(new String[] { "Hora", "Paciente", "Estado" }, 0) {
+				public boolean isCellEditable(int row, int column) { return false; }
+			};
+			tableAgenda.setModel(modelAgenda);
 
-            if (usuarioActual.getCedula() != null) {
-                Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
-                if (resp instanceof Medico) {
-                    Medico yo = (Medico) resp;
-                    int completadas = 0;
-                    int pendientes = 0;
+			for (int i = 0; i < tableAgenda.getColumnCount(); i++) {
+				tableAgenda.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+			}
 
-                    if (yo.getCitasAsignadas() != null) {
-                        for (Cita c : yo.getCitasAsignadas()) {
-                            if (c.getFechaHora().toLocalDate().equals(LocalDate.now())) {
-                                
-                                if (c.getEstado().equalsIgnoreCase("Pendiente")) {
-                                    modelAgenda.addRow(new Object[] { 
-                                        c.getFechaHora().toLocalTime().toString(),
-                                        c.getCliente().getNombre() + " " + c.getCliente().getApellido(),
-                                        c.getEstado() 
-                                    });
-                                    pendientes++;
-                                } else if (c.getEstado().equalsIgnoreCase("Completada")) {
-                                   
-                                    modelAgenda.addRow(new Object[] { 
-                                        c.getFechaHora().toLocalTime().toString(),
-                                        c.getCliente().getNombre() + " " + c.getCliente().getApellido(),
-                                        c.getEstado() 
-                                    });
-                                    completadas++;
-                                }
-                            }
-                        }
-                    }
-                    DefaultPieDataset dataset = new DefaultPieDataset();
-                    dataset.setValue("Pendientes (" + pendientes + ")", pendientes);
-                    dataset.setValue("Completadas (" + completadas + ")", completadas);
+			if (usuarioActual.getCedula() != null) {
+				Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
+				if (resp instanceof Medico) {
+					Medico yo = (Medico) resp;
+					int completadas = 0;
+					int pendientes = 0;
 
-                    JFreeChart chart = ChartFactory.createPieChart("Mi Progreso Diario", dataset, true, true, false);
+					if (yo.getCitasAsignadas() != null) {
+						for (Cita c : yo.getCitasAsignadas()) {
+							if (c.getFechaHora().toLocalDate().equals(LocalDate.now())) {
+								if (c.getEstado().equalsIgnoreCase("Pendiente")) {
+									modelAgenda.addRow(new Object[] { 
+											c.getFechaHora().toLocalTime().toString(),
+											c.getCliente().getNombre() + " " + c.getCliente().getApellido(),
+											c.getEstado() 
+									});
+									pendientes++;
+								} else if (c.getEstado().equalsIgnoreCase("Completada")) {
+									completadas++;
+								}
+							}
+						}
+					}
 
-                    chart.setBackgroundPaint(Color.WHITE);
-                    chart.getTitle().setFont(new Font("Bahnschrift", Font.BOLD, 20));
+					DefaultPieDataset dataset = new DefaultPieDataset();
+					dataset.setValue("Pendientes (" + pendientes + ")", pendientes);
+					dataset.setValue("Completadas (" + completadas + ")", completadas);
 
-                    PiePlot plot = (PiePlot) chart.getPlot();
-                    plot.setBackgroundPaint(Color.WHITE);
-                    plot.setOutlineVisible(false);
-                    plot.setLabelFont(new Font("Bahnschrift", Font.PLAIN, 12));
-                    plot.setShadowPaint(null);
-                    plot.setSectionPaint("Pendientes (" + pendientes + ")", new Color(231, 76, 60)); 
-                    plot.setSectionPaint("Completadas (" + completadas + ")", new Color(60, 70, 123)); 
+					JFreeChart chart = ChartFactory.createPieChart("Mi Progreso Diario", dataset, true, true, false);
+					chart.setBackgroundPaint(Color.WHITE);
+					chart.getTitle().setFont(new Font("Bahnschrift", Font.BOLD, 20));
 
-                    ChartPanel chartPanel = new ChartPanel(chart);
-                    chartPanel.setBorder(null);
-                    panelMedico.add(chartPanel);
-                }
-            }
+					PiePlot plot = (PiePlot) chart.getPlot();
+					plot.setBackgroundPaint(Color.WHITE);
+					plot.setOutlineVisible(false);
+					plot.setLabelFont(new Font("Bahnschrift", Font.PLAIN, 12));
+					plot.setShadowPaint(null); 
 
-            JScrollPane scrollPane = new JScrollPane(tableAgenda);
-            scrollPane.getViewport().setBackground(Color.WHITE);
-            scrollPane.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(230, 230, 230), 1));
-            
-            panelMedico.add(scrollPane);
-            panelDashboard.add(panelMedico, BorderLayout.CENTER);
+					plot.setSectionPaint("Pendientes (" + pendientes + ")", new Color(231, 76, 60)); // Rojo suave
+					plot.setSectionPaint("Completadas (" + completadas + ")", new Color(60, 70, 123)); // AZUL INSTITUCIONAL
 
-        } else if (rol.equalsIgnoreCase("Asistente")) {
-            panelDashboard.setLayout(new BorderLayout());
-            JLabel lblLogo = new JLabel("");
-            lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
-            try {
-                lblLogo.setIcon(new ImageIcon(Principal.class.getResource("/img/Logo-Azul.png")));
-            } catch (Exception e) {
-                lblLogo.setText("Bienvenido Asistente");
-                lblLogo.setFont(new Font("Tahoma", Font.BOLD, 30));
-            }
-            panelDashboard.add(lblLogo, BorderLayout.CENTER);
-        } else {
-            JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            panelBotones.setBackground(Color.WHITE);
+					ChartPanel chartPanel = new ChartPanel(chart);
+					chartPanel.setBorder(null);
+					panelMedico.add(chartPanel);
+				}
+			}
 
-            JButton btnEnf = new JButton("Enfermedades");
-            try {
-                Estilos.estilarBoton(btnEnf, Color.WHITE, Color.BLACK);
-            } catch (Exception e) {
-            }
-            btnEnf.addActionListener(e -> actualizarGrafico("ENFERMEDADES"));
+			JScrollPane scrollPane = new JScrollPane(tableAgenda);
+			scrollPane.getViewport().setBackground(Color.WHITE);
+			scrollPane.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(230, 230, 230), 1));
+			panelMedico.add(scrollPane);
 
-            JButton btnVac = new JButton("Vacunación");
-            try {
-                Estilos.estilarBoton(btnVac, Color.WHITE, Color.BLACK);
-            } catch (Exception e) {
-            }
-            btnVac.addActionListener(e -> actualizarGrafico("VACUNAS"));
+			panelDashboard.add(panelMedico, BorderLayout.CENTER);
 
-            panelBotones.add(btnEnf);
-            panelBotones.add(btnVac);
+		} else if (rol.equalsIgnoreCase("Asistente")) {
+			panelDashboard.setLayout(new BorderLayout());
+			JLabel lblLogo = new JLabel("");
+			lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
+			try {
+				lblLogo.setIcon(new ImageIcon(Principal.class.getResource("/img/Logo-Azul.png")));
+			} catch (Exception e) {
+				lblLogo.setText("Bienvenido Asistente");
+				lblLogo.setFont(new Font("Bahnschrift", Font.BOLD, 40));
+				lblLogo.setForeground(new Color(60, 70, 123));
+			}
+			panelDashboard.add(lblLogo, BorderLayout.CENTER);
 
-            panelDashboard.add(panelBotones, BorderLayout.NORTH);
+		} else {
+			JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			panelBotones.setBackground(Color.WHITE);
 
-            panelGrafico = new JPanel(new BorderLayout());
-            panelGrafico.setBackground(Color.WHITE);
-            panelDashboard.add(panelGrafico, BorderLayout.CENTER);
+			JButton btnEnf = new JButton("Enfermedades");
+			try { Estilos.estilarBoton(btnEnf, Color.WHITE, Color.BLACK); } catch (Exception e) {}
+			btnEnf.addActionListener(e -> actualizarGrafico("ENFERMEDADES"));
 
-            actualizarGrafico("ENFERMEDADES");
-        }
-        return panelDashboard;
-    }
+			JButton btnVac = new JButton("Vacunación");
+			try { Estilos.estilarBoton(btnVac, Color.WHITE, Color.BLACK); } catch (Exception e) {}
+			btnVac.addActionListener(e -> actualizarGrafico("VACUNAS"));
+
+			panelBotones.add(btnEnf);
+			panelBotones.add(btnVac);
+
+			panelDashboard.add(panelBotones, BorderLayout.NORTH);
+
+			panelGrafico = new JPanel(new BorderLayout());
+			panelGrafico.setBackground(Color.WHITE);
+			panelDashboard.add(panelGrafico, BorderLayout.CENTER);
+
+			actualizarGrafico("ENFERMEDADES");
+		}
+		return panelDashboard;
+	}
+
 	@SuppressWarnings("unchecked")
-    private void actualizarGrafico(String tipo) {
-        if (panelGrafico == null)
-            return;
-        panelGrafico.removeAll();
+	private void actualizarGrafico(String tipo) {
+		if (panelGrafico == null)
+			return;
+		panelGrafico.removeAll();
 
-        panelGrafico.setBorder(new EmptyBorder(20, 20, 20, 20));
+		panelGrafico.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        JFreeChart chart = null;
-        java.util.Random random = new java.util.Random(); 
+		JFreeChart chart = null;
+		java.util.Random random = new java.util.Random(); 
 
-        Font fontTitulo = new Font("Bahnschrift", Font.BOLD, 20);
-        Font fontEjes = new Font("Bahnschrift", Font.PLAIN, 14);
-        Font fontEtiquetas = new Font("Bahnschrift", Font.PLAIN, 12);
-        Font fontValores = new Font("Bahnschrift", Font.BOLD, 12);
+		Font fontTitulo = new Font("Bahnschrift", Font.BOLD, 20);
+		Font fontEjes = new Font("Bahnschrift", Font.PLAIN, 14);
+		Font fontEtiquetas = new Font("Bahnschrift", Font.PLAIN, 12);
+		Font fontValores = new Font("Bahnschrift", Font.BOLD, 12);
 
-        if (tipo.equals("ENFERMEDADES")) {
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		if (tipo.equals("ENFERMEDADES")) {
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-            // =============================================================
-            // BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
-            // =============================================================
-            String[] enfermedadesPrueba = { "Gripe A", "Covid-19", "Diabetes T2", "Hipertensión", "Gastritis", "Asma" };
-            for (String enf : enfermedadesPrueba) {
-                dataset.addValue(random.nextInt(45) + 5, "Casos", enf);
-            }
+			// =============================================================
+			// BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
+			// =============================================================
+			String[] enfermedadesPrueba = { "Gripe A", "Covid-19", "Diabetes T2", "Hipertensión", "Gastritis", "Asma" };
+			for (String enf : enfermedadesPrueba) {
+				dataset.addValue(random.nextInt(45) + 5, "Casos", enf);
+			}
 
-            // =============================================================
-            // BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
-            // =============================================================
-            /*
+			// =============================================================
+			// BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
+			// =============================================================
+			/*
             ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
             java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
             if (clientes != null) {
@@ -593,39 +579,39 @@ public class Principal extends JFrame {
                 }
             }
             if (conteo.isEmpty()) dataset.addValue(0, "Sin Datos", "N/A");
-            
+
             for (String key : conteo.keySet()) {
                 dataset.addValue(conteo.get(key), "Casos", key);
             }
-            */
-            // =============================================================
+			 */
+			// =============================================================
 
-            chart = ChartFactory.createBarChart("Enfermedades Diagnosticada", "Enfermedad", "Casos", dataset,
-                    PlotOrientation.VERTICAL, false, true, false);
+			chart = ChartFactory.createBarChart("Enfermedades Diagnosticada", "Enfermedad", "Casos", dataset,
+					PlotOrientation.VERTICAL, false, true, false);
 
-            CategoryPlot plot = chart.getCategoryPlot();
-            BarRenderer renderer = (BarRenderer) plot.getRenderer();
-            
-      
-            renderer.setSeriesPaint(0, new Color(60, 70, 123));
+			CategoryPlot plot = chart.getCategoryPlot();
+			BarRenderer renderer = (BarRenderer) plot.getRenderer();
 
-            configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
 
-        } else if (tipo.equals("VACUNAS")) {
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+			renderer.setSeriesPaint(0, new Color(60, 70, 123));
 
-            // =============================================================
-            // BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
-            // =============================================================
-            String[] vacunasPrueba = { "Pfizer", "Sinovac", "AstraZeneca", "Moderna", "Influenza" };
-            for (String vac : vacunasPrueba) {
-                dataset.addValue(random.nextInt(70) + 10, "Dosis", vac);
-            }
+			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
 
-            // =============================================================
-            // BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
-            // =============================================================
-            /*
+		} else if (tipo.equals("VACUNAS")) {
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+			// =============================================================
+			// BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
+			// =============================================================
+			String[] vacunasPrueba = { "Pfizer", "Sinovac", "AstraZeneca", "Moderna", "Influenza" };
+			for (String vac : vacunasPrueba) {
+				dataset.addValue(random.nextInt(70) + 10, "Dosis", vac);
+			}
+
+			// =============================================================
+			// BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
+			// =============================================================
+			/*
             ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
             java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
             if (clientes != null) {
@@ -641,39 +627,39 @@ public class Principal extends JFrame {
                 }
             }
             if (conteo.isEmpty()) dataset.addValue(0, "Sin Datos", "N/A");
-            
+
             for (String key : conteo.keySet()) {
                 dataset.addValue(conteo.get(key), "Dosis", key);
             }
-            */
-            // =============================================================
+			 */
+			// =============================================================
 
-            chart = ChartFactory.createBarChart("Vacunas Aplicadas (Demo)", "Vacuna", "Total Dosis", dataset,
-                    PlotOrientation.HORIZONTAL, false, true, false);
-            
-            CategoryPlot plot = chart.getCategoryPlot();
-            BarRenderer renderer = (BarRenderer) plot.getRenderer();
-            
-            // COLOR VERDE QUIRÚRGICO
-            renderer.setSeriesPaint(0, new Color(0, 150, 136));
+			chart = ChartFactory.createBarChart("Vacunas Aplicadas (Demo)", "Vacuna", "Total Dosis", dataset,
+					PlotOrientation.HORIZONTAL, false, true, false);
 
-            configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
-        }
+			CategoryPlot plot = chart.getCategoryPlot();
+			BarRenderer renderer = (BarRenderer) plot.getRenderer();
 
-        if (chart != null) {
-          
-            chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-                    java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            
-            chartPanel = new ChartPanel(chart);
-            chartPanel.setBackground(Color.WHITE);
-            panelGrafico.add(chartPanel, BorderLayout.CENTER);
-        }
+			// COLOR VERDE QUIRÚRGICO
+			renderer.setSeriesPaint(0, new Color(0, 150, 136));
 
-        panelGrafico.revalidate();
-        panelGrafico.repaint();
-    }
-	
+			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);
+		}
+
+		if (chart != null) {
+
+			chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
+					java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+			chartPanel = new ChartPanel(chart);
+			chartPanel.setBackground(Color.WHITE);
+			panelGrafico.add(chartPanel, BorderLayout.CENTER);
+		}
+
+		panelGrafico.revalidate();
+		panelGrafico.repaint();
+	}
+
 	private void configurarPlotYRenderer(JFreeChart chart, CategoryPlot plot, BarRenderer renderer, Font fTitulo,
 			Font fEjes, Font fEtiquetas, Font fValores) {
 		chart.setBackgroundPaint(Color.WHITE);
