@@ -18,6 +18,7 @@ public class Main {
 				}
 			}
 		});
+		
 		hiloServer.start(); 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
