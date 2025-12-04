@@ -166,6 +166,24 @@ public class Flujo extends Thread {
 				paquete.setRespuesta(exito);
 			}
 
+			// GESTION DE CONSULTAS
+			else if (comando.equalsIgnoreCase("REG_CONSULTA")) {
+				Consulta c = (Consulta) paquete.getObjeto();
+				boolean exito = false;
+				if (c != null && c.getCliente() != null) {
+					String numExp = c.getCliente().getNumExpediente();
+					Cliente clienteReal = Clinica.getInstancia().buscarClientePorCodigo(numExp);
+					if (clienteReal != null) {
+						if (clienteReal.getHistorial() == null)
+							clienteReal.setHistorial(new Historial("HIST-" + clienteReal.getNumExpediente()));
+						clienteReal.getHistorial().getConsultas().add(c);
+						Clinica.getInstancia().guardarDatosClinica();
+						exito = true;
+					}
+				}
+				paquete.setRespuesta(exito);
+			}
+
 			// GESTION DE VACUNAS
 			else if (comando.equalsIgnoreCase("REG_VACUNA")) {
 				Vacuna v = (Vacuna) paquete.getObjeto();

@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
@@ -22,10 +23,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import logico.Cita;
+import logico.Cliente;
 import logico.Clinica;
 import logico.Consulta;
 import logico.Enfermedad;
@@ -70,12 +73,14 @@ public class RealizarConsulta extends JDialog {
 		contentPanel.setLayout(null);
 
 		JPanel panelInfo = new JPanel();
-		panelInfo.setBorder(new TitledBorder(null, "Datos del Paciente", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelInfo.setBorder(
+				new TitledBorder(null, "Datos del Paciente", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelInfo.setBounds(10, 11, 960, 60);
 		contentPanel.add(panelInfo);
 		panelInfo.setLayout(null);
 
-		JLabel lblNombre = new JLabel("Nombre: " + cita.getCliente().getNombre() + " " + cita.getCliente().getApellido());
+		JLabel lblNombre = new JLabel(
+				"Nombre: " + cita.getCliente().getNombre() + " " + cita.getCliente().getApellido());
 		lblNombre.setFont(new Font("Tahoma", Font.BOLD, 14));
 		lblNombre.setBounds(20, 25, 300, 20);
 		panelInfo.add(lblNombre);
@@ -97,7 +102,8 @@ public class RealizarConsulta extends JDialog {
 		panelInfo.add(btnVerHistorial);
 
 		JPanel panelInformacion = new JPanel();
-		panelInformacion.setBorder(new TitledBorder(null, "Anamnesis", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelInformacion
+				.setBorder(new TitledBorder(null, "Anamnesis", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelInformacion.setBounds(10, 80, 470, 250);
 		contentPanel.add(panelInformacion);
 		panelInformacion.setLayout(null);
@@ -125,7 +131,8 @@ public class RealizarConsulta extends JDialog {
 		scSint.setViewportView(txtSintomas);
 
 		JPanel panelExamen = new JPanel();
-		panelExamen.setBorder(new TitledBorder(null, "Examen y Diagnóstico", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelExamen.setBorder(
+				new TitledBorder(null, "Examen y Diagnóstico", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelExamen.setBounds(490, 80, 480, 250);
 		contentPanel.add(panelExamen);
 		panelExamen.setLayout(null);
@@ -152,26 +159,27 @@ public class RealizarConsulta extends JDialog {
 		scDiag.setViewportView(txtDiagnostico);
 
 		JPanel panelEnf = new JPanel();
-		panelEnf.setBorder(new TitledBorder(null, "Enfermedades Controladas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelEnf.setBorder(
+				new TitledBorder(null, "Enfermedades Controladas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelEnf.setBounds(10, 340, 470, 250);
 		contentPanel.add(panelEnf);
 		panelEnf.setLayout(null);
 
-		JScrollPane spDisp = new JScrollPane(); 
-		spDisp.setBounds(10, 40, 180, 180); 
+		JScrollPane spDisp = new JScrollPane();
+		spDisp.setBounds(10, 40, 180, 180);
 		panelEnf.add(spDisp);
-		modelDisponibles = new DefaultListModel<>(); 
-		listDisponibles = new JList<>(modelDisponibles); 
+		modelDisponibles = new DefaultListModel<>();
+		listDisponibles = new JList<>(modelDisponibles);
 		spDisp.setViewportView(listDisponibles);
 
-		JScrollPane spDiag = new JScrollPane(); 
-		spDiag.setBounds(270, 40, 180, 180); 
+		JScrollPane spDiag = new JScrollPane();
+		spDiag.setBounds(270, 40, 180, 180);
 		panelEnf.add(spDiag);
-		modelDiagnosticadas = new DefaultListModel<>(); 
-		listDiagnosticadas = new JList<>(modelDiagnosticadas); 
+		modelDiagnosticadas = new DefaultListModel<>();
+		listDiagnosticadas = new JList<>(modelDiagnosticadas);
 		spDiag.setViewportView(listDiagnosticadas);
 
-		JButton btnRight = new JButton(">"); 
+		JButton btnRight = new JButton(">");
 		btnRight.setBounds(200, 100, 60, 25);
 		btnRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -180,7 +188,7 @@ public class RealizarConsulta extends JDialog {
 		});
 		panelEnf.add(btnRight);
 
-		JButton btnLeft = new JButton("<"); 
+		JButton btnLeft = new JButton("<");
 		btnLeft.setBounds(200, 140, 60, 25);
 		btnLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -192,7 +200,8 @@ public class RealizarConsulta extends JDialog {
 		cargarEnfermedades();
 
 		JPanel panelPlan = new JPanel();
-		panelPlan.setBorder(new TitledBorder(null, "Plan y Tratamiento", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelPlan.setBorder(
+				new TitledBorder(null, "Plan y Tratamiento", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelPlan.setBounds(490, 340, 480, 250);
 		contentPanel.add(panelPlan);
 		panelPlan.setLayout(null);
@@ -210,7 +219,8 @@ public class RealizarConsulta extends JDialog {
 
 		chkResumen = new JCheckBox("Agregar al Resumen Clínico");
 		chkResumen.setBounds(10, 200, 250, 20);
-		panelPlan.add(chkResumen);;
+		panelPlan.add(chkResumen);
+		;
 
 		cargarEnfermedades();
 
@@ -240,48 +250,63 @@ public class RealizarConsulta extends JDialog {
 		JButton btnVacuna = new JButton("Aplicar Vacuna");
 		btnVacuna.setForeground(Color.BLACK);
 		btnVacuna.addActionListener(new ActionListener() {
-			@SuppressWarnings("unchecked")
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				ArrayList<logico.Vacuna> vacunas = (ArrayList<logico.Vacuna>) ClienteSocket.enviar("LISTAR_VACUNAS", null);
 
-				if(vacunas == null || vacunas.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "No hay vacunas en el sistema.");
-					return;
-				}
-				String[] nombresVacunas = new String[vacunas.size()];
-				for(int i=0; i<vacunas.size(); i++) {
-					nombresVacunas[i] = vacunas.get(i).getNombre();
-				}
+				new Thread(() -> {
+					Object res = ClienteSocket.enviar("LISTAR_VACUNAS", null);
 
-				String seleccion = (String) JOptionPane.showInputDialog(
-						null, 
-						"Seleccione la vacuna a aplicar:", 
-						"Vacunación", 
-						JOptionPane.QUESTION_MESSAGE, 
-						null, 
-						nombresVacunas, 
-						nombresVacunas[0]);
+					if (!(res instanceof ArrayList)) {
+						SwingUtilities.invokeLater(
+								() -> JOptionPane.showMessageDialog(null, "No hay vacunas o error de conexión."));
+						return;
+					}
 
-				if(seleccion != null) {
-					logico.Vacuna vacunaObj = null;
-					for(logico.Vacuna v : vacunas) {
-						if(v.getNombre().equals(seleccion)) {
-							vacunaObj = v; break;
+					ArrayList<logico.Vacuna> vacunas = (ArrayList<logico.Vacuna>) res;
+
+					if (vacunas.isEmpty()) {
+						SwingUtilities.invokeLater(
+								() -> JOptionPane.showMessageDialog(null, "No hay vacunas en el sistema."));
+						return;
+					}
+
+					String[] nombresVacunas = new String[vacunas.size()];
+					for (int i = 0; i < vacunas.size(); i++) {
+						nombresVacunas[i] = vacunas.get(i).getNombre();
+					}
+					SwingUtilities.invokeLater(() -> {
+
+						String seleccion = (String) JOptionPane.showInputDialog(null, "Seleccione la vacuna a aplicar:",
+								"Vacunación", JOptionPane.QUESTION_MESSAGE, null, nombresVacunas, nombresVacunas[0]);
+
+						if (seleccion != null) {
+
+							logico.Vacuna vacunaObj = null;
+							for (logico.Vacuna v : vacunas) {
+								if (v.getNombre().equals(seleccion)) {
+									vacunaObj = v;
+									break;
+								}
+							}
+
+							logico.RegistroVacunacion reg = new logico.RegistroVacunacion(citaActual.getCliente(),
+									vacunaObj, LocalDate.now(), citaActual.getMedico(), true);
+							boolean exito = (boolean) ClienteSocket.enviar("APLICAR_VACUNA", reg);
+
+							if (exito) {
+								JOptionPane.showMessageDialog(null,
+										"Vacuna " + seleccion + " aplicada y registrada en el Servidor.");
+							} else {
+								JOptionPane.showMessageDialog(null, "Error al registrar vacuna.");
+							}
 						}
-					}
-					logico.RegistroVacunacion reg = new logico.RegistroVacunacion(citaActual.getCliente(), vacunaObj, java.time.LocalDate.now(), citaActual.getMedico(), true);
+					});
 
-					boolean exito = (boolean) ClienteSocket.enviar("APLICAR_VACUNA", reg);
+				}).start();
 
-					if(exito) {
-						JOptionPane.showMessageDialog(null, "Vacuna " + seleccion + " aplicada y registrada en el Servidor.");
-					} else {
-						JOptionPane.showMessageDialog(null, "Error al registrar vacuna.");
-					}
-				}
 			}
 		});
-		buttonPane.add(btnVacuna);
+
 	}
 
 	private void registrarSignosVitales() {
@@ -292,13 +317,19 @@ public class RealizarConsulta extends JDialog {
 		JTextField txtPeso = new JTextField(String.valueOf(peso));
 		JTextField txtTalla = new JTextField(String.valueOf(talla));
 
-		panel.add(new JLabel("Presión Arterial (mm/Hg):")); panel.add(txtPresion);
-		panel.add(new JLabel("Frecuencia Cardíaca (lpm):")); panel.add(txtPulso);
-		panel.add(new JLabel("Temperatura (°C):")); panel.add(txtTemp);
-		panel.add(new JLabel("Peso (Kg):")); panel.add(txtPeso);
-		panel.add(new JLabel("Talla (m):")); panel.add(txtTalla);
+		panel.add(new JLabel("Presión Arterial (mm/Hg):"));
+		panel.add(txtPresion);
+		panel.add(new JLabel("Frecuencia Cardíaca (lpm):"));
+		panel.add(txtPulso);
+		panel.add(new JLabel("Temperatura (°C):"));
+		panel.add(txtTemp);
+		panel.add(new JLabel("Peso (Kg):"));
+		panel.add(txtPeso);
+		panel.add(new JLabel("Talla (m):"));
+		panel.add(txtTalla);
 
-		int res = JOptionPane.showConfirmDialog(this, panel, "Registro de Signos Vitales", JOptionPane.OK_CANCEL_OPTION);
+		int res = JOptionPane.showConfirmDialog(this, panel, "Registro de Signos Vitales",
+				JOptionPane.OK_CANCEL_OPTION);
 		if (res == JOptionPane.OK_OPTION) {
 			try {
 				presion = txtPresion.getText();
@@ -309,30 +340,36 @@ public class RealizarConsulta extends JDialog {
 				signosRegistrados = true;
 				JOptionPane.showMessageDialog(this, "Signos vitales registrados.");
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(this, "Error en los datos numéricos.", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Error en los datos numéricos.", "Error",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
 
 	private void terminarConsulta() {
-		if (txtSintomas.getText().isEmpty() || txtDiagnostico.getText().isEmpty() || txtTratamiento.getText().isEmpty()) {
+		if (txtSintomas.getText().isEmpty() || txtDiagnostico.getText().isEmpty()
+				|| txtTratamiento.getText().isEmpty()) {
 			JOptionPane.showMessageDialog(null, "Debe completar Síntomas, Diagnóstico y Tratamiento.");
 			return;
 		}
 		if (!signosRegistrados) {
-			int opt = JOptionPane.showConfirmDialog(null, "No ha registrado Signos Vitales. ¿Desea continuar?", "Advertencia", JOptionPane.YES_NO_OPTION);
-			if (opt == JOptionPane.NO_OPTION) return;
+			int opt = JOptionPane.showConfirmDialog(null, "No ha registrado Signos Vitales. ¿Desea continuar?",
+					"Advertencia", JOptionPane.YES_NO_OPTION);
+			if (opt == JOptionPane.NO_OPTION)
+				return;
 		}
 
-		Consulta consultaTemp = new Consulta("TEMP", java.time.LocalDate.now(), txtSintomas.getText(), txtDiagnostico.getText(), citaActual.getMedico(), citaActual.getCliente());
+		Consulta consultaTemp = new Consulta("TEMP", java.time.LocalDate.now(), txtSintomas.getText(),
+				txtDiagnostico.getText(), citaActual.getMedico(), citaActual.getCliente());
 		consultaTemp.setAntecedentes(txtAntecedentes.getText());
 		consultaTemp.setRecetaMedica(txtTratamiento.getText());
 		consultaTemp.setEnfermedadesDiag(enfermedadesSeleccionadas);
 
-		boolean guardado = (boolean) ClienteSocket.enviar("REG_CONSULTA", consultaTemp); 
+		boolean guardado = (boolean) ClienteSocket.enviar("REG_CONSULTA", consultaTemp);
 
 		if (guardado) {
-			int word = JOptionPane.showConfirmDialog(null, "¿Desea descargar la Receta Médica en Word?", "Receta", JOptionPane.YES_NO_OPTION);
+			int word = JOptionPane.showConfirmDialog(null, "¿Desea descargar la Receta Médica en Word?", "Receta",
+					JOptionPane.YES_NO_OPTION);
 			if (word == JOptionPane.YES_OPTION) {
 				GeneradorReportes.generarReceta(consultaTemp);
 			}
@@ -340,19 +377,51 @@ public class RealizarConsulta extends JDialog {
 		} else {
 			JOptionPane.showMessageDialog(null, "Error al guardar en el sistema.");
 		}
-	}
 
+		new javax.swing.SwingWorker<Boolean, Void>() {
+			@Override
+			protected Boolean doInBackground() throws Exception {
+				Object res = ClienteSocket.enviar("REG_CONSULTA", consultaTemp);
+				return res != null && res instanceof Boolean ? (Boolean) res : false;
+			}
+
+			@Override
+			protected void done() {
+				try {
+					boolean guardado = get();
+					if (guardado) {
+						int word = JOptionPane.showConfirmDialog(null, "¿Desea descargar la Receta Médica en Word?",
+								"Receta", JOptionPane.YES_NO_OPTION);
+						if (word == JOptionPane.YES_OPTION)
+							GeneradorReportes.generarReceta(consultaTemp);
+						dispose();
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al guardar en el sistema.");
+					}
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Error de comunicación: " + e.getMessage());
+				}
+			}
+		}.execute();
+
+	}
 
 	@SuppressWarnings("unchecked")
 	private void cargarEnfermedades() {
-		modelDisponibles.clear();
-		listaEnfermedadesGlobal = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
-
-		if(listaEnfermedadesGlobal != null) {
-			for (Enfermedad enf : listaEnfermedadesGlobal) {
-				modelDisponibles.addElement(enf.getNombre());
+		modelDisponibles.removeAllElements();
+		new Thread(() -> {
+			Object res = ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
+			if (res instanceof ArrayList) {
+				listaEnfermedadesGlobal = (ArrayList<Enfermedad>) res;
+				javax.swing.SwingUtilities.invokeLater(() -> {
+					for (Enfermedad enf : listaEnfermedadesGlobal)
+						modelDisponibles.addElement(enf.getNombre());
+				});
+			} else {
+				javax.swing.SwingUtilities
+						.invokeLater(() -> JOptionPane.showMessageDialog(this, "Error al cargar enfermedades."));
 			}
-		}
+		}).start();
 	}
 
 	private void moverEnfermedadDerecha() {
@@ -367,7 +436,7 @@ public class RealizarConsulta extends JDialog {
 
 					if (enf.isVigilancia()) {
 						chkResumen.setSelected(true);
-						chkResumen.setEnabled(false); 
+						chkResumen.setEnabled(false);
 						chkResumen.setText("Marcar para Resumen (OBLIGATORIO POR VIGILANCIA)");
 						chkResumen.setForeground(Color.RED);
 					}
@@ -387,8 +456,16 @@ public class RealizarConsulta extends JDialog {
 	}
 
 	private void verHistorialFiltrado() {
-		logico.Historial historial = citaActual.getCliente().getHistorial();
-		ArrayList<logico.Consulta> consultasVisibles = historial.getConsultasVisibleMedico(citaActual.getMedico());
+
+		Cliente clienteActualizado = (Cliente) ClienteSocket.enviar("BUSCAR_CLIENTE_CEDULA",
+				citaActual.getCliente().getCedula());
+		if (clienteActualizado == null)
+			clienteActualizado = citaActual.getCliente();
+
+		Historial historial = clienteActualizado.getHistorial();
+		ArrayList<Consulta> consultasVisibles = historial != null
+				? historial.getConsultasVisibleMedico(citaActual.getMedico())
+				: new ArrayList<>();
 
 		if (consultasVisibles.isEmpty()) {
 			JOptionPane.showMessageDialog(null, "No hay consultas previas visibles para este médico.");
@@ -401,7 +478,7 @@ public class RealizarConsulta extends JDialog {
 		dialogHistorial.setLocationRelativeTo(this);
 		dialogHistorial.getContentPane().setLayout(new BorderLayout());
 
-		String[] headers = {"Fecha", "Síntomas", "Diagnóstico", "Médico"};
+		String[] headers = { "Fecha", "Síntomas", "Diagnóstico", "Médico" };
 		javax.swing.table.DefaultTableModel modelHist = new javax.swing.table.DefaultTableModel();
 		modelHist.setColumnIdentifiers(headers);
 
