@@ -22,6 +22,8 @@ import javax.swing.border.EmptyBorder;
 
 import logico.Enfermedad;
 
+
+
 public class RegEnfermedades extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();

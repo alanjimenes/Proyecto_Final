@@ -203,28 +203,28 @@ public class ConsultarMedicos extends JDialog {
 							int option = JOptionPane.showConfirmDialog(
 									null, "¿Está seguro que desea eliminar al médico con Cédula: "
 											+ seleccionado.getCedula() + "?",
-											"Eliminar Médico", JOptionPane.WARNING_MESSAGE);
+									"Eliminar Médico", JOptionPane.WARNING_MESSAGE);
 
 							if (option == JOptionPane.OK_OPTION) {
-								if (seleccionado.getCitasAsignadas().isEmpty()) {
-									Clinica.getInstancia().getMedicos().remove(seleccionado);
-									Clinica.getInstancia().guardarDatosClinica();
+								boolean exito = (boolean) ClienteSocket.enviar("DELETE_MEDICO", seleccionado);
+								if (exito) {
 									cargarMedicos();
 									JOptionPane.showMessageDialog(null, "Médico eliminado correctamente.");
-
 									btnDelete.setEnabled(false);
 									btnUpdate.setEnabled(false);
 									btnVerDetalles.setEnabled(false);
 									seleccionado = null;
+									table.clearSelection();
 								} else {
 									JOptionPane.showMessageDialog(null,
-											"El médico no se puede eliminar porque tiene Citas Asignadas pendientes.",
-											"Advertencia", JOptionPane.WARNING_MESSAGE);
+											"No se pudo eliminar el médico (¿tiene citas pendientes?).", "Advertencia",
+											JOptionPane.WARNING_MESSAGE);
 								}
 							}
 						}
 					}
 				});
+
 				btnDelete.setEnabled(false);
 				buttonPane.add(btnDelete);
 			}
@@ -249,17 +249,22 @@ public class ConsultarMedicos extends JDialog {
 	public void filtrar() {
 		modelo.setRowCount(0);
 		row = new Object[table.getColumnCount()];
+		String textoFiltro = txtFiltro.getText().trim().toLowerCase();
 
-		for (Medico aux : Clinica.getInstancia().getMedicos()) {
-			if (aux.getNombre().toLowerCase().contains(txtFiltro.getText().toLowerCase())
-					|| txtFiltro.getText().isEmpty()) {
-				row[0] = aux.getCedula();
-				row[1] = aux.getNombre();
-				row[2] = aux.getApellido();
-				row[3] = aux.getEspecialidad().getNombre();
-				row[4] = aux.getTelefono();
-				row[5] = aux.getMaxCitasPorDia();
-				modelo.addRow(row);
+		@SuppressWarnings("unchecked")
+		ArrayList<Medico> lista = (ArrayList<Medico>) ClienteSocket.enviar("LISTAR_MEDICOS", null);
+
+		if (lista != null) {
+			for (Medico aux : lista) {
+				if (textoFiltro.isEmpty() || aux.getNombre().toLowerCase().contains(textoFiltro)) {
+					row[0] = aux.getCedula();
+					row[1] = aux.getNombre();
+					row[2] = aux.getApellido();
+					row[3] = aux.getEspecialidad().getNombre();
+					row[4] = aux.getTelefono();
+					row[5] = aux.getMaxCitasPorDia();
+					modelo.addRow(row);
+				}
 			}
 		}
 

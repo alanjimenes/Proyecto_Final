@@ -51,7 +51,8 @@ public class RegClientes extends JDialog {
 
 	public RegClientes() {
 		setResizable(false);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(RegClientes.class.getResource("/img/gestion-de-clientes.png")));
+		setIconImage(
+				Toolkit.getDefaultToolkit().getImage(RegClientes.class.getResource("/img/gestion-de-clientes.png")));
 		initComponents();
 		this.clienteActual = null;
 	}
@@ -69,7 +70,7 @@ public class RegClientes extends JDialog {
 		txtApellido.setText(clienteEditar.getApellido());
 		txtTelefono.setText(clienteEditar.getTelefono());
 		txtDireccion.setText(clienteEditar.getDireccion());
-		
+
 	}
 
 	private void initComponents() {
@@ -92,30 +93,29 @@ public class RegClientes extends JDialog {
 		txtCedula.setBounds(145, 169, 200, 20);
 		contentPanel.add(txtCedula);
 		txtCedula.setColumns(10);
-		
+
 		txtCedula.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent e) {
-                char c = e.getKeyChar();
-                if (!Character.isDigit(c) && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-                    e.consume();
-                    java.awt.Toolkit.getDefaultToolkit().beep(); 
-                    return;
-                }
-                if (txtCedula.getText().length() >= 13 && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-                    e.consume();
-                    return;
-                }
-                if (c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-                   
-                    if (txtCedula.getText().length() == 3) {
-                        txtCedula.setText(txtCedula.getText() + "-");
-                    }
-                    else if (txtCedula.getText().length() == 11) {
-                        txtCedula.setText(txtCedula.getText() + "-");
-                    }
-                }
-            }
-        });
+			public void keyTyped(java.awt.event.KeyEvent e) {
+				char c = e.getKeyChar();
+				if (!Character.isDigit(c) && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+					e.consume();
+					java.awt.Toolkit.getDefaultToolkit().beep();
+					return;
+				}
+				if (txtCedula.getText().length() >= 13 && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+					e.consume();
+					return;
+				}
+				if (c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+
+					if (txtCedula.getText().length() == 3) {
+						txtCedula.setText(txtCedula.getText() + "-");
+					} else if (txtCedula.getText().length() == 11) {
+						txtCedula.setText(txtCedula.getText() + "-");
+					}
+				}
+			}
+		});
 
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setForeground(Color.WHITE);
@@ -127,35 +127,35 @@ public class RegClientes extends JDialog {
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 		txtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent e) {
-                char c = e.getKeyChar();
-                if (!Character.isLetter(c) && c != ' ' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-                    e.consume();
-                   
-                     java.awt.Toolkit.getDefaultToolkit().beep(); 
-                }
-            }
-        });
+			public void keyTyped(java.awt.event.KeyEvent e) {
+				char c = e.getKeyChar();
+				if (!Character.isLetter(c) && c != ' ' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+					e.consume();
+
+					java.awt.Toolkit.getDefaultToolkit().beep();
+				}
+			}
+		});
 		JLabel lblApellido = new JLabel("Apellido:");
 		lblApellido.setForeground(Color.WHITE);
 		lblApellido.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblApellido.setBounds(723, 169, 104, 14);
 		contentPanel.add(lblApellido);
-		
+
 		txtApellido = new JTextField();
 		txtApellido.setBounds(820, 167, 200, 20);
 		contentPanel.add(txtApellido);
 		txtApellido.setColumns(10);
 		txtApellido.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent e) {
-                char c = e.getKeyChar();
-                if (!Character.isLetter(c) && c != ' ' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-                    e.consume();
-                   
-                     java.awt.Toolkit.getDefaultToolkit().beep(); 
-                }
-            }
-        });
+			public void keyTyped(java.awt.event.KeyEvent e) {
+				char c = e.getKeyChar();
+				if (!Character.isLetter(c) && c != ' ' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+					e.consume();
+
+					java.awt.Toolkit.getDefaultToolkit().beep();
+				}
+			}
+		});
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
@@ -167,26 +167,25 @@ public class RegClientes extends JDialog {
 		contentPanel.add(txtTelefono);
 		txtTelefono.setColumns(10);
 		txtTelefono.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent e) {
-                char c = e.getKeyChar();
-                if (!Character.isDigit(c) && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-                    e.consume();
-                    return;
-                }
-                if (txtTelefono.getText().length() >= 15 && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-                    e.consume();
-                    return;
-                }
-                if (c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-                    if (txtTelefono.getText().length() == 3) {
-                        txtTelefono.setText(txtTelefono.getText() + "-");
-                    }
-                    else if (txtTelefono.getText().length() == 7) {
-                        txtTelefono.setText(txtTelefono.getText() + "-");
-                    }
-                }
-            }
-        });
+			public void keyTyped(java.awt.event.KeyEvent e) {
+				char c = e.getKeyChar();
+				if (!Character.isDigit(c) && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+					e.consume();
+					return;
+				}
+				if (txtTelefono.getText().length() >= 15 && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+					e.consume();
+					return;
+				}
+				if (c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+					if (txtTelefono.getText().length() == 3) {
+						txtTelefono.setText(txtTelefono.getText() + "-");
+					} else if (txtTelefono.getText().length() == 7) {
+						txtTelefono.setText(txtTelefono.getText() + "-");
+					}
+				}
+			}
+		});
 		JLabel lblDireccion = new JLabel("Dirección:");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
@@ -204,16 +203,16 @@ public class RegClientes extends JDialog {
 		lblGenero.setBounds(723, 237, 98, 14);
 		contentPanel.add(lblGenero);
 
-		cbxGenero = new JComboBox<>(); 
-        cbxGenero.setModel(new DefaultComboBoxModel<>(new String[] {"<Seleccione>", "Masculino", "Femenino"}));
-        cbxGenero.setBounds(820, 233, 200, 20);
-        contentPanel.add(cbxGenero);
+		cbxGenero = new JComboBox<>();
+		cbxGenero.setModel(new DefaultComboBoxModel<>(new String[] { "<Seleccione>", "Masculino", "Femenino" }));
+		cbxGenero.setBounds(820, 233, 200, 20);
+		contentPanel.add(cbxGenero);
 		{
 			okButton = new JButton("Registrar");
 
 			Estilos.estilarBoton(okButton, new Color(99, 163, 97), Color.WHITE);
 
-			okButton.setBounds(234, 397, 110, 35); 
+			okButton.setBounds(234, 397, 110, 35);
 			contentPanel.add(okButton);
 
 			okButton.addActionListener(new ActionListener() {
@@ -244,126 +243,75 @@ public class RegClientes extends JDialog {
 		btnLimpiar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				limpiarCampos();
-				
+
 			}
 		});
-	
-		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
+
+		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE);
 
 		btnLimpiar.setBounds(383, 397, 110, 35);
 		contentPanel.add(btnLimpiar);
-		
+
 		JButton btnListado = new JButton("Listado");
 		Estilos.estilarBoton(btnListado, new Color(110, 140, 251), Color.WHITE);
 
-		
 		btnListado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			    limpiarCampos();
+				limpiarCampos();
 				ConsultarClientes frame = new ConsultarClientes();
-			
+
 				frame.setLocationRelativeTo(contentPanel);
 				frame.setModal(true);
 				frame.setVisible(true);
-			
+
 			}
 		});
 		btnListado.setBounds(541, 397, 110, 35);
 		contentPanel.add(btnListado);
-		
+
 		JLabel lblRegistrarPaciente = new JLabel("Registrar Paciente");
 		lblRegistrarPaciente.setForeground(Color.WHITE);
 		lblRegistrarPaciente.setFont(new Font("Bahnschrift", Font.PLAIN, 40));
 		lblRegistrarPaciente.setBounds(10, 52, 517, 49);
 		contentPanel.add(lblRegistrarPaciente);
-		
+
 		JSeparator separator = new JSeparator();
 		separator.setBounds(10, 127, 646, 2);
 		contentPanel.add(separator);
-		
+
 		JLabel lblNewlogo = new JLabel("");
-		lblNewlogo.setIcon(new ImageIcon(RegClientes.class.getResource("/img/custom_resized_ffde04b9-ae4a-43dd-8c6e-2c67d4183e19.png")));
+		lblNewlogo.setIcon(new ImageIcon(
+				RegClientes.class.getResource("/img/custom_resized_ffde04b9-ae4a-43dd-8c6e-2c67d4183e19.png")));
 		lblNewlogo.setForeground(Color.WHITE);
 		lblNewlogo.setFont(new Font("Bahnschrift", Font.PLAIN, 40));
 		lblNewlogo.setBounds(663, 0, 366, 131);
 		contentPanel.add(lblNewlogo);
 	}
+
 	private void limpiarCampos() {
-        txtCedula.setText("");
-        txtNombre.setText("");
-        txtApellido.setText("");
-        txtTelefono.setText("");
-        txtDireccion.setText("");
-        
-       
-        if(cbxGenero != null) {
-            cbxGenero.setSelectedIndex(0);
-        }
-        
-        clienteActual = null;
-        txtCedula.setEditable(true); 
-        txtCedula.requestFocus(); 
-    }
+		txtCedula.setText("");
+		txtNombre.setText("");
+		txtApellido.setText("");
+		txtTelefono.setText("");
+		txtDireccion.setText("");
+
+		if (cbxGenero != null) {
+			cbxGenero.setSelectedIndex(0);
+		}
+
+		clienteActual = null;
+		txtCedula.setEditable(true);
+		txtCedula.requestFocus();
+	}
 
 	private void registrarCliente() {
-       
-        if (txtCedula.getText().isEmpty() || 
-            txtNombre.getText().isEmpty() || 
-            txtTelefono.getText().isEmpty() || 
-            cbxGenero.getSelectedIndex() == 0) { 
 
-            JOptionPane.showMessageDialog(null,
-                    "Por favor llene los campos obligatorios y seleccione un género válido.");
-            return;
-        }
-
-        if (clienteActual == null) {
-            Cliente existe = (Cliente) ClienteSocket.enviar("BUSCAR_CLIENTE_CEDULA", txtCedula.getText());
-            if (existe != null) {
-                JOptionPane.showMessageDialog(null, "Ya existe un cliente con esa cédula.");
-                return;
-            }
-
-            Cliente nuevoCliente = new Cliente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(),
-                    txtTelefono.getText(), txtDireccion.getText(), true, null, null, false,
-                    null, true, cbxGenero.getSelectedItem().toString());
-
-            boolean exito = (boolean) ClienteSocket.enviar("REG_CLIENTE", nuevoCliente);
-
-            if(exito) {
-                JOptionPane.showMessageDialog(null, "Paciente registrado con éxito.");
-               
-                limpiarCampos(); 
-            } else {
-                JOptionPane.showMessageDialog(null, "Error al registrar en el servidor.");
-            }
-
-        } else { 
-            clienteActual.setNombre(txtNombre.getText());
-            clienteActual.setApellido(txtApellido.getText());
-            clienteActual.setTelefono(txtTelefono.getText());
-            clienteActual.setDireccion(txtDireccion.getText());
-            clienteActual.setGenero(cbxGenero.getSelectedItem().toString());
-
-            boolean exito = (boolean) ClienteSocket.enviar("UPDATE_CLIENTE", clienteActual);
-
-            if(exito) {
-                JOptionPane.showMessageDialog(null, "Datos actualizados.");
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(null, "Error al actualizar.");
-            }
-        }
-    
-		if (txtCedula.getText().isEmpty() || txtNombre.getText().isEmpty() || txtTelefono.getText().isEmpty()
-				) {
-			JOptionPane.showMessageDialog(null,
-					"Por favor llene los campos obligatorios (Cédula, Nombre, Teléfono, Fecha).");
+		if (txtCedula.getText().isEmpty() || txtNombre.getText().isEmpty() || txtTelefono.getText().isEmpty()|| cbxGenero.getSelectedIndex() == 0) {
+			JOptionPane.showMessageDialog(null,"Por favor llene los campos obligatorios y seleccione un género válido.");
 			return;
 		}
 
-
-
+		// REGISTRAR
 		if (clienteActual == null) {
 			Cliente existe = (Cliente) ClienteSocket.enviar("BUSCAR_CLIENTE_CEDULA", txtCedula.getText());
 			if (existe != null) {
@@ -372,28 +320,31 @@ public class RegClientes extends JDialog {
 			}
 
 			Cliente nuevoCliente = new Cliente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(),
-					 txtTelefono.getText(), txtDireccion.getText(), true, null, null, false,
-					null, true, cbxGenero.getSelectedItem().toString());
+					txtTelefono.getText(), txtDireccion.getText(), true, null, null, false, null, true,
+					cbxGenero.getSelectedItem().toString());
 
 			boolean exito = (boolean) ClienteSocket.enviar("REG_CLIENTE", nuevoCliente);
 
-			if(exito) {
+			if (exito) {
 				JOptionPane.showMessageDialog(null, "Paciente registrado con éxito.");
+				limpiarCampos();
 			} else {
 				JOptionPane.showMessageDialog(null, "Error al registrar en el servidor.");
 			}
 
-		} else { 
+		}
+		// MODIFICAR
+		else {
+
 			clienteActual.setNombre(txtNombre.getText());
 			clienteActual.setApellido(txtApellido.getText());
 			clienteActual.setTelefono(txtTelefono.getText());
 			clienteActual.setDireccion(txtDireccion.getText());
-			
-	
+			clienteActual.setGenero(cbxGenero.getSelectedItem().toString());
 
 			boolean exito = (boolean) ClienteSocket.enviar("UPDATE_CLIENTE", clienteActual);
 
-			if(exito) {
+			if (exito) {
 				JOptionPane.showMessageDialog(null, "Datos actualizados.");
 				dispose();
 			} else {

@@ -50,22 +50,28 @@ public class RegEspecialidad extends JDialog {
 		{
 			JButton okButton = new JButton("Registrar");
 			contentPanel.add(okButton);
-		    Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
-		    okButton.setBounds(22, 150, 110, 35); 
+			Estilos.estilarBoton(okButton, new Color(46, 204, 113), Color.WHITE);
+			okButton.setBounds(22, 150, 110, 35);
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (!txtNombre.getText().isEmpty()) {
-						String codigo = "ESP-" + Clinica.getInstancia().getEspecialidades().size();
+						String codigo = "ESP-" + System.currentTimeMillis() % 100000;
 						Especialidad aux = new Especialidad(codigo, txtNombre.getText());
-						Clinica.getInstancia().agregarEspecialidad(aux);
-						Clinica.getInstancia().guardarDatosClinica();
-						JOptionPane.showMessageDialog(null, "Especialidad creada con éxito.");
-						txtNombre.setText("");
+
+						boolean exito = (boolean) ClienteSocket.enviar("REG_ESPECIALIDAD", aux);
+
+						if (exito) {
+							JOptionPane.showMessageDialog(null, "Especialidad creada con éxito en el servidor.");
+							txtNombre.setText("");
+						} else {
+							JOptionPane.showMessageDialog(null, "Error al registrar especialidad en el servidor.");
+						}
 					} else {
 						JOptionPane.showMessageDialog(null, "El nombre no puede estar vacío.");
 					}
 				}
 			});
+
 			okButton.setActionCommand("OK");
 			getRootPane().setDefaultButton(okButton);
 		}
@@ -82,23 +88,22 @@ public class RegEspecialidad extends JDialog {
 			});
 			cancelButton.setActionCommand("Cancel");
 		}
-		
+
 		JLabel lblTitulo = new JLabel("Registrar Especialidad");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
 		lblTitulo.setBounds(90, 11, 287, 37);
 		contentPanel.add(lblTitulo);
-		
+
 		JButton btnLimpiar = new JButton("Limpiar");
-		
-		
+
 		btnLimpiar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			txtNombre.setText("");
+				txtNombre.setText("");
 			}
 		});
-		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE); 
+		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE);
 		btnLimpiar.setBounds(184, 150, 110, 35);
 		contentPanel.add(btnLimpiar);
 	}
