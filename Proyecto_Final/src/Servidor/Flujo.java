@@ -70,21 +70,19 @@ public class Flujo extends Thread {
 						Clinica.getInstancia().guardarDatosClinica();
 					paquete.setRespuesta(exito);
 				} else if (comando.equalsIgnoreCase("UPDATE_ENFERMEDAD")) {
-					Enfermedad enfNueva = (Enfermedad) paquete.getObjeto();
+					Enfermedad enf = (Enfermedad) paquete.getObjeto();
 					ArrayList<Enfermedad> list = Clinica.getInstancia().getEnfermedades();
-					boolean found = false;
-					for (Enfermedad e : list) {
-						if (e.getCodigo_sick().equalsIgnoreCase(enfNueva.getCodigo_sick())) {
-							e.setNombre(enfNueva.getNombre());
-							e.setDescripcion(enfNueva.getDescripcion());
-							e.setVigilancia(enfNueva.isVigilancia());
-							found = true;
+					ArrayList<Enfermedad> lista = Clinica.getInstancia().getEnfermedades();
+					boolean encontrado = false;
+					for(int i=0; i<lista.size(); i++) {
+						if(lista.get(i).getCodigo_sick().equals(enf.getCodigo_sick())) {
+							lista.set(i, enf); 
+							encontrado = true;
 							break;
 						}
 					}
-					if (found)
-						Clinica.getInstancia().guardarDatosClinica();
-					paquete.setRespuesta(found);
+					if(encontrado) Clinica.getInstancia().guardarDatosClinica();
+					paquete.setRespuesta(encontrado);
 				} else if (comando.equalsIgnoreCase("LISTAR_ENFERMEDADES")) {
 					paquete.setRespuesta(Clinica.getInstancia().getEnfermedades());
 				}
@@ -155,8 +153,10 @@ public class Flujo extends Thread {
 				} else if (comando.equalsIgnoreCase("BUSCAR_ESPECIALIDAD_NOMBRE")) {
 					String nombre = (String) paquete.getObjeto();
 					paquete.setRespuesta(Clinica.getInstancia().buscarEspecialidadPorNombre(nombre));
+				}else if (comando.equalsIgnoreCase("UPDATE_ESPECIALIDAD")) {
+					Especialidad esp = (Especialidad) paquete.getObjeto();
+					paquete.setRespuesta(true);
 				}
-
 				// --- SECCION: CITAS ---
 				else if (comando.equalsIgnoreCase("REG_CITA")) {
 					Cita c = (Cita) paquete.getObjeto();
@@ -189,7 +189,6 @@ public class Flujo extends Thread {
 				else if (comando.equalsIgnoreCase("REG_CONSULTA")) {
 					Consulta c = (Consulta) paquete.getObjeto();
 					boolean exito = false;
-					// BLINDAJE ANTI-EXPLOSIONES AQUI
 					if (c != null && c.getCliente() != null && c.getCliente().getNumExpediente() != null) {
 						Cliente clienteReal = Clinica.getInstancia()
 								.buscarClientePorCodigo(c.getCliente().getNumExpediente());
@@ -226,7 +225,6 @@ public class Flujo extends Thread {
 					RegistroVacunacion reg = (RegistroVacunacion) paquete.getObjeto();
 					boolean exito = false;
 
-					// BLINDAJE ANTI-EXPLOSIONES AQUI TAMBIEN
 					if (reg != null && reg.getCliente() != null && reg.getCliente().getNumExpediente() != null) {
 						Cliente clienteReal = Clinica.getInstancia()
 								.buscarClientePorCodigo(reg.getCliente().getNumExpediente());
@@ -240,7 +238,20 @@ public class Flujo extends Thread {
 						}
 					}
 					paquete.setRespuesta(exito);
-				}
+				}else if (comando.equalsIgnoreCase("UPDATE_VACUNA")) {
+					Vacuna vac = (Vacuna) paquete.getObjeto();
+					ArrayList<Vacuna> lista = Clinica.getInstancia().getVacunas();
+					boolean encontrado = false;
+					for(int i=0; i<lista.size(); i++) {
+						if(lista.get(i).getCodigo_vacun().equals(vac.getCodigo_vacun())) {
+							lista.set(i, vac);
+							encontrado = true;
+							break;
+						}
+					}
+					if(encontrado) Clinica.getInstancia().guardarDatosClinica();
+					paquete.setRespuesta(encontrado);
+				} 
 
 				FlujoEscritura.writeObject(paquete);
 				FlujoEscritura.flush();

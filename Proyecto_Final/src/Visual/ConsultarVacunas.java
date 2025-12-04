@@ -196,9 +196,12 @@ public class ConsultarVacunas extends JDialog {
 	@SuppressWarnings("unchecked")
 	private Vacuna buscarVacunaLocal(String codigo) {
 		ArrayList<Vacuna> lista = (ArrayList<Vacuna>) ClienteSocket.enviar("LISTAR_VACUNAS", null);
-		if(lista != null) {
-			for(Vacuna v : lista) {
-				if(v.getCodigo_vacun().equals(codigo)) return v;
+
+		if (lista != null) {
+			for (Vacuna v : lista) {
+				if (v.getCodigo_vacun().equals(codigo)) {
+					return v; 
+				}
 			}
 		}
 		return null;

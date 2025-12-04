@@ -120,18 +120,20 @@ public class ConsultarEnfermedades extends JDialog {
 
 		btnDelete = new JButton("Eliminar");
 		Estilos.estilarBoton(btnDelete, new Color(231, 76, 60), Color.WHITE);
-		btnDelete.setEnabled(false);
+		btnDelete.setText("Desactivar");
 		btnDelete.addActionListener(e -> {
 			if(seleccionado != null) {
-				int opt = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar la enfermedad " + seleccionado.getNombre() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
+				int opt = JOptionPane.showConfirmDialog(null, 
+						"¿Seguro desea desactivar la enfermedad " + seleccionado.getNombre() + "?", 
+						"Confirmar", JOptionPane.YES_NO_OPTION);
 				if(opt == JOptionPane.YES_OPTION) {
-					boolean exito = (boolean) ClienteSocket.enviar("DELETE_ENFERMEDAD", seleccionado);
+					seleccionado.setActivo(false); 
+					boolean exito = (boolean) ClienteSocket.enviar("UPDATE_ENFERMEDAD", seleccionado);
+
 					if(exito) {
-						JOptionPane.showMessageDialog(null, "Eliminado correctamente.");
+						JOptionPane.showMessageDialog(null, "Enfermedad desactivada.");
 						cargarEnfermedades();
 						resetBotones();
-					} else {
-						JOptionPane.showMessageDialog(null, "Error al eliminar.");
 					}
 				}
 			}
@@ -153,8 +155,10 @@ public class ConsultarEnfermedades extends JDialog {
 
 		if (lista != null) {
 			for (Enfermedad enf : lista) {
-				String vig = enf.isVigilancia() ? "SÍ (ALERTA)" : "No";
-				model.addRow(new Object[] { enf.getCodigo_sick(), enf.getNombre(), vig });
+				if (enf.isActivo()) {
+					String vig = enf.isVigilancia() ? "SÍ (ALERTA)" : "No";
+					model.addRow(new Object[] { enf.getCodigo_sick(), enf.getNombre(), vig });
+				}
 			}
 		}
 	}

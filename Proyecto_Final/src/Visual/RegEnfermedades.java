@@ -25,7 +25,7 @@ public class RegEnfermedades extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtNombre;
-	private JTextArea txtDescripcion; 
+	private JTextArea txtDescripcion;
 	private JCheckBox chkVigilancia;
 	private Enfermedad enfermedadActual = null;
 
@@ -117,8 +117,9 @@ public class RegEnfermedades extends JDialog {
 			String codigo = "ENF-" + System.currentTimeMillis() % 10000;
 			Enfermedad nueva = new Enfermedad(codigo, txtNombre.getText(), txtDescripcion.getText(),
 					chkVigilancia.isSelected());
+			Object respuesta = ClienteSocket.enviar("REG_ENFERMEDAD", nueva);
+			boolean exito = (respuesta != null && (boolean) respuesta);
 
-			boolean exito = (boolean) ClienteSocket.enviar("REG_ENFERMEDAD", nueva);
 			if (exito) {
 				JOptionPane.showMessageDialog(null, "Enfermedad registrada.");
 				dispose();

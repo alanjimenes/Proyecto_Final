@@ -8,11 +8,14 @@ import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -28,7 +31,9 @@ public class ConsultarEspecialidades extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTable table;
 	private DefaultTableModel model;
-	private Object[] row;
+	private Especialidad seleccionado = null;
+	private JButton btnUpdate;
+	private JButton btnDelete;
 
 	public ConsultarEspecialidades() {
 		//setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarEspecialidades.class.getResource("/img/seguro-de-salud.png")));
@@ -54,6 +59,18 @@ public class ConsultarEspecialidades extends JDialog {
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int index = table.getSelectedRow();
+				if (index >= 0) {
+					String codigo = table.getValueAt(index, 0).toString();
+					seleccionado = buscarLocal(codigo);
+					btnUpdate.setEnabled(true);
+					btnDelete.setEnabled(true);
+				}
+			}
+		});
 		model = new DefaultTableModel() {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -76,7 +93,6 @@ public class ConsultarEspecialidades extends JDialog {
 		JPanel panelNorte = new JPanel();
 		panelNorte.setBackground(new Color(60, 70, 123));
 		contentPanel.add(panelNorte, BorderLayout.NORTH);
-
 		JLabel lblTitulo = new JLabel("Listado de Especialidades Médicas");
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
@@ -90,16 +106,45 @@ public class ConsultarEspecialidades extends JDialog {
 		{
 			JButton btnNuevo = new JButton("Nueva");
 			Estilos.estilarBoton(btnNuevo, new Color(176, 206, 136), Color.WHITE);
-			btnNuevo.setFont(new Font("Tahoma", Font.BOLD, 16));
 			btnNuevo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					RegEspecialidad reg = new RegEspecialidad();
 					reg.setModal(true);
 					reg.setVisible(true);
 					cargarEspecialidades();
+					resetBotones();
 				}
 			});
 			buttonPane.add(btnNuevo);
+
+			btnUpdate = new JButton("Modificar");
+			Estilos.estilarBoton(btnUpdate, new Color(41, 128, 185), Color.WHITE);
+			btnUpdate.setEnabled(false);
+			btnUpdate.addActionListener(e -> {
+				if(seleccionado != null) { 
+					RegEspecialidad reg = new RegEspecialidad(seleccionado);
+					reg.setModal(true);
+					reg.setVisible(true);
+					cargarEspecialidades();
+					resetBotones();
+				}
+			});
+			buttonPane.add(btnUpdate);
+
+			btnDelete = new JButton("Eliminar");
+			Estilos.estilarBoton(btnDelete, new Color(231, 76, 60), Color.WHITE);
+			btnDelete.setEnabled(false);
+			btnDelete.addActionListener(e -> {
+				if(seleccionado != null) {
+					int opt = JOptionPane.showConfirmDialog(null, "¿Eliminar especialidad?", "Confirmar", JOptionPane.YES_NO_OPTION);
+					if(opt == JOptionPane.YES_OPTION) {
+						ClienteSocket.enviar("DELETE_ESPECIALIDAD", seleccionado); 
+						cargarEspecialidades();
+						resetBotones();
+					}
+				}
+			});
+			buttonPane.add(btnDelete);
 		}
 
 		{
@@ -119,16 +164,30 @@ public class ConsultarEspecialidades extends JDialog {
 	@SuppressWarnings("unchecked")
 	private void cargarEspecialidades() {
 		model.setRowCount(0);
-		row = new Object[2];
-
 		ArrayList<Especialidad> lista = (ArrayList<Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
 
 		if (lista != null) {
 			for (Especialidad esp : lista) {
-				row[0] = esp.getCodigo_espe();
-				row[1] = esp.getNombre();
-				model.addRow(row);
+				model.addRow(new Object[] { esp.getCodigo_espe(), esp.getNombre() });
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Especialidad buscarLocal(String codigo) {
+		ArrayList<Especialidad> lista = (ArrayList<Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
+		if (lista != null) {
+			for (Especialidad esp : lista) {
+				if(esp.getCodigo_espe().equals(codigo)) return esp;
+			}
+		}
+		return null;
+	}
+
+	private void resetBotones() {
+		seleccionado = null;
+		btnUpdate.setEnabled(false);
+		btnDelete.setEnabled(false);
+		table.clearSelection();
 	}
 }
