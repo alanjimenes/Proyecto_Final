@@ -275,6 +275,15 @@ public class Principal extends JFrame {
 		});
 		menuAdministracion.add(itemGestionarVacunas);
 
+		//ENFERMEDADES
+		JMenuItem itemGestionarEnfermedades = new JMenuItem("Gestionar Enfermedades");
+		itemGestionarEnfermedades.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
+		itemGestionarEnfermedades.addActionListener(e -> {
+			ConsultarEnfermedades dialog = new ConsultarEnfermedades();
+			dialog.setVisible(true);
+		});
+		menuAdministracion.add(itemGestionarEnfermedades);
+
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setForeground(Color.WHITE);
@@ -436,7 +445,7 @@ public class Principal extends JFrame {
 							}
 						}
 					}
-				
+
 				}
 			}
 

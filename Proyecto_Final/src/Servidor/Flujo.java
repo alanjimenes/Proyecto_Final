@@ -46,6 +46,29 @@ public class Flujo extends Thread {
 				paquete.setRespuesta(true);
 			}
 
+			//GESTION DE ENFERMEDADES
+			else if (comando.equalsIgnoreCase("REG_ENFERMEDAD")) {
+				Enfermedad enf = (Enfermedad) paquete.getObjeto();
+				boolean exito = Clinica.getInstancia().agregarEnfermedad(enf);
+				if(exito) Clinica.getInstancia().guardarDatosClinica();
+				paquete.setRespuesta(exito);
+			}
+			else if (comando.equalsIgnoreCase("UPDATE_ENFERMEDAD")) {
+				Enfermedad enfNueva = (Enfermedad) paquete.getObjeto();
+				for(Enfermedad e : Clinica.getInstancia().getEnfermedades()) {
+					if(e.getCodigo_sick().equals(enfNueva.getCodigo_sick())) {
+						e.setNombre(enfNueva.getNombre());
+						e.setDescripcion(enfNueva.getDescripcion());
+						e.setVigilancia(enfNueva.isVigilancia());
+						break;
+					}
+				}
+				Clinica.getInstancia().guardarDatosClinica();
+				paquete.setRespuesta(true);
+			}
+			else if (comando.equalsIgnoreCase("LISTAR_ENFERMEDADES")) {
+				paquete.setRespuesta(Clinica.getInstancia().getEnfermedades());
+			}
 
 			//GESTIÓN DE MEDICOS
 			else if (comando.equalsIgnoreCase("REG_MEDICO")) {
