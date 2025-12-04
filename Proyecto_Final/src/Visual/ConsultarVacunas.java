@@ -176,7 +176,7 @@ public class ConsultarVacunas extends JDialog {
 		cargarVacunas();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") 
 	private void cargarVacunas() {
 		model.setRowCount(0);
 

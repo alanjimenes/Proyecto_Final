@@ -27,7 +27,7 @@ import logico.Enfermedad;
 
 public class ConsultarEnfermedades extends JDialog {
 
-	private final JPanel contentPanel = new JPanel();
+	private final JPanel contentPanel = new JPanel(); 
 	private JTable table;
 	private DefaultTableModel model;
 	private Enfermedad seleccionado = null;

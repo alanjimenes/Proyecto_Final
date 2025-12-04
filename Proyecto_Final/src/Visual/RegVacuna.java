@@ -24,7 +24,7 @@ import logico.Vacuna;
 
 public class RegVacuna extends JDialog {
 
-	private final JPanel contentPanel = new JPanel();
+	private final JPanel contentPanel = new JPanel(); 
 	private JTextField txtNombre;
 	private JTextArea txtDescripcion;
 	private Vacuna vacunaActual = null; 

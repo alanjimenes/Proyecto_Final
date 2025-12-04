@@ -33,7 +33,7 @@ public class ConsultarClientes extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	public static JTable table;
-	public static DefaultTableModel modelo;
+	public static DefaultTableModel modelo; 
 	public static Object[] row;
 	private Cliente seleccionado = null;
 	private JButton btnUpdate;
