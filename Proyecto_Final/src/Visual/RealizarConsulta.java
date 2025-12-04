@@ -288,7 +288,6 @@ public class RealizarConsulta extends JDialog {
 					break;
 				}
 			}
-			// Aseguramos que los objetos no sean nulos antes de enviarlos
 			RegistroVacunacion reg = new RegistroVacunacion(citaActual.getCliente(), vacunaObj,
 					java.time.LocalDate.now(), citaActual.getMedico(), true);
 
