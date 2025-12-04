@@ -61,20 +61,12 @@ public class GestionCitas extends JPanel {
 		panelFormulario.setLayout(null);
 		add(panelFormulario);
 
-<<<<<<< HEAD
 		// CLIENTE
 		JLabel lblCodCliente = new JLabel("Cód. Cliente:");
 		lblCodCliente.setForeground(Color.WHITE);
 		lblCodCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		lblCodCliente.setBounds(10, 45, 100, 14);
 		panelFormulario.add(lblCodCliente);
-=======
-		 JLabel lblCodCliente = new JLabel("Cód. Cliente:");
-		 lblCodCliente.setForeground(Color.WHITE);
-		 lblCodCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		 lblCodCliente.setBounds(10, 45, 100, 14);
-		 panelFormulario.add(lblCodCliente);
->>>>>>> branch 'master' of https://github.com/alanjimenes/Proyecto_Final.git
 
 		txtCodCliente = new JTextField();
 		txtCodCliente.setBounds(122, 42, 142, 20);
@@ -330,6 +322,8 @@ public class GestionCitas extends JPanel {
 		try {
 			LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			String seleccion = cbxHora.getSelectedItem().toString();
+
+			// Parseo manual robusto
 			String[] parts = seleccion.split(" ");
 			String[] timeParts = parts[0].split(":");
 
@@ -388,7 +382,6 @@ public class GestionCitas extends JPanel {
 				String medico = (c.getMedico() != null) ? c.getMedico().getNombre() : "N/A";
 				String fecha = (c.getFechaHora() != null) ? c.getFechaHora().toString().replace("T", " ") : "N/A";
 
-<<<<<<< HEAD
 				model.addRow(new Object[] { c.getCodigo_cita(), cliente, medico, fecha, c.getEstado() });
 			}
 		}
@@ -407,32 +400,9 @@ public class GestionCitas extends JPanel {
 		medicoSeleccionado = null;
 		citaSeleccionada = null;
 		tablaCitas.clearSelection();
-=======
-	 private void limpiarCampos() {
-		 txtCodCliente.setText("");
-		 txtCedulaMedico.setText("");
-		 lblNombreCliente.setText("Paciente: (Busque un cliente)");
-		 lblNombreMedico.setText("Médico: (Busque un médico)");
-		 dateChooser.setDate(null);
-		 cbxHora.setSelectedIndex(0);
-	
-		 txtMotivo.setText("");
-		 clienteSeleccionado = null;
-		 medicoSeleccionado = null;
-		 citaSeleccionada = null;
-		 tablaCitas.clearSelection();
->>>>>>> branch 'master' of https://github.com/alanjimenes/Proyecto_Final.git
 
-<<<<<<< HEAD
 		btnCrearCita.setEnabled(true);
 		btnModificarCita.setEnabled(false);
 		btnCancelarCita.setEnabled(false);
 	}
-=======
-		 
-		 btnCrearCita.setEnabled(true);
-		 btnModificarCita.setEnabled(false); 
-		 btnCancelarCita.setEnabled(false); 
-	 }
->>>>>>> branch 'master' of https://github.com/alanjimenes/Proyecto_Final.git
 }
