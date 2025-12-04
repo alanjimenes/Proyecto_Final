@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import logico.Especialidad;
-import java.awt.Toolkit;
 
 public class ConsultarEspecialidades extends JDialog {
 
@@ -31,7 +31,8 @@ public class ConsultarEspecialidades extends JDialog {
 	private Object[] row;
 
 	public ConsultarEspecialidades() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarEspecialidades.class.getResource("/img/seguro-de-salud.png")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(ConsultarEspecialidades.class.getResource("/img/seguro-de-salud.png")));
 		setTitle("Gestión de Especialidades");
 		setBounds(100, 100, 700, 500);
 		setResizable(false);
@@ -42,7 +43,7 @@ public class ConsultarEspecialidades extends JDialog {
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
-		panel.setBackground(SystemColor.desktop); 
+		panel.setBackground(SystemColor.desktop);
 		panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		contentPanel.add(panel, BorderLayout.CENTER);
 		panel.setLayout(new BorderLayout(0, 0));
@@ -60,7 +61,7 @@ public class ConsultarEspecialidades extends JDialog {
 			}
 		};
 
-		String[] headers = {"Código", "Nombre"};
+		String[] headers = { "Código", "Nombre" };
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 
@@ -94,7 +95,7 @@ public class ConsultarEspecialidades extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					RegEspecialidad reg = new RegEspecialidad();
 					reg.setModal(true);
-					reg.setVisible(true);				
+					reg.setVisible(true);
 					cargarEspecialidades();
 				}
 			});
@@ -122,7 +123,7 @@ public class ConsultarEspecialidades extends JDialog {
 
 		ArrayList<Especialidad> lista = (ArrayList<Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
 
-		if(lista != null) {
+		if (lista != null) {
 			for (Especialidad esp : lista) {
 				row[0] = esp.getCodigo_espe();
 				row[1] = esp.getNombre();

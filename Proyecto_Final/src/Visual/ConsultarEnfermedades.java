@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -48,8 +47,10 @@ public class ConsultarEnfermedades extends JDialog {
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 14));
 
-		model = new DefaultTableModel(new Object[]{"Código", "Nombre", "Vigilancia"}, 0) {
-			public boolean isCellEditable(int row, int column) { return false; }
+		model = new DefaultTableModel(new Object[] { "Código", "Nombre", "Vigilancia" }, 0) {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
 		};
 		table.setModel(model);
 
@@ -88,10 +89,10 @@ public class ConsultarEnfermedades extends JDialog {
 		model.setRowCount(0);
 		ArrayList<Enfermedad> lista = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
 
-		if(lista != null) {
+		if (lista != null) {
 			for (Enfermedad enf : lista) {
 				String vig = enf.isVigilancia() ? "SÍ (ALERTA)" : "No";
-				model.addRow(new Object[]{enf.getCodigo_sick(), enf.getNombre(), vig});
+				model.addRow(new Object[] { enf.getCodigo_sick(), enf.getNombre(), vig });
 			}
 		}
 	}

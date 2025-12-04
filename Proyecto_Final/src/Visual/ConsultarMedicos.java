@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -26,32 +26,21 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import logico.Cliente;
-import logico.Clinica;
 import logico.Medico;
-import Visual.ClienteSocket;
-import java.awt.Toolkit;
 
 public class ConsultarMedicos extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	public static JTable table;
-	public static DefaultTableModel modelo = new DefaultTableModel() {
-		@Override
-		public boolean isCellEditable(int row, int column) {
-			return false;
-		}
-	};
+	public static DefaultTableModel modelo;
 	public static Object[] row;
 	private Medico seleccionado = null;
 	private JButton btnUpdate;
 	private JButton btnDelete;
 	private JButton btnVerDetalles;
 	private JTextField txtFiltro;
+	private ArrayList<Medico> listaMedicosGlobal;
 
-	/**
-	 * Create the dialog.
-	 */
 	public ConsultarMedicos() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarMedicos.class.getResource("/img/doctor.png")));
 		setTitle("Listado de Medicos");
@@ -74,45 +63,44 @@ public class ConsultarMedicos extends JDialog {
 				{
 					table = new JTable();
 					table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+					modelo = new DefaultTableModel() {
+						@Override
+						public boolean isCellEditable(int row, int column) {
+							return false;
+						}
+					};
+					String[] headers = { "Cédula", "Nombre", "Apellido", "Especialidad", "Teléfono", "Citas Máx. Día" };
+					modelo.setColumnIdentifiers(headers);
+					table.setModel(modelo);
+
+					JTableHeader header = table.getTableHeader();
+					header.setBackground(new Color(60, 70, 123));
+					header.setForeground(Color.WHITE);
+					header.setOpaque(true);
+					header.setReorderingAllowed(false);
+					scrollPane.setViewportView(table);
+
 					table.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							int index = table.getSelectedRow();
 							if (index >= 0) {
 								String cedula = table.getValueAt(index, 0).toString();
-
-								seleccionado = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedula);
+								seleccionado = buscarEnCache(cedula);
 
 								btnDelete.setEnabled(true);
 								btnUpdate.setEnabled(true);
 								btnVerDetalles.setEnabled(true);
+
+								if (e.getClickCount() == 2) {
+									dispose();
+								}
 							}
 						}
 					});
-					String[] headers = { "Cédula", "Nombre", "Apellido", "Especialidad", "Teléfono", "Citas Máx. Día" };
-					modelo.setColumnIdentifiers(headers);
-					table.setModel(modelo);
-					JTableHeader header = table.getTableHeader();
-					header.setBackground(new Color(60, 70, 123));
-					header.setForeground(Color.WHITE);
-					header.setOpaque(true);
-
-					header.setReorderingAllowed(false);
-					scrollPane.setViewportView(table);
 				}
 			}
-			table.addMouseListener(new java.awt.event.MouseAdapter() {
-				@Override
-				public void mouseClicked(java.awt.event.MouseEvent e) {
-					if (e.getClickCount() == 2) {
-						int fila = table.getSelectedRow();
-						if (fila >= 0) {
-							dispose();
-						}
-					}
-				}
-			});
-
 		}
 		{
 			JPanel panel = new JPanel();
@@ -127,14 +115,14 @@ public class ConsultarMedicos extends JDialog {
 			{
 				txtFiltro = new JTextField();
 				txtFiltro.setFont(new Font("Tahoma", Font.PLAIN, 16));
+				txtFiltro.setColumns(16);
 				txtFiltro.addKeyListener(new KeyAdapter() {
 					@Override
 					public void keyReleased(KeyEvent e) {
-						filtrar();
+						filtrarLocal(txtFiltro.getText());
 					}
 				});
 				panel.add(txtFiltro);
-				txtFiltro.setColumns(16);
 			}
 		}
 		{
@@ -146,6 +134,8 @@ public class ConsultarMedicos extends JDialog {
 			{
 				btnUpdate = new JButton("Modificar");
 				Estilos.estilarBoton(btnUpdate, new Color(41, 128, 185), Color.WHITE);
+				btnUpdate.setFont(new Font("Tahoma", Font.BOLD, 16));
+				btnUpdate.setEnabled(false);
 				btnUpdate.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if (seleccionado != null) {
@@ -153,50 +143,47 @@ public class ConsultarMedicos extends JDialog {
 							registro.setModal(true);
 							registro.setVisible(true);
 
-							cargarMedicos();
-
-							seleccionado = null;
-							btnDelete.setEnabled(false);
-							btnUpdate.setEnabled(false);
-							btnVerDetalles.setEnabled(false);
-							table.clearSelection();
+							cargarMedicosServer();
+							resetBotones();
 						}
 					}
 				});
-				{
-					btnVerDetalles = new JButton("Ver Detalles");
-					btnVerDetalles.setEnabled(false);
-					btnVerDetalles.setFont(new Font("Tahoma", Font.BOLD, 16));
-					Estilos.estilarBoton(btnVerDetalles, new Color(176, 206, 136), Color.WHITE);
-					btnVerDetalles.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
 
-							if (seleccionado != null) {
-								int consultasHechas = seleccionado.getConsultasRealizadas().size();
-								int citasPendientes = seleccionado.getCitasAsignadas().size();
+				btnVerDetalles = new JButton("Ver Detalles");
+				btnVerDetalles.setEnabled(false);
+				btnVerDetalles.setFont(new Font("Tahoma", Font.BOLD, 16));
+				Estilos.estilarBoton(btnVerDetalles, new Color(176, 206, 136), Color.WHITE);
+				btnVerDetalles.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if (seleccionado != null) {
+							int consultasHechas = seleccionado.getConsultasRealizadas() != null
+									? seleccionado.getConsultasRealizadas().size()
+									: 0;
+							int citasPendientes = seleccionado.getCitasAsignadas() != null
+									? seleccionado.getCitasAsignadas().size()
+									: 0;
+							String espNombre = seleccionado.getEspecialidad() != null
+									? seleccionado.getEspecialidad().getNombre()
+									: "N/A";
 
-								String mensaje = "Detalle para Dr/a. " + seleccionado.getNombre() + " "
-										+ seleccionado.getApellido() + "\n\n" + "Especialidad: \t"
-										+ seleccionado.getEspecialidad().getNombre() + "\n" + "Consultas Realizadas: \t"
-										+ consultasHechas + "\n" + "Citas Asignadas (Pendientes): \t" + citasPendientes;
+							String mensaje = "Detalle para Dr/a. " + seleccionado.getNombre() + " "
+									+ seleccionado.getApellido() + "\n\n" + "Especialidad: \t" + espNombre + "\n"
+									+ "Consultas Realizadas: \t" + consultasHechas + "\n"
+									+ "Citas Asignadas (Pendientes): \t" + citasPendientes;
 
-								JOptionPane.showMessageDialog(null, mensaje, "Información del Médico",
-										JOptionPane.INFORMATION_MESSAGE);
-							}
+							JOptionPane.showMessageDialog(null, mensaje, "Información del Médico",
+									JOptionPane.INFORMATION_MESSAGE);
 						}
-					});
-					buttonPane.add(btnVerDetalles);
-				}
-				btnUpdate.setFont(new Font("Tahoma", Font.BOLD, 16));
-				btnUpdate.setEnabled(false);
-				btnUpdate.setActionCommand("OK");
+					}
+				});
+				buttonPane.add(btnVerDetalles);
 				buttonPane.add(btnUpdate);
-				getRootPane().setDefaultButton(btnUpdate);
 			}
 			{
 				btnDelete = new JButton("Eliminar");
 				Estilos.estilarBoton(btnDelete, new Color(231, 76, 60), Color.WHITE);
 				btnDelete.setFont(new Font("Tahoma", Font.BOLD, 16));
+				btnDelete.setEnabled(false);
 				btnDelete.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if (seleccionado != null) {
@@ -206,15 +193,13 @@ public class ConsultarMedicos extends JDialog {
 									"Eliminar Médico", JOptionPane.WARNING_MESSAGE);
 
 							if (option == JOptionPane.OK_OPTION) {
-								boolean exito = (boolean) ClienteSocket.enviar("DELETE_MEDICO", seleccionado);
+								Object resp = ClienteSocket.enviar("DELETE_MEDICO", seleccionado);
+								boolean exito = (resp instanceof Boolean) ? (Boolean) resp : false;
+
 								if (exito) {
-									cargarMedicos();
+									cargarMedicosServer();
 									JOptionPane.showMessageDialog(null, "Médico eliminado correctamente.");
-									btnDelete.setEnabled(false);
-									btnUpdate.setEnabled(false);
-									btnVerDetalles.setEnabled(false);
-									seleccionado = null;
-									table.clearSelection();
+									resetBotones();
 								} else {
 									JOptionPane.showMessageDialog(null,
 											"No se pudo eliminar el médico (¿tiene citas pendientes?).", "Advertencia",
@@ -224,8 +209,6 @@ public class ConsultarMedicos extends JDialog {
 						}
 					}
 				});
-
-				btnDelete.setEnabled(false);
 				buttonPane.add(btnDelete);
 			}
 			{
@@ -237,59 +220,53 @@ public class ConsultarMedicos extends JDialog {
 						dispose();
 					}
 				});
-				btnCancelar.setActionCommand("Cancel");
 				buttonPane.add(btnCancelar);
 			}
 		}
 
-		cargarMedicos();
-		table.getTableHeader().setReorderingAllowed(false);
-	}
-
-	public void filtrar() {
-		modelo.setRowCount(0);
-		row = new Object[table.getColumnCount()];
-		String textoFiltro = txtFiltro.getText().trim().toLowerCase();
-
-		@SuppressWarnings("unchecked")
-		ArrayList<Medico> lista = (ArrayList<Medico>) ClienteSocket.enviar("LISTAR_MEDICOS", null);
-
-		if (lista != null) {
-			for (Medico aux : lista) {
-				if (textoFiltro.isEmpty() || aux.getNombre().toLowerCase().contains(textoFiltro)) {
-					row[0] = aux.getCedula();
-					row[1] = aux.getNombre();
-					row[2] = aux.getApellido();
-					row[3] = aux.getEspecialidad().getNombre();
-					row[4] = aux.getTelefono();
-					row[5] = aux.getMaxCitasPorDia();
-					modelo.addRow(row);
-				}
-			}
-		}
-
-		seleccionado = null;
-		btnDelete.setEnabled(false);
-		btnUpdate.setEnabled(false);
-		btnVerDetalles.setEnabled(false);
+		cargarMedicosServer();
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void cargarMedicos() {
+	public void cargarMedicosServer() {
+		listaMedicosGlobal = (ArrayList<Medico>) ClienteSocket.enviar("LISTAR_MEDICOS", null);
+		if (listaMedicosGlobal == null)
+			listaMedicosGlobal = new ArrayList<>();
+		filtrarLocal("");
+	}
+
+	private void filtrarLocal(String texto) {
 		modelo.setRowCount(0);
 		row = new Object[6];
-		ArrayList<Medico> lista = (ArrayList<Medico>) ClienteSocket.enviar("LISTAR_MEDICOS", null);
+		String f = texto.toLowerCase();
 
-		if (lista != null) {
-			for (Medico med : lista) {
+		for (Medico med : listaMedicosGlobal) {
+			if (med.isActivo() && (f.isEmpty() || med.getNombre().toLowerCase().contains(f))) {
 				row[0] = med.getCedula();
 				row[1] = med.getNombre();
 				row[2] = med.getApellido();
-				row[3] = med.getEspecialidad().getNombre();
+				row[3] = (med.getEspecialidad() != null) ? med.getEspecialidad().getNombre() : "Sin Especialidad";
 				row[4] = med.getTelefono();
 				row[5] = med.getMaxCitasPorDia();
 				modelo.addRow(row);
 			}
 		}
+	}
+
+	private Medico buscarEnCache(String cedula) {
+		for (Medico m : listaMedicosGlobal) {
+			if (m.getCedula().equals(cedula))
+				return m;
+		}
+		return null;
+	}
+
+	private void resetBotones() {
+		seleccionado = null;
+		btnDelete.setEnabled(false);
+		btnUpdate.setEnabled(false);
+		btnVerDetalles.setEnabled(false);
+		txtFiltro.setText("");
+		table.clearSelection();
 	}
 }

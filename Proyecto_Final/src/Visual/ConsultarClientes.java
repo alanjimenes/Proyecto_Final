@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -27,8 +28,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import logico.Cliente;
-import logico.Clinica;
-import java.awt.Toolkit;
 
 public class ConsultarClientes extends JDialog {
 
@@ -40,6 +39,7 @@ public class ConsultarClientes extends JDialog {
 	private JButton btnUpdate;
 	private JButton btnDelete;
 	private JTextField txtFiltro;
+	private ArrayList<Cliente> listaGlobalClientes;
 
 	public ConsultarClientes() {
 		setIconImage(
@@ -53,7 +53,6 @@ public class ConsultarClientes extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
-
 		JPanel panel = new JPanel();
 		panel.setBackground(SystemColor.desktop);
 		panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -65,19 +64,6 @@ public class ConsultarClientes extends JDialog {
 			{
 				table = new JTable();
 				table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-				table.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						int index = table.getSelectedRow();
-						if (index >= 0) {
-							String codigo = table.getValueAt(index, 0).toString();
-							seleccionado = (Cliente) ClienteSocket.enviar("BUSCAR_CLIENTE", codigo);
-
-							btnDelete.setEnabled(true);
-							btnUpdate.setEnabled(true);
-						}
-					}
-				});
 
 				modelo = new DefaultTableModel() {
 					@Override
@@ -93,25 +79,27 @@ public class ConsultarClientes extends JDialog {
 				header.setBackground(new Color(60, 70, 123));
 				header.setForeground(Color.WHITE);
 				header.setOpaque(true);
-
 				header.setReorderingAllowed(false);
-
 				scrollPane.setViewportView(table);
 
-			}
+				table.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						int index = table.getSelectedRow();
+						if (index >= 0) {
+							String codigo = table.getValueAt(index, 0).toString();
+							seleccionado = buscarEnCache(codigo);
 
-			table.addMouseListener(new java.awt.event.MouseAdapter() {
-				@Override
-				public void mouseClicked(java.awt.event.MouseEvent e) {
-					if (e.getClickCount() == 2) {
-						int fila = table.getSelectedRow();
-						if (fila >= 0) {
-							dispose();
+							btnDelete.setEnabled(true);
+							btnUpdate.setEnabled(true);
+
+							if (e.getClickCount() == 2) {
+								dispose();
+							}
 						}
 					}
-				}
-			});
-
+				});
+			}
 		}
 
 		JPanel panelNorte = new JPanel();
@@ -126,18 +114,18 @@ public class ConsultarClientes extends JDialog {
 		{
 			txtFiltro = new JTextField();
 			txtFiltro.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			txtFiltro.setColumns(20);
 			txtFiltro.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyReleased(KeyEvent e) {
-					cargarClientes(txtFiltro.getText());
+					filtrarLocal(txtFiltro.getText());
 				}
 			});
 			panelNorte.add(txtFiltro);
-			txtFiltro.setColumns(20);
 		}
 
 		JPanel buttonPane = new JPanel();
-		buttonPane.setBackground(new Color (60, 70, 123));
+		buttonPane.setBackground(new Color(60, 70, 123));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		{
@@ -151,7 +139,7 @@ public class ConsultarClientes extends JDialog {
 						RegClientes reg = new RegClientes(seleccionado);
 						reg.setModal(true);
 						reg.setVisible(true);
-						cargarClientes("");
+						cargarClientesDesdeServer();
 						resetBotones();
 					}
 				}
@@ -167,14 +155,13 @@ public class ConsultarClientes extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					if (seleccionado != null) {
 						int option = JOptionPane.showConfirmDialog(null,
-								"¿Seguro que desea eliminar al paciente " + seleccionado.getNombre() + "?",
-								"Confirmar", JOptionPane.YES_NO_OPTION);
+								"¿Seguro que desea eliminar al paciente " + seleccionado.getNombre() + "?", "Confirmar",
+								JOptionPane.YES_NO_OPTION);
 
 						if (option == JOptionPane.YES_OPTION) {
 							seleccionado.setActivo(false);
 							ClienteSocket.enviar("UPDATE_CLIENTE", seleccionado);
-
-							cargarClientes("");
+							cargarClientesDesdeServer();
 							resetBotones();
 						}
 					}
@@ -186,7 +173,6 @@ public class ConsultarClientes extends JDialog {
 			JButton btnCancelar = new JButton("Cerrar");
 			Estilos.estilarBoton(btnCancelar, new Color(231, 76, 60), Color.WHITE);
 			btnCancelar.setFont(new Font("Tahoma", Font.BOLD, 16));
-
 			btnCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					dispose();
@@ -195,34 +181,49 @@ public class ConsultarClientes extends JDialog {
 			buttonPane.add(btnCancelar);
 		}
 
-		cargarClientes("");
+		cargarClientesDesdeServer();
 	}
 
 	@SuppressWarnings("unchecked")
-	private void cargarClientes(String filtro) {
+	private void cargarClientesDesdeServer() {
+		listaGlobalClientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
+		if (listaGlobalClientes == null)
+			listaGlobalClientes = new ArrayList<>();
+		filtrarLocal("");
+	}
+
+	private void filtrarLocal(String filtro) {
 		modelo.setRowCount(0);
 		row = new Object[6];
-		ArrayList<Cliente> lista = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
+		String f = filtro.toLowerCase();
 
-		if (lista != null) {
-			for (Cliente cli : lista) {
-				if (cli.isActivo() && (filtro.isEmpty() || cli.getNombre().toLowerCase().contains(filtro.toLowerCase()))) {
-					row[0] = cli.getNumExpediente();
-					row[1] = cli.getCedula();
-					row[2] = cli.getNombre();
-					row[3] = cli.getApellido();
-					row[4] = cli.getTelefono();
-					row[5] = cli.isEnfermo() ? "Enfermo" : "Sano";
-					modelo.addRow(row);
-				}
+		for (Cliente cli : listaGlobalClientes) {
+			if (cli.isActivo()
+					&& (f.isEmpty() || cli.getNombre().toLowerCase().contains(f) || cli.getCedula().contains(f))) {
+				row[0] = cli.getNumExpediente();
+				row[1] = cli.getCedula();
+				row[2] = cli.getNombre();
+				row[3] = cli.getApellido();
+				row[4] = cli.getTelefono();
+				row[5] = cli.isEnfermo() ? "Enfermo" : "Sano";
+				modelo.addRow(row);
 			}
 		}
+	}
+
+	private Cliente buscarEnCache(String codigoExp) {
+		for (Cliente c : listaGlobalClientes) {
+			if (c.getNumExpediente().equals(codigoExp))
+				return c;
+		}
+		return null;
 	}
 
 	private void resetBotones() {
 		seleccionado = null;
 		btnDelete.setEnabled(false);
 		btnUpdate.setEnabled(false);
+		txtFiltro.setText("");
 		table.clearSelection();
 	}
 }
