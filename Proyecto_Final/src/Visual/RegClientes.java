@@ -78,11 +78,10 @@ public class RegClientes extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		// --- FILA 1 ---
-		JLabel lblCedula = new JLabel("Cédula:");
+		JLabel lblCedula = new JLabel("Identificación:");
 		lblCedula.setForeground(Color.WHITE);
 		lblCedula.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-		lblCedula.setBounds(54, 171, 81, 14);
+		lblCedula.setBounds(38, 172, 104, 14);
 		contentPanel.add(lblCedula);
 
 		txtCedula = new JTextField();
@@ -149,7 +148,6 @@ public class RegClientes extends JDialog {
 			}
 		});
 
-		// --- FILA 2 ---
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
@@ -211,6 +209,9 @@ public class RegClientes extends JDialog {
 		txtFechaNac = new JDateChooser();
 		txtFechaNac.setBounds(180, 293, 165, 20);
 		((JTextField) txtFechaNac.getDateEditor().getUiComponent()).setEditable(false);
+
+		txtFechaNac.setMaxSelectableDate(new Date());
+
 		contentPanel.add(txtFechaNac);
 
 		{
@@ -315,11 +316,35 @@ public class RegClientes extends JDialog {
 
 		LocalDate fechaNacimiento = txtFechaNac.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
+		if (fechaNacimiento.isAfter(LocalDate.now())) {
+			JOptionPane.showMessageDialog(null, "La fecha de nacimiento no puede ser una fecha futura.",
+					"Error de Validación", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		long edad = java.time.temporal.ChronoUnit.YEARS.between(fechaNacimiento, LocalDate.now());
+
+		if (edad < 16) {
+			if (txtCedula.getText().length() < 5) {
+				JOptionPane.showMessageDialog(null,
+						"Paciente menor de 16 años. Por favor ingrese el número de Pasaporte o ID de menor.",
+						"Identificación Requerida", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+		} else {
+			if (txtCedula.getText().isEmpty() || txtCedula.getText().length() < 13) {
+				JOptionPane.showMessageDialog(null,
+						"Paciente mayor de 16 años. La Cédula (con el formato de 13 dígitos) es obligatoria.",
+						"Cédula Requerida", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+
 		if (clienteActual == null) {
-			// VALIDAR DUPLICADO
+
 			Object respuesta = ClienteSocket.enviar("BUSCAR_CLIENTE_CEDULA", txtCedula.getText());
 			if (respuesta != null) {
-				JOptionPane.showMessageDialog(null, "Ya existe un cliente con esa cédula.");
+				JOptionPane.showMessageDialog(null, "Ya existe un cliente con esa identificación/cédula.");
 				return;
 			}
 
@@ -337,7 +362,7 @@ public class RegClientes extends JDialog {
 			}
 
 		} else {
-			// MODO EDICIÓN
+
 			clienteActual.setNombre(txtNombre.getText());
 			clienteActual.setApellido(txtApellido.getText());
 			clienteActual.setTelefono(txtTelefono.getText());

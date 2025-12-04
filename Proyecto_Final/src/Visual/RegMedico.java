@@ -207,6 +207,8 @@ public class RegMedico extends JDialog {
 		dateChooser.setBounds(819, 219, 220, 20);
 		contentPanel.add(dateChooser);
 
+		dateChooser.setMaxSelectableDate(new Date());
+
 		JLabel lblEspecialidad = new JLabel("Especialidad:");
 		lblEspecialidad.setForeground(Color.WHITE);
 		lblEspecialidad.setFont(new Font("Bahnschrift", Font.BOLD, 14));
@@ -337,6 +339,20 @@ public class RegMedico extends JDialog {
 
 		Date date = dateChooser.getDate();
 		LocalDate fechaNac = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		if (fechaNac.isAfter(LocalDate.now())) {
+			JOptionPane.showMessageDialog(null, "La fecha de nacimiento no puede ser una fecha futura.",
+					"Error de Validación", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		LocalDate fechaMinima = LocalDate.now().minusYears(23);
+
+		if (fechaNac.isAfter(fechaMinima)) {
+			JOptionPane.showMessageDialog(null, "El médico debe tener al menos 23 años de edad.", "Error de Validación",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 
 		if (medicoActual == null) {
 			if (txtCedula.getText().isEmpty()) {
