@@ -190,7 +190,7 @@ public class Flujo extends Thread {
 						exito = Clinica.getInstancia().cancelCita(real);
 					}
 					paquete.setRespuesta(exito);
-				}
+				} 
 
 				// --- SECCION: CONSULTAS E HISTORIAL ---
 				else if (comando.equalsIgnoreCase("REG_CONSULTA")) {

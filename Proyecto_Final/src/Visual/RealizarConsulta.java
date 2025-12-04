@@ -352,7 +352,7 @@ public class RealizarConsulta extends JDialog {
 		if (citaActual == null || citaActual.getMedico() == null || citaActual.getCliente() == null) {
 			JOptionPane.showMessageDialog(null, "Error: Datos de la cita corruptos o incompletos.");
 			return;
-		}
+		} 
 
 		Consulta consultaTemp = new Consulta("TEMP", java.time.LocalDate.now(), txtSintomas.getText(), txtDiagnostico.getText(), citaActual.getMedico(), citaActual.getCliente());
 		consultaTemp.setAntecedentes(txtAntecedentes.getText());
