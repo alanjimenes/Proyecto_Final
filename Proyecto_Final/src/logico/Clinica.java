@@ -148,8 +148,13 @@ public class Clinica implements Serializable {
 	}
 
 	public boolean registrarNuevoCliente(Cliente cliente) {
-		if (cliente == null)
+		if (cliente == null) {
 			return false;
+		}
+		if (buscarIndiceClientePorCedula(cliente.getCedula()) != -1) {
+			System.out.println("Error: Ya existe un cliente con esa cédula.");
+			return false;
+		}
 
 		insertarCliente(cliente);
 		return true;
@@ -214,7 +219,10 @@ public class Clinica implements Serializable {
 	}
 
 	public boolean cancelCita(Cita cita) {
-		if (cita.getFechaHora().toLocalDate().isBefore(LocalDate.now())) {
+		if (cita == null)
+			return false;
+
+		if (cita.getFechaHora().isBefore(LocalDateTime.now())) {
 			return false;
 		}
 
@@ -223,6 +231,8 @@ public class Clinica implements Serializable {
 		if (cita.getMedico() != null) {
 			cita.getMedico().getCitasAsignadas().remove(cita);
 		}
+
+		guardarDatosClinica();
 
 		return true;
 	}
@@ -305,8 +315,13 @@ public class Clinica implements Serializable {
 	public boolean crearCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente, String motivo) {
 
 		Medico medico = buscarMedicoCedula(cedulaMedico);
-		if (medico == null)
+		if (medico == null) {
 			return false;
+		}
+
+		if (medico == null || !medico.isActivo()) {
+			return false;
+		}
 
 		Cliente cliente = buscarClientePorCodigo(codigoCliente);
 		if (cliente == null)
@@ -530,7 +545,7 @@ public class Clinica implements Serializable {
 		if (cliente == null || vacuna == null || medico == null) {
 			return false;
 		}
-		RegistroVacunacion reg = new RegistroVacunacion(cliente, vacuna, LocalDate.now(),medico, true);
+		RegistroVacunacion reg = new RegistroVacunacion(cliente, vacuna, LocalDate.now(), medico, true);
 
 		reg.setCodigo_reg("REG-VAC-" + vacuna.getCodigo_vacun() + "-" + cliente.getCedula());
 		cliente.getRegVacunas().add(reg);
@@ -1042,7 +1057,7 @@ public class Clinica implements Serializable {
 			oos.close();
 			fos.close();
 
-			Servidor.Server.generarRespaldoTotal(); 
+			Servidor.Server.generarRespaldoTotal();
 
 		} catch (Exception e) {
 			e.printStackTrace();
