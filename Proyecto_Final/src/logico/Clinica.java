@@ -241,51 +241,6 @@ public class Clinica implements Serializable {
 		return true;
 	}
 
-	public boolean editCita(Cita citaOriginal, LocalDateTime nuevaFechaHora, Medico nuevoMedico) {
-		if (citaOriginal.getFechaHora().isBefore(LocalDateTime.now())) {
-			return false;
-		}
-
-		if (citaOriginal == null || nuevoMedico == null || nuevaFechaHora == null)
-			return false;
-
-		for (Cita c : citas) {
-			if (c == citaOriginal)
-				continue;
-			if (c.getMedico() != null && c.getMedico().equals(nuevoMedico) && c.getFechaHora().equals(nuevaFechaHora)) {
-				return false;
-			}
-		}
-
-		int contador = 0;
-		for (Cita c : nuevoMedico.getCitasAsignadas()) {
-			if (c == citaOriginal)
-				continue;
-			if (c.getFechaHora().toLocalDate().equals(nuevaFechaHora.toLocalDate())) {
-				contador++;
-			}
-		}
-		if (contador >= nuevoMedico.getMaxCitasPorDia()) {
-			return false;
-		}
-
-		Medico medicoAnterior = citaOriginal.getMedico();
-		if (medicoAnterior != null && medicoAnterior != nuevoMedico) {
-			medicoAnterior.getCitasAsignadas().remove(citaOriginal);
-		}
-
-		if (!nuevoMedico.getCitasAsignadas().contains(citaOriginal)) {
-			nuevoMedico.getCitasAsignadas().add(citaOriginal);
-		}
-
-		citaOriginal.setFechaHora(nuevaFechaHora);
-		citaOriginal.setMedico(nuevoMedico);
-
-		guardarDatosClinica();
-
-		return true;
-	}
-
 	private int contarCitasPorDia(Medico medico, LocalDate fecha) {
 		int contador = 0;
 
@@ -350,6 +305,66 @@ public class Clinica implements Serializable {
 
 	public boolean agendarCita(LocalDateTime fechaHora, String cedulaMedico, String codigoCliente, String motivo) {
 		return crearCita(fechaHora, cedulaMedico, codigoCliente, motivo);
+	}
+
+	public boolean editCita(Cita citaOriginal, LocalDateTime nuevaFechaHora, Medico nuevoMedico) {
+		if (nuevaFechaHora.isBefore(LocalDateTime.now())) {
+			return false;
+		}
+
+		if (citaOriginal == null || nuevoMedico == null || nuevaFechaHora == null) {
+			return false;
+		}
+
+		for (Cita c : citas) {
+			if (c.getCodigo_cita().equals(citaOriginal.getCodigo_cita())) {
+				continue;
+			}
+			if (c.getMedico() != null && c.getMedico().getCedula().equals(nuevoMedico.getCedula())) {
+				if (c.getFechaHora().isEqual(nuevaFechaHora)) {
+					return false;
+				}
+			}
+		}
+
+		int contador = 0;
+		for (Cita c : this.citas) {
+			if (c.getCodigo_cita().equals(citaOriginal.getCodigo_cita())) {
+				continue;
+			}
+			if (c.getMedico().getCedula().equals(nuevoMedico.getCedula())) {
+				if (c.getFechaHora().toLocalDate().equals(nuevaFechaHora.toLocalDate())) {
+					contador++;
+				}
+			}
+		}
+
+		if (contador >= nuevoMedico.getMaxCitasPorDia()) {
+			return false;
+		}
+
+		Cita citaEnServidor = buscarCita(citaOriginal.getCodigo_cita());
+		if (citaEnServidor == null) {
+			return false;
+		}
+
+		Medico medicoAnterior = citaEnServidor.getMedico();
+
+		if (medicoAnterior != null && !medicoAnterior.getCedula().equals(nuevoMedico.getCedula())) {
+			medicoAnterior.getCitasAsignadas().remove(citaEnServidor);
+			nuevoMedico.agregarCitaAsignada(citaEnServidor);
+		} else {
+			if (!nuevoMedico.getCitasAsignadas().contains(citaEnServidor)) {
+				nuevoMedico.agregarCitaAsignada(citaEnServidor);
+			}
+		}
+
+		citaEnServidor.setFechaHora(nuevaFechaHora);
+		citaEnServidor.setMedico(nuevoMedico);
+
+		guardarDatosClinica();
+
+		return true;
 	}
 
 	// Consultas

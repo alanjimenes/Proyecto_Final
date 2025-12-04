@@ -2,8 +2,6 @@ package Visual;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
@@ -61,7 +59,6 @@ public class GestionCitas extends JPanel {
 		panelFormulario.setLayout(null);
 		add(panelFormulario);
 
-		// CLIENTE
 		JLabel lblCodCliente = new JLabel("Cód. Cliente:");
 		lblCodCliente.setForeground(Color.WHITE);
 		lblCodCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -82,7 +79,6 @@ public class GestionCitas extends JPanel {
 		lblNombreCliente.setBounds(386, 45, 300, 14);
 		panelFormulario.add(lblNombreCliente);
 
-		// MEDICO
 		JLabel lblCedMedico = new JLabel("Cédula Médico:");
 		lblCedMedico.setForeground(Color.WHITE);
 		lblCedMedico.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -103,7 +99,6 @@ public class GestionCitas extends JPanel {
 		lblNombreMedico.setBounds(386, 85, 300, 14);
 		panelFormulario.add(lblNombreMedico);
 
-		// FECHA Y HORA
 		JLabel lblFecha = new JLabel("Fecha:");
 		lblFecha.setForeground(Color.WHITE);
 		lblFecha.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
@@ -123,13 +118,13 @@ public class GestionCitas extends JPanel {
 
 		cbxHora = new JComboBox<>();
 		cbxHora.setBounds(120, 163, 149, 20);
-		for (int h = 8; h <= 17; h++) {
-			String ampm = (h < 12) ? "AM" : "PM";
-			int hora12 = (h > 12) ? (h - 12) : ((h == 0 || h == 12) ? 12 : h);
-			cbxHora.addItem(String.format("%02d:00 %s", hora12, ampm));
-			cbxHora.addItem(String.format("%02d:30 %s", hora12, ampm));
-		}
 		panelFormulario.add(cbxHora);
+
+		dateChooser.addPropertyChangeListener("date", e -> {
+			actualizarHorasDisponibles();
+		});
+
+		actualizarHorasDisponibles();
 
 		JLabel lblMotivo = new JLabel("Motivo:");
 		lblMotivo.setForeground(Color.WHITE);
@@ -145,7 +140,6 @@ public class GestionCitas extends JPanel {
 		scrollMotivo.setViewportView(txtMotivo);
 		txtMotivo.setLineWrap(true);
 
-		// BOTONES
 		btnCancelarCita = new JButton("Cancelar Cita");
 		Estilos.estilarBoton(btnCancelarCita, new Color(231, 76, 60), Color.WHITE);
 		btnCancelarCita.setBounds(593, 213, 155, 45);
@@ -168,7 +162,6 @@ public class GestionCitas extends JPanel {
 		btnCrearCita.setBounds(51, 213, 155, 45);
 		panelFormulario.add(btnCrearCita);
 
-		// ACCIONES
 		btnBuscarCliente.addActionListener(e -> {
 			ConsultarClientes dialog = new ConsultarClientes();
 			dialog.setModal(true);
@@ -282,6 +275,11 @@ public class GestionCitas extends JPanel {
 		if (nuevaFecha == null)
 			return;
 
+		if (nuevaFecha.isBefore(LocalDateTime.now())) {
+			JOptionPane.showMessageDialog(null, "Fecha inválida. No se puede ingresar una fecha ya pasada");
+			return;
+		}
+
 		citaSeleccionada.setFechaHora(nuevaFecha);
 		citaSeleccionada.setMedico(medicoSeleccionado);
 		citaSeleccionada.setMotivo(txtMotivo.getText());
@@ -294,7 +292,7 @@ public class GestionCitas extends JPanel {
 			cargarTablaCitas();
 			limpiarCampos();
 		} else {
-			JOptionPane.showMessageDialog(null, "No se pudo modificar (Conflicto de horario).");
+			JOptionPane.showMessageDialog(null, "No se pudo modificar (El médico está ocupado o hay conflicto).");
 		}
 	}
 
@@ -320,10 +318,16 @@ public class GestionCitas extends JPanel {
 
 	private LocalDateTime construirFechaHora() {
 		try {
+			if (dateChooser.getDate() == null)
+				return null;
+
 			LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			if (cbxHora.getSelectedItem() == null)
+				return null;
+
 			String seleccion = cbxHora.getSelectedItem().toString();
 
-			// Parseo manual robusto
 			String[] parts = seleccion.split(" ");
 			String[] timeParts = parts[0].split(":");
 
@@ -362,6 +366,14 @@ public class GestionCitas extends JPanel {
 				dateChooser
 						.setDate(Date.from(citaSeleccionada.getFechaHora().atZone(ZoneId.systemDefault()).toInstant()));
 
+				int h = citaSeleccionada.getFechaHora().getHour();
+				int m = citaSeleccionada.getFechaHora().getMinute();
+				String ampm = (h < 12) ? "AM" : "PM";
+				int hora12 = (h > 12) ? (h - 12) : ((h == 0 || h == 12) ? 12 : h);
+				String textoHoraCita = String.format("%02d:%02d %s", hora12, m, ampm);
+
+				cbxHora.setSelectedItem(textoHoraCita);
+
 				boolean activa = !citaSeleccionada.getEstado().equalsIgnoreCase("Completada")
 						&& !citaSeleccionada.getEstado().equalsIgnoreCase("Cancelada");
 				btnModificarCita.setEnabled(activa);
@@ -393,7 +405,11 @@ public class GestionCitas extends JPanel {
 		lblNombreCliente.setText("Paciente: (Busque un cliente)");
 		lblNombreMedico.setText("Médico: (Busque un médico)");
 		dateChooser.setDate(null);
-		cbxHora.setSelectedIndex(0);
+
+		actualizarHorasDisponibles();
+		if (cbxHora.getItemCount() > 0)
+			cbxHora.setSelectedIndex(0);
+
 		txtMotivo.setText("");
 
 		clienteSeleccionado = null;
@@ -404,5 +420,47 @@ public class GestionCitas extends JPanel {
 		btnCrearCita.setEnabled(true);
 		btnModificarCita.setEnabled(false);
 		btnCancelarCita.setEnabled(false);
+	}
+
+	private void actualizarHorasDisponibles() {
+		Object seleccionPrevia = cbxHora.getSelectedItem();
+		cbxHora.removeAllItems();
+
+		if (dateChooser.getDate() == null)
+			return;
+
+		LocalDate fechaSeleccionada = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		LocalDate hoy = LocalDate.now();
+		LocalTime ahora = LocalTime.now();
+
+		for (int h = 8; h <= 17; h++) {
+			int[] minutos = { 0, 30 };
+
+			for (int m : minutos) {
+				LocalTime horaSlot = LocalTime.of(h, m);
+				if (fechaSeleccionada.isEqual(hoy) && horaSlot.isBefore(ahora)) {
+					continue;
+				}
+				String ampm = (h < 12) ? "AM" : "PM";
+				int hora12 = (h > 12) ? (h - 12) : ((h == 0 || h == 12) ? 12 : h);
+				String textoHora = String.format("%02d:%02d %s", hora12, m, ampm);
+
+				cbxHora.addItem(textoHora);
+			}
+		}
+
+		if (seleccionPrevia != null) {
+			for (int i = 0; i < cbxHora.getItemCount(); i++) {
+				if (cbxHora.getItemAt(i).equals(seleccionPrevia)) {
+					cbxHora.setSelectedIndex(i);
+					return;
+				}
+			}
+		}
+
+		if (cbxHora.getItemCount() > 0) {
+			cbxHora.setSelectedIndex(0);
+		}
 	}
 }
