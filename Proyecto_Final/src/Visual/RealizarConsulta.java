@@ -91,8 +91,12 @@ public class RealizarConsulta extends JDialog {
 		lblCedula.setBounds(350, 28, 200, 14);
 		panelInfo.add(lblCedula);
 
-		boolean tieneHistorial = (cita.getCliente().getHistorial() != null
-				&& !cita.getCliente().getHistorial().getConsultas().isEmpty());
+		boolean tieneHistorial = false;
+		if (cita.getCliente().getHistorial() != null && cita.getCliente().getHistorial().getConsultas() != null) {
+			if (!cita.getCliente().getHistorial().getConsultas().isEmpty()) {
+				tieneHistorial = true;
+			}
+		}
 
 		JButton btnVerHistorial = new JButton("Ver Historial");
 		Estilos.estilarBoton(btnVerHistorial, new Color(41, 128, 185), Color.WHITE);
@@ -257,6 +261,11 @@ public class RealizarConsulta extends JDialog {
 
 	@SuppressWarnings("unchecked")
 	private void aplicarVacuna() {
+		if (citaActual == null || citaActual.getCliente() == null) {
+			JOptionPane.showMessageDialog(null, "Error: Datos del paciente no válidos.");
+			return;
+		}
+
 		ArrayList<Vacuna> vacunas = (ArrayList<Vacuna>) ClienteSocket.enviar("LISTAR_VACUNAS", null);
 
 		if (vacunas == null || vacunas.isEmpty()) {
@@ -279,14 +288,17 @@ public class RealizarConsulta extends JDialog {
 					break;
 				}
 			}
+			// Aseguramos que los objetos no sean nulos antes de enviarlos
 			RegistroVacunacion reg = new RegistroVacunacion(citaActual.getCliente(), vacunaObj,
 					java.time.LocalDate.now(), citaActual.getMedico(), true);
-			boolean exito = (boolean) ClienteSocket.enviar("APLICAR_VACUNA", reg);
+
+			Object resp = ClienteSocket.enviar("APLICAR_VACUNA", reg);
+			boolean exito = (resp instanceof Boolean) ? (Boolean) resp : false;
 
 			if (exito) {
 				JOptionPane.showMessageDialog(null, "Vacuna registrada.");
 			} else {
-				JOptionPane.showMessageDialog(null, "Error al registrar.");
+				JOptionPane.showMessageDialog(null, "Error al registrar vacuna en el servidor.");
 			}
 		}
 	}
@@ -342,6 +354,11 @@ public class RealizarConsulta extends JDialog {
 				return;
 		}
 
+		if (citaActual == null || citaActual.getMedico() == null || citaActual.getCliente() == null) {
+			JOptionPane.showMessageDialog(null, "Error: Datos de la cita corruptos o incompletos.");
+			return;
+		}
+
 		Consulta consultaTemp = new Consulta("TEMP", java.time.LocalDate.now(), txtSintomas.getText(),
 				txtDiagnostico.getText(), citaActual.getMedico(), citaActual.getCliente());
 		consultaTemp.setAntecedentes(txtAntecedentes.getText());
@@ -367,9 +384,9 @@ public class RealizarConsulta extends JDialog {
 	@SuppressWarnings("unchecked")
 	private void cargarEnfermedades() {
 		modelDisponibles.clear();
-		listaEnfermedadesGlobal = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
-
-		if (listaEnfermedadesGlobal != null) {
+		Object resp = ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
+		if (resp instanceof ArrayList) {
+			listaEnfermedadesGlobal = (ArrayList<Enfermedad>) resp;
 			for (Enfermedad enf : listaEnfermedadesGlobal) {
 				modelDisponibles.addElement(enf.getNombre());
 			}
@@ -382,16 +399,18 @@ public class RealizarConsulta extends JDialog {
 			modelDisponibles.removeElement(seleccion);
 			modelDiagnosticadas.addElement(seleccion);
 
-			for (Enfermedad enf : listaEnfermedadesGlobal) {
-				if (enf.getNombre().equals(seleccion)) {
-					enfermedadesSeleccionadas.add(enf);
-					if (enf.isVigilancia()) {
-						chkResumen.setSelected(true);
-						chkResumen.setEnabled(false);
-						chkResumen.setText("Marcar para Resumen (VIGILANCIA)");
-						chkResumen.setForeground(Color.RED);
+			if (listaEnfermedadesGlobal != null) {
+				for (Enfermedad enf : listaEnfermedadesGlobal) {
+					if (enf.getNombre().equals(seleccion)) {
+						enfermedadesSeleccionadas.add(enf);
+						if (enf.isVigilancia()) {
+							chkResumen.setSelected(true);
+							chkResumen.setEnabled(false);
+							chkResumen.setText("Marcar para Resumen (VIGILANCIA)");
+							chkResumen.setForeground(Color.RED);
+						}
+						break;
 					}
-					break;
 				}
 			}
 		}
@@ -403,6 +422,7 @@ public class RealizarConsulta extends JDialog {
 			modelDiagnosticadas.removeElement(seleccion);
 			modelDisponibles.addElement(seleccion);
 			enfermedadesSeleccionadas.removeIf(enf -> enf.getNombre().equals(seleccion));
+
 			boolean hayVigilancia = enfermedadesSeleccionadas.stream().anyMatch(Enfermedad::isVigilancia);
 			if (!hayVigilancia) {
 				chkResumen.setEnabled(true);

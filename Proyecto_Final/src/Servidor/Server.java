@@ -29,6 +29,7 @@ public class Server {
 				System.out.println("No se encontró respaldo. Iniciando sistema limpio.");
 				if (Control.getInstance().getMisUsuarios().isEmpty()) {
 					try {
+						// Usuario por defecto si no hay nada
 						User admin = new User("Administrador", "Admin", "Admin", "000-0000000-0");
 						Control.getInstance().regUser(admin);
 						guardarUsuariosIndividual();
@@ -87,6 +88,7 @@ public class Server {
 			Clinica temp = (Clinica) ois.readObject();
 			Clinica.setInstancia(temp);
 
+			// Importante: Refrescar referencias tras deserializar
 			Clinica.getInstancia().refrescarRelaciones();
 
 			ois.close();
