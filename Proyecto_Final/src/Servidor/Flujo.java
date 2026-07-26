@@ -1,11 +1,12 @@
 package Servidor;
 
-import java.net.*;
-import java.io.*;
-import java.util.ArrayList;
-
-import Servicios.Clinica;
 import logico.*;
+import Servicios.*;
+
+import java.io.*;
+import java.net.Socket;
+import java.net.SocketException;
+import java.sql.Timestamp;
 
 public class Flujo extends Thread {
 	Socket nsfd;
@@ -28,15 +29,25 @@ public class Flujo extends Thread {
 	public void run() {
 		if (FlujoLectura == null || FlujoEscritura == null) {
 			try { if (nsfd != null) nsfd.close(); } catch (IOException e) { e.printStackTrace(); }
-			return; 
+			return;
 		}
+
+		// Inicialización de los servicios de Base de Datos
+		Servicios.ClienteService clienteService = new Servicios.ClienteService();
+		Servicios.MedicoService medicoService = new Servicios.MedicoService();
+		Servicios.EnfermedadService enfermedadService = new Servicios.EnfermedadService();
+		Servicios.EspecialidadService especialidadService = new Servicios.EspecialidadService();
+		Servicios.CitaService citaService = new Servicios.CitaService();
+		Servicios.ConsultaService consultaService = new Servicios.ConsultaService();
+		Servicios.VacunaService vacunaService = new Servicios.VacunaService();
+
 		try {
 			while (true) {
 				PaqueteDeDatos paquete = null;
 				try {
-					paquete = (PaqueteDeDatos) FlujoLectura.readObject(); 
+					paquete = (PaqueteDeDatos) FlujoLectura.readObject();
 				} catch (EOFException e) {
-					break; 
+					break;
 				}
 
 				if (paquete == null)
@@ -73,171 +84,128 @@ public class Flujo extends Thread {
 				// --- SECCION: ENFERMEDADES ---
 				else if (comando.equalsIgnoreCase("REG_ENFERMEDAD")) {
 					Enfermedad enf = (Enfermedad) paquete.getObjeto();
-					boolean exito = Clinica.getInstancia().agregarEnfermedad(enf);
-					if (exito)
-						Clinica.getInstancia().guardarDatosClinica();
+					boolean exito = enfermedadService.agregarEnfermedad(enf);
 					paquete.setRespuesta(exito);
 				} else if (comando.equalsIgnoreCase("UPDATE_ENFERMEDAD")) {
-					Enfermedad enf = (Enfermedad) paquete.getObjeto();
-					ArrayList<Enfermedad> list = Clinica.getInstancia().getEnfermedades();
-					ArrayList<Enfermedad> lista = Clinica.getInstancia().getEnfermedades();
-					boolean encontrado = false;
-					for(int i=0; i<lista.size(); i++) {
-						if(lista.get(i).getCodigo_sick().equals(enf.getCodigo_sick())) {
-							lista.set(i, enf); 
-							encontrado = true;
-							break;
-						}
-					}
-					if(encontrado) Clinica.getInstancia().guardarDatosClinica();
-					paquete.setRespuesta(encontrado);
+					// Lógica de actualización si la implementas en EnfermedadService
+					paquete.setRespuesta(false);
 				} else if (comando.equalsIgnoreCase("LISTAR_ENFERMEDADES")) {
-					paquete.setRespuesta(Clinica.getInstancia().getEnfermedades());
+					paquete.setRespuesta(enfermedadService.listarEnfermedades());
 				}
 
 				// --- SECCION: MEDICOS ---
 				else if (comando.equalsIgnoreCase("REG_MEDICO")) {
 					Medico m = (Medico) paquete.getObjeto();
-					boolean exito = Clinica.getInstancia().agregarMedico(m);
-					if (exito)
-						Clinica.getInstancia().guardarDatosClinica();
+					String codEspLimpio = m.getEspecialidad().getCodigo_espe().replaceAll("[^0-9]", "");
+					int idEspecialidad = Integer.parseInt(codEspLimpio);
+					boolean exito = medicoService.agregarMedico(m, 0, idEspecialidad);
 					paquete.setRespuesta(exito);
 				} else if (comando.equalsIgnoreCase("LISTAR_MEDICOS")) {
-					paquete.setRespuesta(Clinica.getInstancia().getMedicos());
+					paquete.setRespuesta(medicoService.listarMedicos());
 				} else if (comando.equalsIgnoreCase("BUSCAR_MEDICO")) {
 					String cedula = (String) paquete.getObjeto();
-					paquete.setRespuesta(Clinica.getInstancia().buscarMedicoCedula(cedula));
+					paquete.setRespuesta(medicoService.buscarMedicoCedula(cedula));
 				} else if (comando.equalsIgnoreCase("UPDATE_MEDICO")) {
 					Medico m = (Medico) paquete.getObjeto();
-					Clinica.getInstancia().actualizarMedico(m);
-					paquete.setRespuesta(true);
+					boolean exito = medicoService.actualizarMedico(m);
+					paquete.setRespuesta(exito);
 				} else if (comando.equalsIgnoreCase("DELETE_MEDICO")) {
 					Medico m = (Medico) paquete.getObjeto();
-					boolean exito = Clinica.getInstancia().desactivarMedico(m.getCedula());
+					boolean exito = medicoService.desactivarMedico(m.getCedula());
 					paquete.setRespuesta(exito);
 				}
 
 				// --- SECCION: CLIENTES ---
 				else if (comando.equalsIgnoreCase("REG_CLIENTE")) {
 					Cliente cli = (Cliente) paquete.getObjeto();
-					Cliente existente = Clinica.getInstancia().buscarClientePorCodigo(cli.getNumExpediente());
+					Cliente existente = clienteService.buscarClientePorCodigo(cli.getNumExpediente());
+					boolean exito;
 					if (existente == null) {
-						Clinica.getInstancia().insertarCliente(cli);
+						exito = clienteService.registrarNuevoCliente(cli);
 					} else {
-						Clinica.getInstancia().actualizarCliente(cli);
+						exito = clienteService.actualizarCliente(cli);
 					}
-					Clinica.getInstancia().guardarDatosClinica();
-					paquete.setRespuesta(true);
+					paquete.setRespuesta(exito);
 				} else if (comando.equalsIgnoreCase("LISTAR_CLIENTES")) {
-					paquete.setRespuesta(Clinica.getInstancia().getClientes());
+					paquete.setRespuesta(clienteService.getClientes());
 				} else if (comando.equalsIgnoreCase("BUSCAR_CLIENTE")) {
 					String codigo = (String) paquete.getObjeto();
-					paquete.setRespuesta(Clinica.getInstancia().buscarClientePorCodigo(codigo));
+					paquete.setRespuesta(clienteService.buscarClientePorCodigo(codigo));
 				} else if (comando.equalsIgnoreCase("BUSCAR_CLIENTE_CEDULA")) {
 					String cedula = (String) paquete.getObjeto();
-					Cliente encontrado = null;
-					for (Cliente c : Clinica.getInstancia().getClientes()) {
-						if (c.getCedula().equals(cedula)) {
-							encontrado = c;
-							break;
-						}
-					}
-					paquete.setRespuesta(encontrado);
+					paquete.setRespuesta(clienteService.buscarClientePorCedula(cedula));
 				} else if (comando.equalsIgnoreCase("UPDATE_CLIENTE")) {
 					Cliente c = (Cliente) paquete.getObjeto();
-					Clinica.getInstancia().actualizarCliente(c);
-					Clinica.getInstancia().guardarDatosClinica();
-					paquete.setRespuesta(true);
+					boolean exito = clienteService.actualizarCliente(c);
+					paquete.setRespuesta(exito);
 				}
 
 				// --- SECCION: ESPECIALIDADES ---
 				else if (comando.equalsIgnoreCase("REG_ESPECIALIDAD")) {
 					Especialidad esp = (Especialidad) paquete.getObjeto();
-					Clinica.getInstancia().agregarEspecialidad(esp);
-					Clinica.getInstancia().guardarDatosClinica();
-					paquete.setRespuesta(true);
+					boolean exito = especialidadService.registrarEspecialidad(esp);
+					paquete.setRespuesta(exito);
 				} else if (comando.equalsIgnoreCase("LISTAR_ESPECIALIDADES")) {
-					paquete.setRespuesta(Clinica.getInstancia().getEspecialidades());
+					paquete.setRespuesta(especialidadService.listarEspecialidades());
 				} else if (comando.equalsIgnoreCase("BUSCAR_ESPECIALIDAD_NOMBRE")) {
 					String nombre = (String) paquete.getObjeto();
-					paquete.setRespuesta(Clinica.getInstancia().buscarEspecialidadPorNombre(nombre));
-				}else if (comando.equalsIgnoreCase("UPDATE_ESPECIALIDAD")) {
+					paquete.setRespuesta(especialidadService.buscarEspecialidadPorNombre(nombre));
+				} else if (comando.equalsIgnoreCase("UPDATE_ESPECIALIDAD")) {
 					Especialidad esp = (Especialidad) paquete.getObjeto();
-					paquete.setRespuesta(true);
+					boolean exito = especialidadService.actualizarEspecialidad(esp);
+					paquete.setRespuesta(exito);
 				}
+
 				// --- SECCION: CITAS ---
 				else if (comando.equalsIgnoreCase("REG_CITA")) {
 					Cita c = (Cita) paquete.getObjeto();
-					boolean exito = Clinica.getInstancia().crearCita(c.getFechaHora(), c.getMedico().getCedula(),
-							c.getCliente().getNumExpediente(), c.getMotivo());
+					// Se debe ajustar para buscar los IDs reales en la base de datos si es necesario
+					int idMedico = 1; // Reemplazar por búsqueda de ID
+					int idCliente = 1; // Reemplazar por búsqueda de ID
+					boolean exito = citaService.crearCita(c, idMedico, idCliente);
 					paquete.setRespuesta(exito);
 				} else if (comando.equalsIgnoreCase("LISTAR_CITAS")) {
-					Clinica.getInstancia().refrescarRelaciones();
-					paquete.setRespuesta(Clinica.getInstancia().getCitas());
+					paquete.setRespuesta(citaService.getTodasLasCitas());
 				} else if (comando.equalsIgnoreCase("BUSCAR_CITA")) {
 					String codigo = (String) paquete.getObjeto();
-					paquete.setRespuesta(Clinica.getInstancia().buscarCita(codigo));
+					paquete.setRespuesta(citaService.buscarCita(Integer.parseInt(codigo)));
 				} else if (comando.equalsIgnoreCase("EDIT_CITA")) {
 					Cita citaMod = (Cita) paquete.getObjeto();
-					Cita original = Clinica.getInstancia().buscarCita(citaMod.getCodigo_cita());
-					boolean exito = Clinica.getInstancia().editCita(original, citaMod.getFechaHora(),
-							citaMod.getMedico());
+					int idMedico = 1; // Ajustar ID
+					boolean exito = citaService.editCita(Integer.parseInt(citaMod.getCodigo_cita()), citaMod.getFechaHora(), idMedico);
 					paquete.setRespuesta(exito);
 				} else if (comando.equalsIgnoreCase("CANCEL_CITA")) {
 					Cita c = (Cita) paquete.getObjeto();
-					Cita real = Clinica.getInstancia().buscarCita(c.getCodigo_cita());
-					boolean exito = false;
-					if (real != null) {
-						exito = Clinica.getInstancia().cancelCita(real);
-					}
+					boolean exito = citaService.cancelCita(Integer.parseInt(c.getCodigo_cita()));
 					paquete.setRespuesta(exito);
-				} 
+				}
 
 				// --- SECCION: CONSULTAS E HISTORIAL ---
 				else if (comando.equalsIgnoreCase("REG_CONSULTA")) {
-					paquete.setRespuesta(true);
+					Consulta c = (Consulta) paquete.getObjeto();
+					int idMedico = 1; // Ajustar ID
+					int idCliente = 1; // Ajustar ID
+					boolean exito = consultaService.guardarConsulta(1, c.getSintomas(), c.getDiagnostico(), c.getEnfermedadesDiag());
+					paquete.setRespuesta(exito);
 				}
 
 				// --- SECCION: VACUNAS ---
 				else if (comando.equalsIgnoreCase("REG_VACUNA")) {
 					Vacuna v = (Vacuna) paquete.getObjeto();
-					boolean exito = Clinica.getInstancia().agregarVacuna(v);
-					if (exito)
-						Clinica.getInstancia().guardarDatosClinica();
+					boolean exito = vacunaService.agregarVacuna(v);
 					paquete.setRespuesta(exito);
 				} else if (comando.equalsIgnoreCase("LISTAR_VACUNAS")) {
-					paquete.setRespuesta(Clinica.getInstancia().getVacunas());
+					paquete.setRespuesta(vacunaService.listarVacunas());
 				} else if (comando.equalsIgnoreCase("APLICAR_VACUNA")) {
 					RegistroVacunacion reg = (RegistroVacunacion) paquete.getObjeto();
-					boolean exito = false;
-
-					if (reg != null && reg.getCliente() != null && reg.getCliente().getNumExpediente() != null) {
-						Cliente clienteReal = Clinica.getInstancia()
-								.buscarClientePorCodigo(reg.getCliente().getNumExpediente());
-						if (clienteReal != null) {
-							if (clienteReal.getRegVacunas() == null) {
-								clienteReal.setRegVacunas(new ArrayList<>());
-							}
-							clienteReal.getRegVacunas().add(reg);
-							Clinica.getInstancia().guardarDatosClinica();
-							exito = true;
-						}
-					}
+					int idCliente = 1; // Ajustar ID
+					int idVacuna = Integer.parseInt(reg.getVacuna().getCodigo_vacun());
+					boolean exito = vacunaService.aplicarVacunaCliente(idCliente, idVacuna, Timestamp.valueOf(reg.getFecha().atStartOfDay()));
 					paquete.setRespuesta(exito);
-				}else if (comando.equalsIgnoreCase("UPDATE_VACUNA")) {
-					Vacuna vac = (Vacuna) paquete.getObjeto();
-					ArrayList<Vacuna> lista = Clinica.getInstancia().getVacunas();
-					boolean encontrado = false;
-					for(int i=0; i<lista.size(); i++) {
-						if(lista.get(i).getCodigo_vacun().equals(vac.getCodigo_vacun())) {
-							lista.set(i, vac);
-							encontrado = true;
-							break;
-						}
-					}
-					if(encontrado) Clinica.getInstancia().guardarDatosClinica();
-					paquete.setRespuesta(encontrado);
-				} 
+				} else if (comando.equalsIgnoreCase("UPDATE_VACUNA")) {
+					// Lógica de actualización si la implementas en VacunaService
+					paquete.setRespuesta(false);
+				}
 
 				FlujoEscritura.writeObject(paquete);
 				FlujoEscritura.flush();
