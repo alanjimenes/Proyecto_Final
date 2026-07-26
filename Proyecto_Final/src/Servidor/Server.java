@@ -14,7 +14,6 @@ public class Server {
 
 		System.out.println("--- INICIANDO SERVIDOR CLINICA ---");
 
-		// 1. Probamos la conexión a SQL Server de arranque
 		try {
 			ConexionDB.getConexion();
 			System.out.println(">>> CONEXIÓN A BASE DE DATOS SQL SERVER: ¡EXITOSA! <<<");
@@ -24,7 +23,6 @@ public class Server {
 			System.exit(1);
 		}
 
-		// 2. Cargamos solo los usuarios (hasta que los migremos a BD también)
 		boolean usuariosCargados = cargarUsuariosIndividual();
 		if (!usuariosCargados) {
 			System.out.println("No se encontraron usuarios. Iniciando sistema limpio y creando Admin por defecto.");

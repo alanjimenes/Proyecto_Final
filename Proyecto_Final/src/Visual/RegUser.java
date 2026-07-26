@@ -120,7 +120,7 @@ public class RegUser extends JDialog {
 		cbMedicos.setVisible(false);
 		contentPanel.add(cbMedicos);
 
-		// --- AQUI EMPIEZA LO QUE ARREGL� ---
+		// --- AQUI EMPIEZA LO QUE ARREGLO ---
 		{
 			JButton okButton = new JButton("Registrar");
 			Estilos.estilarBoton(okButton, new Color(99, 163, 97), Color.WHITE);

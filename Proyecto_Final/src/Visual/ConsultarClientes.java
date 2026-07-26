@@ -89,14 +89,20 @@ public class ConsultarClientes extends JDialog {
 					public void mouseClicked(MouseEvent e) {
 						int index = table.getSelectedRow();
 						if (index >= 0) {
-							String codigo = table.getValueAt(index, 0).toString();
-							seleccionado = buscarEnCache(codigo);
+							Object objCedula = table.getValueAt(index, 1);
 
-							btnDelete.setEnabled(true);
-							btnUpdate.setEnabled(true);
+							if (objCedula != null) {
+								String cedula = objCedula.toString();
+								seleccionado = buscarEnCachePorCedula(cedula);
 
-							if (e.getClickCount() == 2) {
-								dispose();
+								if (seleccionado != null) {
+									btnDelete.setEnabled(true);
+									btnUpdate.setEnabled(true);
+
+									if (e.getClickCount() == 2) {
+										dispose();
+									}
+								}
 							}
 						}
 					}
@@ -213,10 +219,11 @@ public class ConsultarClientes extends JDialog {
 		}
 	}
 
-	private Cliente buscarEnCache(String codigoExp) {
+	private Cliente buscarEnCachePorCedula(String cedula) {
 		for (Cliente c : listaGlobalClientes) {
-			if (c.getNumExpediente().equals(codigoExp))
+			if (c.getCedula() != null && c.getCedula().equals(cedula)) {
 				return c;
+			}
 		}
 		return null;
 	}
@@ -227,5 +234,9 @@ public class ConsultarClientes extends JDialog {
 		btnUpdate.setEnabled(false);
 		txtFiltro.setText("");
 		table.clearSelection();
+	}
+
+	public Cliente getClienteSeleccionado() {
+		return seleccionado;
 	}
 }

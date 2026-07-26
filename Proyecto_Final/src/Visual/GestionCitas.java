@@ -178,15 +178,16 @@ public class GestionCitas extends JPanel {
 			dialog.setModal(true);
 			dialog.setVisible(true);
 
-			if (ConsultarClientes.table.getSelectedRow() >= 0) {
-				String codigo = ConsultarClientes.table.getValueAt(ConsultarClientes.table.getSelectedRow(), 0)
-						.toString();
-				clienteSeleccionado = (Cliente) ClienteSocket.enviar("BUSCAR_CLIENTE", codigo);
-				if (clienteSeleccionado != null) {
+			if (dialog.getClienteSeleccionado() != null) {
+				clienteSeleccionado = dialog.getClienteSeleccionado();
+
+				if (clienteSeleccionado.getNumExpediente() != null) {
 					txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
-					lblNombreCliente.setText(
-							"Paciente: " + clienteSeleccionado.getNombre() + " " + clienteSeleccionado.getApellido());
+				} else {
+					txtCodCliente.setText("N/A");
 				}
+
+				lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre() + " " + clienteSeleccionado.getApellido());
 			}
 		});
 
