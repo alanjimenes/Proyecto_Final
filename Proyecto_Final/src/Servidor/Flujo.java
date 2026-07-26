@@ -1,9 +1,10 @@
 package Servidor;
 
 import java.net.*;
-import java.time.LocalDate;
 import java.io.*;
 import java.util.ArrayList;
+
+import Servicios.Clinica;
 import logico.*;
 
 public class Flujo extends Thread {

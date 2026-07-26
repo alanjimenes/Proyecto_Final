@@ -19,6 +19,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import logico.Medico;
 import logico.User;
 
@@ -105,7 +107,7 @@ public class RegUser extends JDialog {
 		passField_2.setBounds(265, 179, 180, 20);
 		contentPanel.add(passField_2);
 
-		lblCedulaLink = new JLabel("Seleccione Médico:");
+		lblCedulaLink = new JLabel("Seleccione Mï¿½dico:");
 		lblCedulaLink.setForeground(Color.WHITE);
 		lblCedulaLink.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblCedulaLink.setBounds(69, 254, 180, 20);
@@ -118,7 +120,7 @@ public class RegUser extends JDialog {
 		cbMedicos.setVisible(false);
 		contentPanel.add(cbMedicos);
 
-		// --- AQUI EMPIEZA LO QUE ARREGLÉ ---
+		// --- AQUI EMPIEZA LO QUE ARREGLï¿½ ---
 		{
 			JButton okButton = new JButton("Registrar");
 			Estilos.estilarBoton(okButton, new Color(99, 163, 97), Color.WHITE);
@@ -138,7 +140,7 @@ public class RegUser extends JDialog {
 					}
 
 					if (!pass1.equals(pass2)) {
-						JOptionPane.showMessageDialog(contentPanel, "Las contraseñas no coinciden.", "Error",
+						JOptionPane.showMessageDialog(contentPanel, "Las contraseï¿½as no coinciden.", "Error",
 								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
@@ -154,7 +156,7 @@ public class RegUser extends JDialog {
 					if (tipo.equalsIgnoreCase("Medico")) {
 						if (cbMedicos.getSelectedItem() == null
 								|| cbMedicos.getSelectedItem().toString().startsWith("<Seleccione")) {
-							JOptionPane.showMessageDialog(contentPanel, "Debe seleccionar un médico de la lista.");
+							JOptionPane.showMessageDialog(contentPanel, "Debe seleccionar un mï¿½dico de la lista.");
 							return;
 						}
 						String seleccion = cbMedicos.getSelectedItem().toString();
@@ -163,7 +165,7 @@ public class RegUser extends JDialog {
 							int fin = seleccion.lastIndexOf(")");
 							cedulaLink = seleccion.substring(inicio, fin);
 						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(contentPanel, "Error al procesar la cédula del médico.");
+							JOptionPane.showMessageDialog(contentPanel, "Error al procesar la cï¿½dula del mï¿½dico.");
 							return;
 						}
 					}
@@ -177,14 +179,14 @@ public class RegUser extends JDialog {
 					if (respuestaServidor == null) {
 						JOptionPane.showMessageDialog(contentPanel,
 								"Error grave: No hubo respuesta del servidor.\n",
-								"Error de Conexión", JOptionPane.ERROR_MESSAGE);
+								"Error de Conexiï¿½n", JOptionPane.ERROR_MESSAGE);
 					} else if (respuestaServidor instanceof Boolean) {
 						if ((boolean) respuestaServidor) {
-							JOptionPane.showMessageDialog(contentPanel, "¡Usuario registrado exitosamente!");
+							JOptionPane.showMessageDialog(contentPanel, "ï¿½Usuario registrado exitosamente!");
 							dispose();
 						} else {
 							JOptionPane.showMessageDialog(contentPanel,
-									"El nombre de usuario '" + userTxt + "' ya está en uso.", "Usuario Duplicado",
+									"El nombre de usuario '" + userTxt + "' ya estï¿½ en uso.", "Usuario Duplicado",
 									JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
@@ -195,7 +197,7 @@ public class RegUser extends JDialog {
 			okButton.setActionCommand("OK");
 			getRootPane().setDefaultButton(okButton);
 		}
-		// --- FIN DE LO QUE ARREGLÉ ---
+		// --- FIN DE LO QUE ARREGLï¿½ ---
 
 		{
 			JButton cancelButton = new JButton("Cancel");
@@ -224,7 +226,7 @@ public class RegUser extends JDialog {
 	@SuppressWarnings("unchecked")
 	private void cargarListaMedicos() {
 		cbMedicos.removeAllItems();
-		cbMedicos.addItem("<Seleccione Médico>");
+		cbMedicos.addItem("<Seleccione Mï¿½dico>");
 		Object respuesta = ClienteSocket.enviar("LISTAR_MEDICOS", null);
 
 		if (respuesta != null && respuesta instanceof java.util.ArrayList) {

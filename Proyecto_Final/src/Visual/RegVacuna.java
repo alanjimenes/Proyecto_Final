@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -17,9 +16,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import logico.Vacuna;
 
 public class RegVacuna extends JDialog {
@@ -71,7 +71,7 @@ public class RegVacuna extends JDialog {
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 
-		JLabel lblDesc = new JLabel("Descripción:");
+		JLabel lblDesc = new JLabel("Descripciï¿½n:");
 		lblDesc.setForeground(Color.WHITE);
 		lblDesc.setFont(new Font("Bahnschrift", Font.BOLD, 14));
 		lblDesc.setBounds(25, 90, 130, 14);
@@ -117,7 +117,7 @@ public class RegVacuna extends JDialog {
 
 	private void registrarVacuna() {
 		if(txtNombre.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "El nombre no puede estar vacío.");
+			JOptionPane.showMessageDialog(null, "El nombre no puede estar vacï¿½o.");
 			return;
 		}
 

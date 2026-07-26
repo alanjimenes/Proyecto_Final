@@ -16,6 +16,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import logico.Especialidad;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -83,7 +85,7 @@ public class RegEspecialidad extends JDialog {
 		cancelButton.addActionListener(e -> dispose());
 		buttonPane.add(cancelButton);
 
-		JLabel lblTitulo = new JLabel("Gestión de Especialidades");
+		JLabel lblTitulo = new JLabel("Gestiï¿½n de Especialidades");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
@@ -93,7 +95,7 @@ public class RegEspecialidad extends JDialog {
 
 	private void gestionar() {
 		if (txtNombre.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "El nombre no puede estar vacío.");
+			JOptionPane.showMessageDialog(null, "El nombre no puede estar vacï¿½o.");
 			return;
 		}
 

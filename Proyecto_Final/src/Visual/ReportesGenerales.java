@@ -6,7 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.time.LocalDate;
-import java.time.Period; // ¡IMPORTANTE PARA CALCULAR EDAD!
+import java.time.Period; // ï¿½IMPORTANTE PARA CALCULAR EDAD!
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,13 +23,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
+import Utils.GeneradorPDF;
 import com.toedter.calendar.JDateChooser;
 
 import logico.Cita;
@@ -37,7 +39,6 @@ import logico.Cliente;
 import logico.Consulta;
 import logico.Enfermedad;
 import logico.Medico;
-import logico.RegistroVacunacion;
 import logico.Vacuna;
 
 public class ReportesGenerales extends JDialog {
@@ -62,7 +63,7 @@ public class ReportesGenerales extends JDialog {
 	private JCheckBox chkVigilanciaOnly;
 
 	public ReportesGenerales() {
-		setTitle("Centro de Reportes Estadísticos");
+		setTitle("Centro de Reportes Estadï¿½sticos");
 		try { setIconImage(Toolkit.getDefaultToolkit().getImage(ReportesGenerales.class.getResource("/img/dato-de-registro.png"))); } catch (Exception e) {}
 		setSize(1250, 700);
 		setLocationRelativeTo(null);
@@ -74,7 +75,7 @@ public class ReportesGenerales extends JDialog {
 		JPanel panelNorte = new JPanel();
 		panelNorte.setBackground(colorPrimario);
 		panelNorte.setBorder(new EmptyBorder(10, 10, 10, 10));
-		JLabel lblTitulo = new JLabel("Reportes e Indicadores de Gestión");
+		JLabel lblTitulo = new JLabel("Reportes e Indicadores de Gestiï¿½n");
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 24));
 		panelNorte.add(lblTitulo);
@@ -85,14 +86,14 @@ public class ReportesGenerales extends JDialog {
 
 		tabbedPane.addTab("1. Citas x Fecha", crearPanelCitasPorFecha());
 		tabbedPane.addTab("2. Consultas x Fecha", crearPanelConsultasPorFecha());
-		tabbedPane.addTab("3. Médicos x Esp.", crearPanelMedicosEspecialidad());
-		tabbedPane.addTab("4. Catálogo Vacunas", crearPanelVacunas());
+		tabbedPane.addTab("3. Mï¿½dicos x Esp.", crearPanelMedicosEspecialidad());
+		tabbedPane.addTab("4. Catï¿½logo Vacunas", crearPanelVacunas());
 		tabbedPane.addTab("5. Casos Activos", crearPanelEnfermedadesActuales());
-		tabbedPane.addTab("6. Rendimiento Médico", crearPanelConsultasMedicoFecha());
-		tabbedPane.addTab("7. Epidemiología", crearPanelEnfermedadFecha());
-		tabbedPane.addTab("9. Días Pico", crearPanelDiasPico());
-		tabbedPane.addTab("10. Demografía (Sexo)", crearPanelSexoFecha());
-		tabbedPane.addTab("11. Demografía (Edad)", crearPanelEdades());
+		tabbedPane.addTab("6. Rendimiento Mï¿½dico", crearPanelConsultasMedicoFecha());
+		tabbedPane.addTab("7. Epidemiologï¿½a", crearPanelEnfermedadFecha());
+		tabbedPane.addTab("9. Dï¿½as Pico", crearPanelDiasPico());
+		tabbedPane.addTab("10. Demografï¿½a (Sexo)", crearPanelSexoFecha());
+		tabbedPane.addTab("11. Demografï¿½a (Edad)", crearPanelEdades());
 
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
@@ -192,8 +193,8 @@ public class ReportesGenerales extends JDialog {
 	}
 
 	private JPanel crearPanelMedicosEspecialidad() {
-		modelMedicosEsp = new DefaultTableModel(new String[]{"Especialidad", "Cantidad de Médicos"}, 0);
-		JPanel panel = armarPanelFiltroTabla(modelMedicosEsp, "Distribución de Médicos", new Object[]{});
+		modelMedicosEsp = new DefaultTableModel(new String[]{"Especialidad", "Cantidad de Mï¿½dicos"}, 0);
+		JPanel panel = armarPanelFiltroTabla(modelMedicosEsp, "Distribuciï¿½n de Mï¿½dicos", new Object[]{});
 
 		Map<String, Integer> conteo = new HashMap<>();
 		int total = 0;
@@ -207,14 +208,14 @@ public class ReportesGenerales extends JDialog {
 		for(String esp : conteo.keySet()) {
 			modelMedicosEsp.addRow(new Object[]{esp, conteo.get(esp)});
 		}
-		modelMedicosEsp.addRow(new Object[]{"TOTAL CLÍNICA", total});
+		modelMedicosEsp.addRow(new Object[]{"TOTAL CLï¿½NICA", total});
 
 		return panel;
 	}
 
 	private JPanel crearPanelVacunas() {
-		modelVacunas = new DefaultTableModel(new String[]{"Código", "Nombre", "Descripción"}, 0);
-		JPanel panel = armarPanelFiltroTabla(modelVacunas, "Catálogo de Vacunas", new Object[]{});
+		modelVacunas = new DefaultTableModel(new String[]{"Cï¿½digo", "Nombre", "Descripciï¿½n"}, 0);
+		JPanel panel = armarPanelFiltroTabla(modelVacunas, "Catï¿½logo de Vacunas", new Object[]{});
 
 		if(listaVacunasGlobal != null) {
 			for(Vacuna v : listaVacunasGlobal) {
@@ -225,7 +226,7 @@ public class ReportesGenerales extends JDialog {
 	}
 
 	private JPanel crearPanelEnfermedadesActuales() {
-		modelEnfEsp = new DefaultTableModel(new String[]{"Cédula", "Paciente", "Enfermedad", "Fecha Diagnóstico", "Vigilancia"}, 0);
+		modelEnfEsp = new DefaultTableModel(new String[]{"Cï¿½dula", "Paciente", "Enfermedad", "Fecha Diagnï¿½stico", "Vigilancia"}, 0);
 
 		cbEnfermedad = new JComboBox<>();
 		cbEnfermedad.addItem("<Todas>");
@@ -262,7 +263,7 @@ public class ReportesGenerales extends JDialog {
 										cli.getNombre() + " " + cli.getApellido(),
 										enf.getNombre(),
 										con.getFechaConsulta(),
-										enf.isVigilancia() ? "SÍ" : "NO"
+										enf.isVigilancia() ? "Sï¿½" : "NO"
 								});
 							}
 						}
@@ -273,7 +274,7 @@ public class ReportesGenerales extends JDialog {
 	}
 
 	private JPanel crearPanelConsultasMedicoFecha() {
-		modelConsMedFecha = new DefaultTableModel(new String[]{"Fecha", "Paciente", "Diagnóstico"}, 0);
+		modelConsMedFecha = new DefaultTableModel(new String[]{"Fecha", "Paciente", "Diagnï¿½stico"}, 0);
 		d1ConsMed = new JDateChooser(); d2ConsMed = new JDateChooser();
 
 		cbMedico = new JComboBox<>();
@@ -284,8 +285,8 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarConsMedFecha());
 
-		return armarPanelFiltroTabla(modelConsMedFecha, "Consultas por Médico y Rango", 
-				new Object[]{new JLabel("Médico:"), cbMedico, new JLabel("Desde:"), d1ConsMed, new JLabel("Hasta:"), d2ConsMed, btnGenerar});
+		return armarPanelFiltroTabla(modelConsMedFecha, "Consultas por Mï¿½dico y Rango", 
+				new Object[]{new JLabel("Mï¿½dico:"), cbMedico, new JLabel("Desde:"), d1ConsMed, new JLabel("Hasta:"), d2ConsMed, btnGenerar});
 	}
 
 	private void generarConsMedFecha() {
@@ -324,7 +325,7 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarEnfFecha());
 
-		return armarPanelFiltroTabla(modelEnfFecha, "Evolución de Enfermedad por Fecha", 
+		return armarPanelFiltroTabla(modelEnfFecha, "Evoluciï¿½n de Enfermedad por Fecha", 
 				new Object[]{new JLabel("Enfermedad:"), cbEnfFiltro, new JLabel("Desde:"), d1Enf, new JLabel("Hasta:"), d2Enf, btnGenerar});
 	}
 
@@ -365,7 +366,7 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarDiasPico());
 
-		return armarPanelFiltroTabla(modelDiasPico, "Días de Mayor Afluencia", 
+		return armarPanelFiltroTabla(modelDiasPico, "Dï¿½as de Mayor Afluencia", 
 				new Object[]{new JLabel("Desde:"), d1Pico, new JLabel("Hasta:"), d2Pico, btnGenerar});
 	}
 
@@ -405,7 +406,7 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarSexoFecha());
 
-		return armarPanelFiltroTabla(modelSexoFecha, "Demografía de Atención por Fecha", 
+		return armarPanelFiltroTabla(modelSexoFecha, "Demografï¿½a de Atenciï¿½n por Fecha", 
 				new Object[]{new JLabel("Desde:"), d1Sexo, new JLabel("Hasta:"), d2Sexo, btnGenerar});
 	}
 
@@ -442,10 +443,10 @@ public class ReportesGenerales extends JDialog {
 
 	private JPanel crearPanelEdades() {
 		modelEdades = new DefaultTableModel(new String[]{"Rango de Edad", "Cantidad Pacientes", "Porcentaje"}, 0);
-		JPanel panel = armarPanelFiltroTabla(modelEdades, "Distribución Demográfica por Edad", new Object[]{});
+		JPanel panel = armarPanelFiltroTabla(modelEdades, "Distribuciï¿½n Demogrï¿½fica por Edad", new Object[]{});
 
 		int[] contadores = new int[5]; 
-		String[] etiquetas = {"Niños (0-12)", "Adolescentes (13-19)", "Jóvenes (20-39)", "Adultos (40-59)", "Adultos Mayores (60+)"};
+		String[] etiquetas = {"Niï¿½os (0-12)", "Adolescentes (13-19)", "Jï¿½venes (20-39)", "Adultos (40-59)", "Adultos Mayores (60+)"};
 		int totalPacientes = 0;
 
 		if(listaClientesGlobal != null) {

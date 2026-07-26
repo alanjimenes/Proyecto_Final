@@ -23,6 +23,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import logico.Cita;
 import logico.Medico;
 import logico.User;
@@ -41,9 +43,9 @@ public class MisCitas extends JDialog {
 	public MisCitas(User usuario) {
 		this.usuarioMedico = usuario;
 
-		// Icono y Título
+		// Icono y Tï¿½tulo
 		setTitle("Mis Citas de Hoy");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(MisCitas.class.getResource("/img/dato-de-registro.png"))); // Asegúrate de tener la imagen o quitar esta línea si da error
+		setIconImage(Toolkit.getDefaultToolkit().getImage(MisCitas.class.getResource("/img/dato-de-registro.png"))); // Asegï¿½rate de tener la imagen o quitar esta lï¿½nea si da error
 		setBounds(100, 100, 900, 500);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -54,14 +56,14 @@ public class MisCitas extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
-		// --- PANEL NORTE (TÍTULO) ---
+		// --- PANEL NORTE (Tï¿½TULO) ---
 		JPanel panelNorte = new JPanel();
 		panelNorte.setBackground(new Color(60, 70, 123));
 		panelNorte.setPreferredSize(new Dimension(10, 50)); // Altura fija para que se vea bien
 		panelNorte.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 12)); // Centrar verticalmente
 		contentPanel.add(panelNorte, BorderLayout.NORTH);
 
-		// Lógica para obtener nombre del médico
+		// Lï¿½gica para obtener nombre del mï¿½dico
 		String nombreMedico = "Desconocido";
 		if (usuario.getCedula() != null) {
 			Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuario.getCedula());
@@ -83,12 +85,12 @@ public class MisCitas extends JDialog {
 		contentPanel.add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
-		table.setRowHeight(30); // Filas más altas para mejor lectura
+		table.setRowHeight(30); // Filas mï¿½s altas para mejor lectura
 		table.setSelectionBackground(new Color(232, 246, 255)); // Azul muy claro al seleccionar
 		table.setSelectionForeground(Color.BLACK);
-		table.setGridColor(new Color(230, 230, 230)); // Líneas de cuadrícula sutiles
+		table.setGridColor(new Color(230, 230, 230)); // Lï¿½neas de cuadrï¿½cula sutiles
 		table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		table.setShowVerticalLines(false); // Solo líneas horizontales (diseño moderno)
+		table.setShowVerticalLines(false); // Solo lï¿½neas horizontales (diseï¿½o moderno)
 
 		// Evento Click
 		table.addMouseListener(new MouseAdapter() {
@@ -110,7 +112,7 @@ public class MisCitas extends JDialog {
 			}
 		};
 
-		model.setColumnIdentifiers(new String[] { "Código", "Hora", "Paciente", "Cédula Paciente", "Estado" });
+		model.setColumnIdentifiers(new String[] { "Cï¿½digo", "Hora", "Paciente", "Cï¿½dula Paciente", "Estado" });
 		table.setModel(model);
 
 		// --- ESTILIZADO DEL HEADER (ENCABEZADO AZUL) ---
@@ -159,7 +161,7 @@ public class MisCitas extends JDialog {
 						citaSeleccionada = null;
 					} catch (Exception ex) {
 						// Si RealizarConsulta no existe o da error, mostramos mensaje
-						javax.swing.JOptionPane.showMessageDialog(null, "Abriendo consulta... (Asegúrese de tener la clase RealizarConsulta)");
+						javax.swing.JOptionPane.showMessageDialog(null, "Abriendo consulta... (Asegï¿½rese de tener la clase RealizarConsulta)");
 					}
 				}
 			}

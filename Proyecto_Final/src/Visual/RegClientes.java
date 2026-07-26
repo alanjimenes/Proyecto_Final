@@ -22,6 +22,8 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import com.toedter.calendar.JDateChooser;
 
 import logico.Cliente;
@@ -78,7 +80,7 @@ public class RegClientes extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		JLabel lblCedula = new JLabel("Identificación:");
+		JLabel lblCedula = new JLabel("Identificaciï¿½n:");
 		lblCedula.setForeground(Color.WHITE);
 		lblCedula.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblCedula.setBounds(38, 172, 104, 14);
@@ -148,7 +150,7 @@ public class RegClientes extends JDialog {
 			}
 		});
 
-		JLabel lblTelefono = new JLabel("Teléfono:");
+		JLabel lblTelefono = new JLabel("Telï¿½fono:");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblTelefono.setBounds(54, 233, 81, 14);
@@ -178,7 +180,7 @@ public class RegClientes extends JDialog {
 			}
 		});
 
-		JLabel lblDireccion = new JLabel("Dirección:");
+		JLabel lblDireccion = new JLabel("Direcciï¿½n:");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblDireccion.setBounds(391, 235, 93, 14);
@@ -189,7 +191,7 @@ public class RegClientes extends JDialog {
 		contentPanel.add(txtDireccion);
 		txtDireccion.setColumns(10);
 
-		JLabel lblGenero = new JLabel("Género:");
+		JLabel lblGenero = new JLabel("Gï¿½nero:");
 		lblGenero.setForeground(Color.WHITE);
 		lblGenero.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblGenero.setBounds(723, 237, 98, 14);
@@ -310,7 +312,7 @@ public class RegClientes extends JDialog {
 				|| cbxGenero.getSelectedIndex() == 0 || txtFechaNac.getDate() == null) {
 
 			JOptionPane.showMessageDialog(null,
-					"Por favor llene los campos obligatorios, incluyendo Fecha de Nacimiento y Género.");
+					"Por favor llene los campos obligatorios, incluyendo Fecha de Nacimiento y Gï¿½nero.");
 			return;
 		}
 
@@ -318,7 +320,7 @@ public class RegClientes extends JDialog {
 
 		if (fechaNacimiento.isAfter(LocalDate.now())) {
 			JOptionPane.showMessageDialog(null, "La fecha de nacimiento no puede ser una fecha futura.",
-					"Error de Validación", JOptionPane.ERROR_MESSAGE);
+					"Error de Validaciï¿½n", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
@@ -327,15 +329,15 @@ public class RegClientes extends JDialog {
 		if (edad < 16) {
 			if (txtCedula.getText().length() < 5) {
 				JOptionPane.showMessageDialog(null,
-						"Paciente menor de 16 años. Por favor ingrese el número de Pasaporte o ID de menor.",
-						"Identificación Requerida", JOptionPane.WARNING_MESSAGE);
+						"Paciente menor de 16 aï¿½os. Por favor ingrese el nï¿½mero de Pasaporte o ID de menor.",
+						"Identificaciï¿½n Requerida", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 		} else {
 			if (txtCedula.getText().isEmpty() || txtCedula.getText().length() < 13) {
 				JOptionPane.showMessageDialog(null,
-						"Paciente mayor de 16 años. La Cédula (con el formato de 13 dígitos) es obligatoria.",
-						"Cédula Requerida", JOptionPane.ERROR_MESSAGE);
+						"Paciente mayor de 16 aï¿½os. La Cï¿½dula (con el formato de 13 dï¿½gitos) es obligatoria.",
+						"Cï¿½dula Requerida", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 		}
@@ -344,7 +346,7 @@ public class RegClientes extends JDialog {
 
 			Object respuesta = ClienteSocket.enviar("BUSCAR_CLIENTE_CEDULA", txtCedula.getText());
 			if (respuesta != null) {
-				JOptionPane.showMessageDialog(null, "Ya existe un cliente con esa identificación/cédula.");
+				JOptionPane.showMessageDialog(null, "Ya existe un cliente con esa identificaciï¿½n/cï¿½dula.");
 				return;
 			}
 
@@ -355,7 +357,7 @@ public class RegClientes extends JDialog {
 			boolean exito = (boolean) ClienteSocket.enviar("REG_CLIENTE", nuevoCliente);
 
 			if (exito) {
-				JOptionPane.showMessageDialog(null, "Paciente registrado con éxito.");
+				JOptionPane.showMessageDialog(null, "Paciente registrado con ï¿½xito.");
 				limpiarCampos();
 			} else {
 				JOptionPane.showMessageDialog(null, "Error al registrar en el servidor.");

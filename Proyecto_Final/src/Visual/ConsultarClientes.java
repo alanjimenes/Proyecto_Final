@@ -27,6 +27,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import logico.Cliente;
 
 public class ConsultarClientes extends JDialog {
@@ -71,7 +73,7 @@ public class ConsultarClientes extends JDialog {
 						return false;
 					}
 				};
-				String[] headers = { "Expediente", "Cédula", "Nombre", "Apellido", "Teléfono", "Estado Salud" };
+				String[] headers = { "Expediente", "Cï¿½dula", "Nombre", "Apellido", "Telï¿½fono", "Estado Salud" };
 				modelo.setColumnIdentifiers(headers);
 				table.setModel(modelo);
 
@@ -155,7 +157,7 @@ public class ConsultarClientes extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					if (seleccionado != null) {
 						int option = JOptionPane.showConfirmDialog(null,
-								"¿Seguro que desea eliminar al paciente " + seleccionado.getNombre() + "?", "Confirmar",
+								"ï¿½Seguro que desea eliminar al paciente " + seleccionado.getNombre() + "?", "Confirmar",
 								JOptionPane.YES_NO_OPTION);
 
 						if (option == JOptionPane.YES_OPTION) {

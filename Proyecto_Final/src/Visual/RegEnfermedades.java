@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -19,6 +17,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import logico.Enfermedad;
 import java.awt.Toolkit;
 
@@ -66,7 +66,7 @@ public class RegEnfermedades extends JDialog {
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 
-		JLabel lblDesc = new JLabel("Descripción / Síntomas:");
+		JLabel lblDesc = new JLabel("Descripciï¿½n / Sï¿½ntomas:");
 		lblDesc.setForeground(Color.WHITE);
 		lblDesc.setFont(new Font("Bahnschrift", Font.BOLD, 14));
 		lblDesc.setBounds(25, 120, 200, 14);
@@ -80,14 +80,14 @@ public class RegEnfermedades extends JDialog {
 		txtDescripcion.setLineWrap(true);
 		scrollPane.setViewportView(txtDescripcion);
 
-		chkVigilancia = new JCheckBox("Enfermedad bajo Vigilancia Epidemiológica");
+		chkVigilancia = new JCheckBox("Enfermedad bajo Vigilancia Epidemiolï¿½gica");
 		chkVigilancia.setBackground(new Color(60, 70, 123));
 		chkVigilancia.setForeground(Color.ORANGE);
 		chkVigilancia.setFont(new Font("Bahnschrift", Font.BOLD, 12));
 		chkVigilancia.setBounds(25, 210, 300, 23);
 		contentPanel.add(chkVigilancia);
 
-		JLabel lblTitulo = new JLabel("Gestión de Enfermedades");
+		JLabel lblTitulo = new JLabel("Gestiï¿½n de Enfermedades");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 20));

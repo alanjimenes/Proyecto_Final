@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component LANGUAGE_LEVEL="JDK_1_8" jdk="JavaSE-1.8" jdk_type="JavaSDK">
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="miglayout15-swing.jar" scope="COMPILE">
+		<srcroot url="jar://$MODULE_DIR$/miglayout-src.zip!/"/>
+		<relative-module-src project-related="jar://$PROJECT_DIR$/Proyecto_Final/miglayout-src.zip!/"/>
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/Proyecto_Final/miglayout15-swing.jar!/"/>
+	</lib>
+	<lib name="jcalendar-1.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/Proyecto_Final/src/lib/jcalendar-1.4.jar!/"/>
+	</lib>
+	<lib name="jcommon-1.0.23.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/Proyecto_Final/src/lib/jcommon-1.0.23.jar!/"/>
+	</lib>
+	<lib name="jfreechart-1.0.19.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/Proyecto_Final/src/lib/jfreechart-1.0.19.jar!/"/>
+	</lib>
+	<lib name="itextpdf-5.5.13.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/Proyecto_Final/src/lib/itextpdf-5.5.13.4.jar!/"/>
+	</lib>
+</component>

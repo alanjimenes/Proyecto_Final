@@ -3,7 +3,7 @@ package Servidor;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import logico.Clinica;
+import Servicios.Clinica;
 import logico.Control;
 import logico.User;
 
@@ -22,11 +22,11 @@ public class Server {
 			System.out.println("Intentando recuperar desde RespaldoTotal.dat...");
 
 			if (recuperarDesdeRespaldoTotal()) {
-				System.out.println("¡SISTEMA RECUPERADO EXITOSAMENTE!");
+				System.out.println("ï¿½SISTEMA RECUPERADO EXITOSAMENTE!");
 				guardarUsuariosIndividual();
 				Clinica.getInstancia().guardarDatosClinica();
 			} else {
-				System.out.println("No se encontró respaldo. Iniciando sistema limpio.");
+				System.out.println("No se encontrï¿½ respaldo. Iniciando sistema limpio.");
 				if (Control.getInstance().getMisUsuarios().isEmpty()) {
 					try {
 						// Usuario por defecto si no hay nada
@@ -45,7 +45,7 @@ public class Server {
 			sfd = new ServerSocket(7000);
 			System.out.println(">>> SERVIDOR ONLINE EN PUERTO 7000 <<<");
 		} catch (IOException ioe) {
-			System.err.println("Error fatal al abrir el puerto 7000. ¿Ya está corriendo el servidor?");
+			System.err.println("Error fatal al abrir el puerto 7000. ï¿½Ya estï¿½ corriendo el servidor?");
 			System.exit(1);
 		}
 
@@ -55,7 +55,7 @@ public class Server {
 				Flujo flujo = new Flujo(nsfd);
 				flujo.start();
 			} catch (IOException ioe) {
-				System.out.println("Error aceptando conexión: " + ioe);
+				System.out.println("Error aceptando conexiï¿½n: " + ioe);
 			}
 		}
 	}

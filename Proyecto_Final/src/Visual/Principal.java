@@ -10,9 +10,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Locale;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -30,6 +27,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -41,11 +40,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 import logico.Cita;
-import logico.Cliente;
-import logico.Consulta;
-import logico.Enfermedad;
 import logico.Medico;
-import logico.RegistroVacunacion;
 import logico.User;
 
 public class Principal extends JFrame {
@@ -68,26 +63,26 @@ public class Principal extends JFrame {
 	public Principal(User usuarioLogueado) {
 		this.usuarioActual = usuarioLogueado;
 
-		// CONFIGURACIÓN BÁSICA DE LA VENTANA
+		// CONFIGURACIï¿½N Bï¿½SICA DE LA VENTANA
 		try {
 			setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
 		} catch (Exception e) {
 		}
-		setTitle("Sistema de Gestión Hospitalaria - Usuario: " + usuarioActual.getUsuario());
+		setTitle("Sistema de Gestiï¿½n Hospitalaria - Usuario: " + usuarioActual.getUsuario());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		dim = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(dim.width, dim.height);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setLocationRelativeTo(null);
 
-		// BARRA DE MENÚ
+		// BARRA DE MENï¿½
 		menuBar = new JMenuBar();
 		menuBar.setForeground(Color.WHITE);
 		menuBar.setBackground(new Color(60, 70, 123));
 		setJMenuBar(menuBar);
 
-		// --- MENÚ CITAS ---
-		menuCitas = new JMenu("  Gestión Citas  ");
+		// --- MENï¿½ CITAS ---
+		menuCitas = new JMenu("  Gestiï¿½n Citas  ");
 		menuCitas.setForeground(Color.WHITE);
 		try {
 			menuCitas.setIcon(new ImageIcon(Principal.class.getResource("/img/cita.png")));
@@ -105,8 +100,8 @@ public class Principal extends JFrame {
 		});
 		menuCitas.add(itemCrearCita);
 
-		// --- MENÚ PACIENTES ---
-		menuPacientes = new JMenu("  Gestión Pacientes  ");
+		// --- MENï¿½ PACIENTES ---
+		menuPacientes = new JMenu("  Gestiï¿½n Pacientes  ");
 		menuPacientes.setForeground(Color.WHITE);
 		try {
 			menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/img/gestion-de-clientes.png")));
@@ -137,7 +132,7 @@ public class Principal extends JFrame {
 		});
 		menuPacientes.add(itemListarPacientes);
 
-		// --- MENÚ CONSULTAS ---
+		// --- MENï¿½ CONSULTAS ---
 		menuConsulta = new JMenu("  Consultas  ");
 		menuConsulta.setForeground(Color.WHITE);
 		try {
@@ -158,8 +153,8 @@ public class Principal extends JFrame {
 		});
 		menuConsulta.add(itemVerMisCitas);
 
-		// --- MENÚ ADMINISTRACIÓN ---
-		menuAdministracion = new JMenu("  Administración");
+		// --- MENï¿½ ADMINISTRACIï¿½N ---
+		menuAdministracion = new JMenu("  Administraciï¿½n");
 		menuAdministracion.setForeground(Color.WHITE);
 		try {
 			menuAdministracion.setIcon(new ImageIcon(Principal.class.getResource("/img/doctor.png")));
@@ -189,10 +184,10 @@ public class Principal extends JFrame {
 		});
 		menuAdministracion.add(itemReportes);
 
-		JMenu menuGestionMedicos = new JMenu("Gestionar Médicos");
+		JMenu menuGestionMedicos = new JMenu("Gestionar Mï¿½dicos");
 		menuGestionMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
 
-		JMenuItem itemRegMedico = new JMenuItem("Registrar Médico");
+		JMenuItem itemRegMedico = new JMenuItem("Registrar Mï¿½dico");
 		itemRegMedico.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
 		itemRegMedico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -203,7 +198,7 @@ public class Principal extends JFrame {
 		});
 		menuGestionMedicos.add(itemRegMedico);
 
-		JMenuItem itemListarMedicos = new JMenuItem("Listar Médicos");
+		JMenuItem itemListarMedicos = new JMenuItem("Listar Mï¿½dicos");
 		itemListarMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
 		itemListarMedicos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -287,7 +282,7 @@ public class Principal extends JFrame {
 		panelDashboardCentral.setLayout(new GridLayout(1, 1, 20, 0));
 		contentPane.add(panelDashboardCentral, BorderLayout.CENTER);
 
-		// INYECCION DE GRÁFICOS (Mantenemos la lógica pero dentro del constructor)
+		// INYECCION DE GRï¿½FICOS (Mantenemos la lï¿½gica pero dentro del constructor)
 		panelDashboardCentral.add(crearPanelEstadistico());
 
 		// PANEL INFERIOR (RELOJ Y LOGOUT)
@@ -306,9 +301,9 @@ public class Principal extends JFrame {
 		JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		panelBoton.setOpaque(false);
 
-		JButton btnLogout = new JButton("Cerrar Sesión");
+		JButton btnLogout = new JButton("Cerrar Sesiï¿½n");
 		btnLogout.setFont(new Font("Bahnschrift", Font.BOLD, 16));
-		// Asegúrate de que Estilos exista, si no, borra esta línea
+		// Asegï¿½rate de que Estilos exista, si no, borra esta lï¿½nea
 		try {
 			Estilos.estilarBoton(btnLogout, new Color(231, 76, 60), Color.WHITE);
 		} catch (Exception e) {
@@ -318,8 +313,8 @@ public class Principal extends JFrame {
 
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?",
-						"Cerrar Sesión", JOptionPane.YES_NO_OPTION);
+				int confirm = JOptionPane.showConfirmDialog(null, "ï¿½Estï¿½ seguro de que desea cerrar sesiï¿½n?",
+						"Cerrar Sesiï¿½n", JOptionPane.YES_NO_OPTION);
 				if (confirm == JOptionPane.YES_OPTION) {
 					dispose();
 					Login login = new Login();
@@ -337,7 +332,7 @@ public class Principal extends JFrame {
 	}
 
 	// --------------------------------------------------------------------------------
-	// MÉTODOS AUXILIARES (LÓGICA)
+	// Mï¿½TODOS AUXILIARES (Lï¿½GICA)
 	// --------------------------------------------------------------------------------
 
 	private void configurarAccesosPorRol() {
@@ -364,7 +359,7 @@ public class Principal extends JFrame {
 	}
 
 	private void abrirDialogoDeCitas() {
-		JDialog dialogCitas = new JDialog(Principal.this, "Gestión de Citas", true);
+		JDialog dialogCitas = new JDialog(Principal.this, "Gestiï¿½n de Citas", true);
 		GestionCitas panel = new GestionCitas();
 		dialogCitas.getContentPane().add(panel);
 		dialogCitas.setSize(1130, 750);
@@ -514,7 +509,7 @@ public class Principal extends JFrame {
 			try { Estilos.estilarBoton(btnEnf, Color.WHITE, Color.BLACK); } catch (Exception e) {}
 			btnEnf.addActionListener(e -> actualizarGrafico("ENFERMEDADES"));
 
-			JButton btnVac = new JButton("Vacunación");
+			JButton btnVac = new JButton("Vacunaciï¿½n");
 			try { Estilos.estilarBoton(btnVac, Color.WHITE, Color.BLACK); } catch (Exception e) {}
 			btnVac.addActionListener(e -> actualizarGrafico("VACUNAS"));
 
@@ -554,7 +549,7 @@ public class Principal extends JFrame {
 			// =============================================================
 			// BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
 			// =============================================================
-			String[] enfermedadesPrueba = { "Gripe A", "Covid-19", "Diabetes T2", "Hipertensión", "Gastritis", "Asma" };
+			String[] enfermedadesPrueba = { "Gripe A", "Covid-19", "Diabetes T2", "Hipertensiï¿½n", "Gastritis", "Asma" };
 			for (String enf : enfermedadesPrueba) {
 				dataset.addValue(random.nextInt(45) + 5, "Casos", enf);
 			}
@@ -640,7 +635,7 @@ public class Principal extends JFrame {
 			CategoryPlot plot = chart.getCategoryPlot();
 			BarRenderer renderer = (BarRenderer) plot.getRenderer();
 
-			// COLOR VERDE QUIRÚRGICO
+			// COLOR VERDE QUIRï¿½RGICO
 			renderer.setSeriesPaint(0, new Color(0, 150, 136));
 
 			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);

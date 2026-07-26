@@ -26,6 +26,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import com.toedter.calendar.IDateEvaluator;
 import com.toedter.calendar.JDateChooser;
 
@@ -64,7 +66,7 @@ public class GestionCitas extends JPanel {
 		panelFormulario.setLayout(null);
 		add(panelFormulario);
 
-		JLabel lblCodCliente = new JLabel("Cód. Cliente:");
+		JLabel lblCodCliente = new JLabel("Cï¿½d. Cliente:");
 		lblCodCliente.setForeground(Color.WHITE);
 		lblCodCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		lblCodCliente.setBounds(10, 45, 100, 14);
@@ -84,7 +86,7 @@ public class GestionCitas extends JPanel {
 		lblNombreCliente.setBounds(386, 45, 300, 14);
 		panelFormulario.add(lblNombreCliente);
 
-		JLabel lblCedMedico = new JLabel("Cédula Médico:");
+		JLabel lblCedMedico = new JLabel("Cï¿½dula Mï¿½dico:");
 		lblCedMedico.setForeground(Color.WHITE);
 		lblCedMedico.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
 		lblCedMedico.setBounds(10, 85, 100, 14);
@@ -99,7 +101,7 @@ public class GestionCitas extends JPanel {
 		btnBuscarMedico.setBounds(274, 81, 102, 23);
 		panelFormulario.add(btnBuscarMedico);
 
-		lblNombreMedico = new JLabel("Médico: (Busque un médico)");
+		lblNombreMedico = new JLabel("Mï¿½dico: (Busque un mï¿½dico)");
 		lblNombreMedico.setForeground(Color.WHITE);
 		lblNombreMedico.setBounds(386, 85, 300, 14);
 		panelFormulario.add(lblNombreMedico);
@@ -199,7 +201,7 @@ public class GestionCitas extends JPanel {
 				medicoSeleccionado = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedula);
 				if (medicoSeleccionado != null) {
 					txtCedulaMedico.setText(medicoSeleccionado.getCedula());
-					lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre() + " ("
+					lblNombreMedico.setText("Mï¿½dico: " + medicoSeleccionado.getNombre() + " ("
 							+ medicoSeleccionado.getEspecialidad().getNombre() + ")");
 				}
 			}
@@ -228,7 +230,7 @@ public class GestionCitas extends JPanel {
 			}
 		};
 
-		model.setColumnIdentifiers(new String[] { "Código", "Paciente", "Médico", "Fecha y Hora", "Estado" });
+		model.setColumnIdentifiers(new String[] { "Cï¿½digo", "Paciente", "Mï¿½dico", "Fecha y Hora", "Estado" });
 		tablaCitas.setModel(model);
 		scrollPane.setViewportView(tablaCitas);
 
@@ -251,7 +253,7 @@ public class GestionCitas extends JPanel {
 
 	private void crearCita() {
 		if (clienteSeleccionado == null || medicoSeleccionado == null || dateChooser.getDate() == null) {
-			JOptionPane.showMessageDialog(null, "Debe buscar un cliente, un médico y seleccionar una fecha.");
+			JOptionPane.showMessageDialog(null, "Debe buscar un cliente, un mï¿½dico y seleccionar una fecha.");
 			return;
 		}
 		if (txtMotivo.getText().trim().isEmpty()) {
@@ -280,11 +282,11 @@ public class GestionCitas extends JPanel {
 		boolean exito = (respuesta instanceof Boolean) ? (Boolean) respuesta : false;
 
 		if (exito) {
-			JOptionPane.showMessageDialog(null, "¡Cita agendada exitosamente!");
+			JOptionPane.showMessageDialog(null, "ï¿½Cita agendada exitosamente!");
 			cargarTablaCitas();
 			limpiarCampos();
 		} else {
-			JOptionPane.showMessageDialog(null, "Error: Médico no disponible en ese horario.");
+			JOptionPane.showMessageDialog(null, "Error: Mï¿½dico no disponible en ese horario.");
 		}
 	}
 
@@ -306,7 +308,7 @@ public class GestionCitas extends JPanel {
 			return;
 
 		if (nuevaFecha.isBefore(LocalDateTime.now())) {
-			JOptionPane.showMessageDialog(null, "Fecha inválida. No se puede ingresar una fecha ya pasada");
+			JOptionPane.showMessageDialog(null, "Fecha invï¿½lida. No se puede ingresar una fecha ya pasada");
 			return;
 		}
 
@@ -322,7 +324,7 @@ public class GestionCitas extends JPanel {
 			cargarTablaCitas();
 			limpiarCampos();
 		} else {
-			JOptionPane.showMessageDialog(null, "No se pudo modificar (El médico está ocupado o hay conflicto).");
+			JOptionPane.showMessageDialog(null, "No se pudo modificar (El mï¿½dico estï¿½ ocupado o hay conflicto).");
 		}
 	}
 
@@ -331,7 +333,7 @@ public class GestionCitas extends JPanel {
 			return;
 
 		int confirm = JOptionPane.showConfirmDialog(null,
-				"¿Cancelar la cita " + citaSeleccionada.getCodigo_cita() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
+				"ï¿½Cancelar la cita " + citaSeleccionada.getCodigo_cita() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
 		if (confirm == JOptionPane.YES_OPTION) {
 			Object respuesta = ClienteSocket.enviar("CANCEL_CITA", citaSeleccionada);
 			boolean exito = (respuesta instanceof Boolean) ? (Boolean) respuesta : false;
@@ -341,7 +343,7 @@ public class GestionCitas extends JPanel {
 				cargarTablaCitas();
 				limpiarCampos();
 			} else {
-				JOptionPane.showMessageDialog(null, "Error al cancelar (Quizás ya pasó la fecha).");
+				JOptionPane.showMessageDialog(null, "Error al cancelar (Quizï¿½s ya pasï¿½ la fecha).");
 			}
 		}
 	}
@@ -354,7 +356,7 @@ public class GestionCitas extends JPanel {
 			LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 			if (cbxHora.getSelectedItem() == null) {
-				JOptionPane.showMessageDialog(null, "Debe seleccionar una hora válida.");
+				JOptionPane.showMessageDialog(null, "Debe seleccionar una hora vï¿½lida.");
 				return null;
 			}
 
@@ -405,10 +407,10 @@ public class GestionCitas extends JPanel {
 
 				if (medicoSeleccionado != null) {
 					txtCedulaMedico.setText(medicoSeleccionado.getCedula());
-					lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre());
+					lblNombreMedico.setText("Mï¿½dico: " + medicoSeleccionado.getNombre());
 				} else {
 					txtCedulaMedico.setText("N/A");
-					lblNombreMedico.setText("Médico: [No encontrado]");
+					lblNombreMedico.setText("Mï¿½dico: [No encontrado]");
 				}
 
 				txtMotivo.setText(citaSeleccionada.getMotivo());
@@ -468,7 +470,7 @@ public class GestionCitas extends JPanel {
 		txtCodCliente.setText("");
 		txtCedulaMedico.setText("");
 		lblNombreCliente.setText("Paciente: (Busque un cliente)");
-		lblNombreMedico.setText("Médico: (Busque un médico)");
+		lblNombreMedico.setText("Mï¿½dico: (Busque un mï¿½dico)");
 		dateChooser.setDate(null);
 
 		actualizarHorasDisponibles();

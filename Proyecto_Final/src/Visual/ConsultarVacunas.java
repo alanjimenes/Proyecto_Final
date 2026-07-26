@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.SystemColor;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,6 +22,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
+import Utils.ClienteSocket;
+import Utils.Estilos;
 import logico.Vacuna;
 
 public class ConsultarVacunas extends JDialog {
@@ -40,7 +40,7 @@ public class ConsultarVacunas extends JDialog {
 			//setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarVacunas.class.getResource("/img/seguro-de-salud.png")));
 		} catch (Exception e) {}
 
-		setTitle("Gestión de Vacunas");
+		setTitle("Gestiï¿½n de Vacunas");
 		setBounds(100, 100, 800, 500);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -83,7 +83,7 @@ public class ConsultarVacunas extends JDialog {
 			}
 		};
 
-		String[] headers = {"Código", "Nombre", "Descripción"};
+		String[] headers = {"Cï¿½digo", "Nombre", "Descripciï¿½n"};
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 
@@ -144,7 +144,7 @@ public class ConsultarVacunas extends JDialog {
 			btnDelete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if(seleccionado != null) {
-						int opt = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar la vacuna " + seleccionado.getNombre() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
+						int opt = JOptionPane.showConfirmDialog(null, "ï¿½Seguro desea eliminar la vacuna " + seleccionado.getNombre() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
 						if(opt == JOptionPane.YES_OPTION) {
 							boolean exito = (boolean) ClienteSocket.enviar("DELETE_VACUNA", seleccionado);
 							if(exito) {
