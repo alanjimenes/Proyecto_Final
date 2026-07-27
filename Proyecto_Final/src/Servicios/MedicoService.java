@@ -46,7 +46,7 @@ public class MedicoService {
                 stmtMedico.setInt(3, codigoEspecialidad);
                 stmtMedico.setInt(4, med.getMaxCitasPorDia());
                 stmtMedico.executeUpdate();
-            } // ¡ESTA ES LA LLAVE QUE TE COMISTE Y ROMPIÓ TODO!
+            }
 
             conn.commit();
             conn.setAutoCommit(true);

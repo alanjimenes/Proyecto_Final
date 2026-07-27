@@ -10,6 +10,50 @@ import java.util.ArrayList;
 
 public class ConsultaService {
 
+
+    public boolean registrarConsultaCompleta(Consulta con, String cedulaMedico, String cedulaCliente) {
+        String sqlConsulta = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) values (?, ?, ?, (select persona.codigo_persona from persona where persona.cedula = ?), (select persona.codigo_persona from persona where persona.cedula = ?))";
+        String sqlEnfermedad = "insert into enfermedad_consulta (codigo_enfermedad, codigo_consulta) values (?, ?)";
+
+        try (Connection conn = Utils.ConexionDB.getConexion()) {
+            conn.setAutoCommit(false);
+            int generatedId = -1;
+
+            try (PreparedStatement stmtCons = conn.prepareStatement(sqlConsulta, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                stmtCons.setTimestamp(1, Timestamp.valueOf(con.getFechaConsulta().atStartOfDay()));
+                stmtCons.setString(2, con.getSintomas());
+                stmtCons.setString(3, con.getDiagnostico());
+                stmtCons.setString(4, cedulaMedico);
+                stmtCons.setString(5, cedulaCliente);
+                stmtCons.executeUpdate();
+
+                ResultSet rs = stmtCons.getGeneratedKeys();
+                if (rs.next()) {
+                    generatedId = rs.getInt(1);
+                }
+            }
+
+            if (generatedId != -1 && con.getEnfermedadesDiag() != null && !con.getEnfermedadesDiag().isEmpty()) {
+                try (PreparedStatement stmtEnf = conn.prepareStatement(sqlEnfermedad)) {
+                    for (Enfermedad enf : con.getEnfermedadesDiag()) {
+                        stmtEnf.setInt(1, Integer.parseInt(enf.getCodigo_sick()));
+                        stmtEnf.setInt(2, generatedId);
+                        stmtEnf.addBatch();
+                    }
+                    stmtEnf.executeBatch();
+                }
+            }
+
+            conn.commit();
+            conn.setAutoCommit(true);
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public int iniciarConsulta(Consulta con, int codigoMedico, int codigoCliente) {
         String sql = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) values (?, ?, ?, ?, ?)";
         int generatedId = -1;

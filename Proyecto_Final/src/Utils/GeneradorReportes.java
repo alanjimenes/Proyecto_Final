@@ -1,19 +1,12 @@
 package Utils;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
+import logico.Consulta;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
-// IMPORTS DE ITEXT (�ESTOS SON LOS NUEVOS!)
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
-
-import logico.Consulta;
 
 public class GeneradorReportes {
 

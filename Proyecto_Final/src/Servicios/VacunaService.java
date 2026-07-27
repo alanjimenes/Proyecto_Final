@@ -51,12 +51,12 @@ public class VacunaService {
         return lista;
     }
 
-    public boolean aplicarVacunaCliente(int codigoCliente, int codigoVacuna, Timestamp fecha) {
-        String sql = "insert into regvacuna (codigo_cliente, codigo_vacuna, fecha, aplicada) values (?, ?, ?, ?)";
+    public boolean aplicarVacunaCliente(String cedulaCliente, int codigoVacuna, Timestamp fecha) {
+        String sql = "insert into regvacuna (codigo_cliente, codigo_vacuna, fecha, aplicada) values ((select persona.codigo_persona from persona where persona.cedula = ?), ?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, codigoCliente);
+            stmt.setString(1, cedulaCliente);
             stmt.setInt(2, codigoVacuna);
             stmt.setTimestamp(3, fecha);
             stmt.setBoolean(4, true);

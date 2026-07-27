@@ -1,13 +1,12 @@
 package Utils;
 
-import java.io.FileOutputStream;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+
+import javax.swing.*;
+import java.io.FileOutputStream;
 
 public class GeneradorPDF {
 
