@@ -43,7 +43,7 @@ public class Login extends JFrame {
 	}
 
 	public Login() {
-		setTitle("Login - Sistema Cl�nico");
+		setTitle("Login - Sistema Clínico");
 		try {
 			setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/img/seguro-de-salud.png")));
 		} catch (Exception e) {
@@ -70,7 +70,7 @@ public class Login extends JFrame {
 		lblUsuario.setBounds(102, 171, 146, 36);
 		panel.add(lblUsuario);
 
-		JLabel lblContrasea = new JLabel("Contrase�a:");
+		JLabel lblContrasea = new JLabel("Contraseña:");
 		lblContrasea.setForeground(Color.WHITE);
 		lblContrasea.setFont(new Font("Bahnschrift", Font.BOLD, 20));
 		lblContrasea.setBounds(102, 265, 123, 23);
@@ -119,7 +119,7 @@ public class Login extends JFrame {
 		} catch (Exception e) {
 		}
 
-		JLabel labelTitulo = new JLabel("Iniciar Sesi�n");
+		JLabel labelTitulo = new JLabel("Iniciar Sesión");
 		labelTitulo.setForeground(Color.WHITE);
 		labelTitulo.setFont(new Font("Monospaced", Font.BOLD, 32));
 		labelTitulo.setBounds(102, 58, 270, 55);

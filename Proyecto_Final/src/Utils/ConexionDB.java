@@ -7,8 +7,8 @@ import java.sql.SQLException;
 public class ConexionDB {
 
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=Clinica;encrypt=true;trustServerCertificate=true;";
-    private static final String USER = "eduardo"; //cambiar el usuario
-    private static final String PASSWORD = "1234"; //la contraseña
+    private static final String USER = "ej"; //cambiar el usuario
+    private static final String PASSWORD = "bd2026"; //la contraseña
     private static Connection conexion = null;
 
     public static Connection getConexion() {
