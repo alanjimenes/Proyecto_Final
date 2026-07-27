@@ -163,12 +163,11 @@ public class ConsultarClientes extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					if (seleccionado != null) {
 						int option = JOptionPane.showConfirmDialog(null,
-								"�Seguro que desea eliminar al paciente " + seleccionado.getNombre() + "?", "Confirmar",
+								"¿Seguro que desea eliminar al paciente " + seleccionado.getNombre() + "?", "Confirmar",
 								JOptionPane.YES_NO_OPTION);
 
 						if (option == JOptionPane.YES_OPTION) {
-							seleccionado.setActivo(false);
-							ClienteSocket.enviar("UPDATE_CLIENTE", seleccionado);
+							ClienteSocket.enviar("DELETE_CLIENTE", seleccionado.getCedula());
 							cargarClientesDesdeServer();
 							resetBotones();
 						}
