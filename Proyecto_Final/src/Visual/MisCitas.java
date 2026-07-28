@@ -43,7 +43,7 @@ public class MisCitas extends JDialog {
 	public MisCitas(User usuario) {
 		this.usuarioMedico = usuario;
 
-		// Icono y T�tulo
+		// Icono y Título
 		setTitle("Mis Citas de Hoy");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MisCitas.class.getResource("/img/dato-de-registro.png"))); // Aseg�rate de tener la imagen o quitar esta l�nea si da error
 		setBounds(100, 100, 900, 500);
@@ -56,14 +56,14 @@ public class MisCitas extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
-		// --- PANEL NORTE (T�TULO) ---
+		// --- PANEL NORTE (TÍTULO) ---
 		JPanel panelNorte = new JPanel();
 		panelNorte.setBackground(new Color(60, 70, 123));
 		panelNorte.setPreferredSize(new Dimension(10, 50)); // Altura fija para que se vea bien
 		panelNorte.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 12)); // Centrar verticalmente
 		contentPanel.add(panelNorte, BorderLayout.NORTH);
 
-		// L�gica para obtener nombre del m�dico
+		// Lógica para obtener nombre del médico
 		String nombreMedico = "Desconocido";
 		if (usuario.getCedula() != null) {
 			Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuario.getCedula());
@@ -85,12 +85,12 @@ public class MisCitas extends JDialog {
 		contentPanel.add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
-		table.setRowHeight(30); // Filas m�s altas para mejor lectura
+		table.setRowHeight(30); // Filas más altas para mejor lectura
 		table.setSelectionBackground(new Color(232, 246, 255)); // Azul muy claro al seleccionar
 		table.setSelectionForeground(Color.BLACK);
-		table.setGridColor(new Color(230, 230, 230)); // L�neas de cuadr�cula sutiles
+		table.setGridColor(new Color(230, 230, 230)); // Líneas de cuadrícula sutiles
 		table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		table.setShowVerticalLines(false); // Solo l�neas horizontales (dise�o moderno)
+		table.setShowVerticalLines(false); // Solo líneas horizontales (diseño moderno)
 
 		// Evento Click
 		table.addMouseListener(new MouseAdapter() {
@@ -112,7 +112,7 @@ public class MisCitas extends JDialog {
 			}
 		};
 
-		model.setColumnIdentifiers(new String[] { "C�digo", "Hora", "Paciente", "C�dula Paciente", "Estado" });
+		model.setColumnIdentifiers(new String[] { "Código", "Hora", "Paciente", "Cédula Paciente", "Estado" });
 		table.setModel(model);
 
 		// --- ESTILIZADO DEL HEADER (ENCABEZADO AZUL) ---

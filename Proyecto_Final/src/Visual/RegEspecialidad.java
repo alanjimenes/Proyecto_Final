@@ -85,7 +85,7 @@ public class RegEspecialidad extends JDialog {
 		cancelButton.addActionListener(e -> dispose());
 		buttonPane.add(cancelButton);
 
-		JLabel lblTitulo = new JLabel("Gesti�n de Especialidades");
+		JLabel lblTitulo = new JLabel("Gestión de Especialidades");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
@@ -95,7 +95,7 @@ public class RegEspecialidad extends JDialog {
 
 	private void gestionar() {
 		if (txtNombre.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "El nombre no puede estar vac�o.");
+			JOptionPane.showMessageDialog(null, "El nombre no puede estar vacío.");
 			return;
 		}
 

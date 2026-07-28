@@ -45,7 +45,7 @@ public class ConsultarMedicos extends JDialog {
 
 	public ConsultarMedicos() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarMedicos.class.getResource("/img/doctor.png")));
-		setTitle("Listado de Medicos");
+		setTitle("Listado de Médicos");
 		setBounds(100, 100, 1065, 534);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -72,7 +72,7 @@ public class ConsultarMedicos extends JDialog {
 							return false;
 						}
 					};
-					String[] headers = { "C�dula", "Nombre", "Apellido", "Especialidad", "Tel�fono", "Citas M�x. D�a" };
+					String[] headers = { "Cédula", "Nombre", "Apellido", "Especialidad", "Teléfono", "Citas Máx. Díaa" };
 					modelo.setColumnIdentifiers(headers);
 					table.setModel(modelo);
 
@@ -173,7 +173,7 @@ public class ConsultarMedicos extends JDialog {
 									+ "Consultas Realizadas: \t" + consultasHechas + "\n"
 									+ "Citas Asignadas (Pendientes): \t" + citasPendientes;
 
-							JOptionPane.showMessageDialog(null, mensaje, "Informaci�n del M�dico",
+							JOptionPane.showMessageDialog(null, mensaje, "Información del Médico",
 									JOptionPane.INFORMATION_MESSAGE);
 						}
 					}
@@ -190,9 +190,9 @@ public class ConsultarMedicos extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						if (seleccionado != null) {
 							int option = JOptionPane.showConfirmDialog(
-									null, "�Est� seguro que desea eliminar al m�dico con C�dula: "
+									null, "¿Está seguro que desea eliminar al médico con Cédula: "
 											+ seleccionado.getCedula() + "?",
-									"Eliminar M�dico", JOptionPane.WARNING_MESSAGE);
+									"Eliminar Médico", JOptionPane.WARNING_MESSAGE);
 
 							if (option == JOptionPane.OK_OPTION) {
 								Object resp = ClienteSocket.enviar("DELETE_MEDICO", seleccionado);
@@ -200,11 +200,11 @@ public class ConsultarMedicos extends JDialog {
 
 								if (exito) {
 									cargarMedicosServer();
-									JOptionPane.showMessageDialog(null, "M�dico eliminado correctamente.");
+									JOptionPane.showMessageDialog(null, "Médico eliminado correctamente.");
 									resetBotones();
 								} else {
 									JOptionPane.showMessageDialog(null,
-											"No se pudo eliminar el m�dico (�tiene citas pendientes?).", "Advertencia",
+											"No se pudo eliminar el médico (¿Tiene citas pendientes?).", "Advertencia",
 											JOptionPane.WARNING_MESSAGE);
 								}
 							}

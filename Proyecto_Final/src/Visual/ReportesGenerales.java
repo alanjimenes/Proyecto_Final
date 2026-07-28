@@ -63,7 +63,7 @@ public class ReportesGenerales extends JDialog {
 	private JCheckBox chkVigilanciaOnly;
 
 	public ReportesGenerales() {
-		setTitle("Centro de Reportes Estad�sticos");
+		setTitle("Centro de Reportes Estadísticos");
 		try { setIconImage(Toolkit.getDefaultToolkit().getImage(ReportesGenerales.class.getResource("/img/dato-de-registro.png"))); } catch (Exception e) {}
 		setSize(1250, 700);
 		setLocationRelativeTo(null);
@@ -86,14 +86,14 @@ public class ReportesGenerales extends JDialog {
 
 		tabbedPane.addTab("1. Citas x Fecha", crearPanelCitasPorFecha());
 		tabbedPane.addTab("2. Consultas x Fecha", crearPanelConsultasPorFecha());
-		tabbedPane.addTab("3. M�dicos x Esp.", crearPanelMedicosEspecialidad());
-		tabbedPane.addTab("4. Cat�logo Vacunas", crearPanelVacunas());
+		tabbedPane.addTab("3. Médicos x Esp.", crearPanelMedicosEspecialidad());
+		tabbedPane.addTab("4. Catálogo Vacunas", crearPanelVacunas());
 		tabbedPane.addTab("5. Casos Activos", crearPanelEnfermedadesActuales());
-		tabbedPane.addTab("6. Rendimiento M�dico", crearPanelConsultasMedicoFecha());
-		tabbedPane.addTab("7. Epidemiolog�a", crearPanelEnfermedadFecha());
+		tabbedPane.addTab("6. Rendimiento Médico", crearPanelConsultasMedicoFecha());
+		tabbedPane.addTab("7. Epidemiología", crearPanelEnfermedadFecha());
 		tabbedPane.addTab("9. D�as Pico", crearPanelDiasPico());
-		tabbedPane.addTab("10. Demograf�a (Sexo)", crearPanelSexoFecha());
-		tabbedPane.addTab("11. Demograf�a (Edad)", crearPanelEdades());
+		tabbedPane.addTab("10. Demografía (Sexo)", crearPanelSexoFecha());
+		tabbedPane.addTab("11. Demografía (Edad)", crearPanelEdades());
 
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
@@ -193,8 +193,8 @@ public class ReportesGenerales extends JDialog {
 	}
 
 	private JPanel crearPanelMedicosEspecialidad() {
-		modelMedicosEsp = new DefaultTableModel(new String[]{"Especialidad", "Cantidad de M�dicos"}, 0);
-		JPanel panel = armarPanelFiltroTabla(modelMedicosEsp, "Distribuci�n de M�dicos", new Object[]{});
+		modelMedicosEsp = new DefaultTableModel(new String[]{"Especialidad", "Cantidad de Médicos"}, 0);
+		JPanel panel = armarPanelFiltroTabla(modelMedicosEsp, "Distribución de Médicos", new Object[]{});
 
 		Map<String, Integer> conteo = new HashMap<>();
 		int total = 0;
@@ -208,14 +208,14 @@ public class ReportesGenerales extends JDialog {
 		for(String esp : conteo.keySet()) {
 			modelMedicosEsp.addRow(new Object[]{esp, conteo.get(esp)});
 		}
-		modelMedicosEsp.addRow(new Object[]{"TOTAL CL�NICA", total});
+		modelMedicosEsp.addRow(new Object[]{"TOTAL CLÍNICA", total});
 
 		return panel;
 	}
 
 	private JPanel crearPanelVacunas() {
-		modelVacunas = new DefaultTableModel(new String[]{"C�digo", "Nombre", "Descripci�n"}, 0);
-		JPanel panel = armarPanelFiltroTabla(modelVacunas, "Cat�logo de Vacunas", new Object[]{});
+		modelVacunas = new DefaultTableModel(new String[]{"Código", "Nombre", "Descripción"}, 0);
+		JPanel panel = armarPanelFiltroTabla(modelVacunas, "Catálogo de Vacunas", new Object[]{});
 
 		if(listaVacunasGlobal != null) {
 			for(Vacuna v : listaVacunasGlobal) {
@@ -226,7 +226,7 @@ public class ReportesGenerales extends JDialog {
 	}
 
 	private JPanel crearPanelEnfermedadesActuales() {
-		modelEnfEsp = new DefaultTableModel(new String[]{"C�dula", "Paciente", "Enfermedad", "Fecha Diagn�stico", "Vigilancia"}, 0);
+		modelEnfEsp = new DefaultTableModel(new String[]{"Cédula", "Paciente", "Enfermedad", "Fecha Diagnóstico", "Vigilancia"}, 0);
 
 		cbEnfermedad = new JComboBox<>();
 		cbEnfermedad.addItem("<Todas>");
@@ -263,7 +263,7 @@ public class ReportesGenerales extends JDialog {
 										cli.getNombre() + " " + cli.getApellido(),
 										enf.getNombre(),
 										con.getFechaConsulta(),
-										enf.isVigilancia() ? "S�" : "NO"
+										enf.isVigilancia() ? "Sí" : "NO"
 								});
 							}
 						}
@@ -274,7 +274,7 @@ public class ReportesGenerales extends JDialog {
 	}
 
 	private JPanel crearPanelConsultasMedicoFecha() {
-		modelConsMedFecha = new DefaultTableModel(new String[]{"Fecha", "Paciente", "Diagn�stico"}, 0);
+		modelConsMedFecha = new DefaultTableModel(new String[]{"Fecha", "Paciente", "Diagnóstico"}, 0);
 		d1ConsMed = new JDateChooser(); d2ConsMed = new JDateChooser();
 
 		cbMedico = new JComboBox<>();
@@ -285,8 +285,8 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarConsMedFecha());
 
-		return armarPanelFiltroTabla(modelConsMedFecha, "Consultas por M�dico y Rango", 
-				new Object[]{new JLabel("M�dico:"), cbMedico, new JLabel("Desde:"), d1ConsMed, new JLabel("Hasta:"), d2ConsMed, btnGenerar});
+		return armarPanelFiltroTabla(modelConsMedFecha, "Consultas por Médico y Rango",
+				new Object[]{new JLabel("Médico:"), cbMedico, new JLabel("Desde:"), d1ConsMed, new JLabel("Hasta:"), d2ConsMed, btnGenerar});
 	}
 
 	private void generarConsMedFecha() {
@@ -325,7 +325,7 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarEnfFecha());
 
-		return armarPanelFiltroTabla(modelEnfFecha, "Evoluci�n de Enfermedad por Fecha", 
+		return armarPanelFiltroTabla(modelEnfFecha, "Evolución de Enfermedad por Fecha",
 				new Object[]{new JLabel("Enfermedad:"), cbEnfFiltro, new JLabel("Desde:"), d1Enf, new JLabel("Hasta:"), d2Enf, btnGenerar});
 	}
 
@@ -366,7 +366,7 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarDiasPico());
 
-		return armarPanelFiltroTabla(modelDiasPico, "D�as de Mayor Afluencia", 
+		return armarPanelFiltroTabla(modelDiasPico, "Días de Mayor Afluencia",
 				new Object[]{new JLabel("Desde:"), d1Pico, new JLabel("Hasta:"), d2Pico, btnGenerar});
 	}
 
@@ -406,7 +406,7 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarSexoFecha());
 
-		return armarPanelFiltroTabla(modelSexoFecha, "Demograf�a de Atenci�n por Fecha", 
+		return armarPanelFiltroTabla(modelSexoFecha, "Demografía de Atención por Fecha",
 				new Object[]{new JLabel("Desde:"), d1Sexo, new JLabel("Hasta:"), d2Sexo, btnGenerar});
 	}
 
@@ -443,10 +443,10 @@ public class ReportesGenerales extends JDialog {
 
 	private JPanel crearPanelEdades() {
 		modelEdades = new DefaultTableModel(new String[]{"Rango de Edad", "Cantidad Pacientes", "Porcentaje"}, 0);
-		JPanel panel = armarPanelFiltroTabla(modelEdades, "Distribuci�n Demogr�fica por Edad", new Object[]{});
+		JPanel panel = armarPanelFiltroTabla(modelEdades, "Distribución Demográfica por Edad", new Object[]{});
 
 		int[] contadores = new int[5]; 
-		String[] etiquetas = {"Ni�os (0-12)", "Adolescentes (13-19)", "J�venes (20-39)", "Adultos (40-59)", "Adultos Mayores (60+)"};
+		String[] etiquetas = {"Niños (0-12)", "Adolescentes (13-19)", "Jóvenes (20-39)", "Adultos (40-59)", "Adultos Mayores (60+)"};
 		int totalPacientes = 0;
 
 		if(listaClientesGlobal != null) {

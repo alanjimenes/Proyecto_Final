@@ -62,7 +62,7 @@ public class RealizarConsulta extends JDialog {
 		this.citaActual = cita;
 		this.enfermedadesSeleccionadas = new ArrayList<>();
 
-		setTitle("Consulta M�dica - Paciente: " + cita.getCliente().getNombre());
+		setTitle("Consulta Médica - Paciente: " + cita.getCliente().getNombre());
 		setBounds(100, 100, 1000, 740);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -127,7 +127,7 @@ public class RealizarConsulta extends JDialog {
 		txtAntecedentes.setLineWrap(true);
 		scAnt.setViewportView(txtAntecedentes);
 
-		JLabel lblSint = new JLabel("Enfermedad Actual (S�ntomas):");
+		JLabel lblSint = new JLabel("Enfermedad Actual (Síntomas):");
 		lblSint.setForeground(Color.WHITE);
 		lblSint.setFont(new Font("Bahnschrift", Font.PLAIN, 17));
 		lblSint.setBounds(10, 110, 250, 14);
@@ -155,7 +155,7 @@ public class RealizarConsulta extends JDialog {
 		btnSignos.addActionListener(e -> registrarSignosVitales());
 		panelExamen.add(btnSignos);
 
-		JLabel lblDiag = new JLabel("Diagn�stico:");
+		JLabel lblDiag = new JLabel("Diagnóstico:");
 		lblDiag.setForeground(Color.WHITE);
 		lblDiag.setFont(new Font("Bahnschrift", Font.PLAIN, 17));
 		lblDiag.setBounds(20, 66, 200, 22);
@@ -212,7 +212,7 @@ public class RealizarConsulta extends JDialog {
 		contentPanel.add(panelPlan);
 		panelPlan.setLayout(null);
 
-		JLabel lblRx = new JLabel("Receta M�dica / Indicaciones:");
+		JLabel lblRx = new JLabel("Receta Médica / Indicaciones:");
 		lblRx.setForeground(Color.WHITE);
 		lblRx.setFont(new Font("Bahnschrift", Font.PLAIN, 17));
 		lblRx.setBounds(10, 20, 250, 14);
@@ -225,7 +225,7 @@ public class RealizarConsulta extends JDialog {
 		txtTratamiento.setLineWrap(true);
 		scRx.setViewportView(txtTratamiento);
 
-		chkResumen = new JCheckBox("Agregar al Resumen Cl�nico");
+		chkResumen = new JCheckBox("Agregar al Resumen Clínico");
 		chkResumen.setBackground(new Color(60, 70, 123));
 		chkResumen.setForeground(Color.WHITE);
 		chkResumen.setFont(new Font("Bahnschrift", Font.PLAIN, 17));
@@ -263,7 +263,7 @@ public class RealizarConsulta extends JDialog {
 	@SuppressWarnings("unchecked")
 	private void aplicarVacuna() {
 		if (citaActual == null || citaActual.getCliente() == null) {
-			JOptionPane.showMessageDialog(null, "Error: Datos del paciente no v�lidos.");
+			JOptionPane.showMessageDialog(null, "Error: Datos del paciente no válidos.");
 			return;
 		}
 
@@ -310,11 +310,11 @@ public class RealizarConsulta extends JDialog {
 		JTextField txtPeso = new JTextField(String.valueOf(peso));
 		JTextField txtTalla = new JTextField(String.valueOf(talla));
 
-		panel.add(new JLabel("Presi�n Arterial:"));
+		panel.add(new JLabel("Presión Arterial:"));
 		panel.add(txtPresion);
-		panel.add(new JLabel("Frecuencia Card�aca:"));
+		panel.add(new JLabel("Frecuencia Cardíaca:"));
 		panel.add(txtPulso);
-		panel.add(new JLabel("Temperatura (�C):"));
+		panel.add(new JLabel("Temperatura (Celsius):"));
 		panel.add(txtTemp);
 		panel.add(new JLabel("Peso (Kg):"));
 		panel.add(txtPeso);
@@ -333,7 +333,7 @@ public class RealizarConsulta extends JDialog {
 				signosRegistrados = true;
 				JOptionPane.showMessageDialog(this, "Signos vitales registrados.");
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(this, "Error: Ingrese solo n�meros v�lidos.", "Error",
+				JOptionPane.showMessageDialog(this, "Error: Ingrese solo números válidos.", "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		}
@@ -341,12 +341,12 @@ public class RealizarConsulta extends JDialog {
 
 	private void terminarConsulta() {
 		if (txtSintomas.getText().isEmpty() || txtDiagnostico.getText().isEmpty() || txtTratamiento.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Debe completar S�ntomas, Diagn�stico y Tratamiento.");
+			JOptionPane.showMessageDialog(null, "Debe completar Síntomas, Diagnóstico y Tratamiento.");
 			return;
 		}
 
 		if (!signosRegistrados) {
-			int opt = JOptionPane.showConfirmDialog(null, "No ha registrado Signos Vitales. �Desea continuar?", "Advertencia", JOptionPane.YES_NO_OPTION);
+			int opt = JOptionPane.showConfirmDialog(null, "No ha registrado Signos Vitales. ¿Desea continuar?", "Advertencia", JOptionPane.YES_NO_OPTION);
 			if (opt == JOptionPane.NO_OPTION) return;
 		}
 
@@ -364,18 +364,18 @@ public class RealizarConsulta extends JDialog {
 		boolean exito = (respuesta instanceof Boolean) ? (Boolean) respuesta : false;
 
 		if (exito) {
-			int pdf = JOptionPane.showConfirmDialog(null, "�Desea descargar la Receta M�dica en PDF?", "Receta Generada", JOptionPane.YES_NO_OPTION);
+			int pdf = JOptionPane.showConfirmDialog(null, "¿Desea descargar la Receta Médica en PDF?", "Receta Generada", JOptionPane.YES_NO_OPTION);
 			if (pdf == JOptionPane.YES_OPTION) {
 				GeneradorReportes.generarReceta(consultaTemp);
 			}
 			JOptionPane.showMessageDialog(null, "Consulta finalizada exitosamente.");
 			dispose();
 		} else {
-			JOptionPane.showMessageDialog(null, "Error al guardar la consulta en el servidor.", "Error de Conexi�n", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Error al guardar la consulta en el servidor.", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+
 	private void cargarEnfermedades() {
 		modelDisponibles.clear();
 		Object resp = ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
@@ -420,7 +420,7 @@ public class RealizarConsulta extends JDialog {
 			boolean hayVigilancia = enfermedadesSeleccionadas.stream().anyMatch(Enfermedad::isVigilancia);
 			if (!hayVigilancia) {
 				chkResumen.setEnabled(true);
-				chkResumen.setText("Agregar al Resumen Cl�nico");
+				chkResumen.setText("Agregar al Resumen Clínico");
 				chkResumen.setForeground(Color.WHITE);
 			}
 		}
@@ -436,17 +436,17 @@ public class RealizarConsulta extends JDialog {
 				.getConsultasVisibleMedico(citaActual.getMedico());
 
 		if (consultasVisibles.isEmpty()) {
-			JOptionPane.showMessageDialog(null, "No hay consultas previas visibles para este m�dico.");
+			JOptionPane.showMessageDialog(null, "No hay consultas previas visibles para este médico.");
 			return;
 		}
 
 		JDialog dialogHistorial = new JDialog();
-		dialogHistorial.setTitle("Historial Cl�nico - " + citaActual.getCliente().getNombre());
+		dialogHistorial.setTitle("Historial Clínico - " + citaActual.getCliente().getNombre());
 		dialogHistorial.setSize(800, 400);
 		dialogHistorial.setLocationRelativeTo(this);
 		dialogHistorial.getContentPane().setLayout(new BorderLayout());
 
-		String[] headers = { "Fecha", "S�ntomas", "Diagn�stico", "M�dico" };
+		String[] headers = { "Fecha", "Síntomas", "Diagnóstico", "Médico" };
 		javax.swing.table.DefaultTableModel modelHist = new javax.swing.table.DefaultTableModel();
 		modelHist.setColumnIdentifiers(headers);
 

@@ -39,7 +39,7 @@ public class ConsultarEspecialidades extends JDialog {
 	public ConsultarEspecialidades() {
 		//setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarEspecialidades.class.getResource("/img/seguro-de-salud.png")));
 
-		setTitle("Gesti�n de Especialidades");
+		setTitle("Gestión de Especialidades");
 		setBounds(100, 100, 700, 500); 
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -79,7 +79,7 @@ public class ConsultarEspecialidades extends JDialog {
 			}
 		};
 
-		String[] headers = { "C�digo", "Nombre" };
+		String[] headers = { "Código", "Nombre" };
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 
@@ -94,7 +94,7 @@ public class ConsultarEspecialidades extends JDialog {
 		JPanel panelNorte = new JPanel();
 		panelNorte.setBackground(new Color(60, 70, 123));
 		contentPanel.add(panelNorte, BorderLayout.NORTH);
-		JLabel lblTitulo = new JLabel("Listado de Especialidades M�dicas");
+		JLabel lblTitulo = new JLabel("Listado de Especialidades Médicas");
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
 		panelNorte.add(lblTitulo);
@@ -137,7 +137,7 @@ public class ConsultarEspecialidades extends JDialog {
 			btnDelete.setEnabled(false);
 			btnDelete.addActionListener(e -> {
 				if(seleccionado != null) {
-					int opt = JOptionPane.showConfirmDialog(null, "�Eliminar especialidad?", "Confirmar", JOptionPane.YES_NO_OPTION);
+					int opt = JOptionPane.showConfirmDialog(null, "¿Eliminar especialidad?", "Confirmar", JOptionPane.YES_NO_OPTION);
 					if(opt == JOptionPane.YES_OPTION) {
 						ClienteSocket.enviar("DELETE_ESPECIALIDAD", seleccionado);
 						cargarEspecialidades();

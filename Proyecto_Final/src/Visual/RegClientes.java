@@ -80,7 +80,7 @@ public class RegClientes extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		JLabel lblCedula = new JLabel("Identificaci�n:");
+		JLabel lblCedula = new JLabel("Identificación:");
 		lblCedula.setForeground(Color.WHITE);
 		lblCedula.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblCedula.setBounds(38, 172, 104, 14);
@@ -150,7 +150,7 @@ public class RegClientes extends JDialog {
 			}
 		});
 
-		JLabel lblTelefono = new JLabel("Tel�fono:");
+		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblTelefono.setBounds(54, 233, 81, 14);
@@ -180,7 +180,7 @@ public class RegClientes extends JDialog {
 			}
 		});
 
-		JLabel lblDireccion = new JLabel("Direcci�n:");
+		JLabel lblDireccion = new JLabel("Dirección:");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblDireccion.setBounds(391, 235, 93, 14);
@@ -191,7 +191,7 @@ public class RegClientes extends JDialog {
 		contentPanel.add(txtDireccion);
 		txtDireccion.setColumns(10);
 
-		JLabel lblGenero = new JLabel("G�nero:");
+		JLabel lblGenero = new JLabel("Género:");
 		lblGenero.setForeground(Color.WHITE);
 		lblGenero.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblGenero.setBounds(723, 237, 98, 14);
@@ -312,7 +312,7 @@ public class RegClientes extends JDialog {
 				|| cbxGenero.getSelectedIndex() == 0 || txtFechaNac.getDate() == null) {
 
 			JOptionPane.showMessageDialog(null,
-					"Por favor llene los campos obligatorios, incluyendo Fecha de Nacimiento y G�nero.");
+					"Por favor llene los campos obligatorios, incluyendo Fecha de Nacimiento y Género.");
 			return;
 		}
 
@@ -320,7 +320,7 @@ public class RegClientes extends JDialog {
 
 		if (fechaNacimiento.isAfter(LocalDate.now())) {
 			JOptionPane.showMessageDialog(null, "La fecha de nacimiento no puede ser una fecha futura.",
-					"Error de Validaci�n", JOptionPane.ERROR_MESSAGE);
+					"Error de Validación", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
@@ -329,15 +329,15 @@ public class RegClientes extends JDialog {
 		if (edad < 16) {
 			if (txtCedula.getText().length() < 5) {
 				JOptionPane.showMessageDialog(null,
-						"Paciente menor de 16 a�os. Por favor ingrese el n�mero de Pasaporte o ID de menor.",
-						"Identificaci�n Requerida", JOptionPane.WARNING_MESSAGE);
+						"Paciente menor de 16 años. Por favor ingrese el n�mero de Pasaporte o ID de menor.",
+						"Identificación Requerida", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 		} else {
 			if (txtCedula.getText().isEmpty() || txtCedula.getText().length() < 13) {
 				JOptionPane.showMessageDialog(null,
-						"Paciente mayor de 16 a�os. La C�dula (con el formato de 13 d�gitos) es obligatoria.",
-						"C�dula Requerida", JOptionPane.ERROR_MESSAGE);
+						"Paciente mayor de 16 años. La Cédula (con el formato de 13 dígitos) es obligatoria.",
+						"Cédula Requerida", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 		}
@@ -346,7 +346,7 @@ public class RegClientes extends JDialog {
 
 			Object respuesta = ClienteSocket.enviar("BUSCAR_CLIENTE_CEDULA", txtCedula.getText());
 			if (respuesta != null) {
-				JOptionPane.showMessageDialog(null, "Ya existe un cliente con esa identificaci�n/c�dula.");
+				JOptionPane.showMessageDialog(null, "Ya existe un cliente con esa identificación/cédula.");
 				return;
 			}
 
@@ -357,7 +357,7 @@ public class RegClientes extends JDialog {
 			boolean exito = (boolean) ClienteSocket.enviar("REG_CLIENTE", nuevoCliente);
 
 			if (exito) {
-				JOptionPane.showMessageDialog(null, "Paciente registrado con �xito.");
+				JOptionPane.showMessageDialog(null, "Paciente registrado con éxito.");
 				limpiarCampos();
 			} else {
 				JOptionPane.showMessageDialog(null, "Error al registrar en el servidor.");

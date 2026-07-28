@@ -40,7 +40,7 @@ public class ConsultarVacunas extends JDialog {
 			//setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarVacunas.class.getResource("/img/seguro-de-salud.png")));
 		} catch (Exception e) {}
 
-		setTitle("Gesti�n de Vacunas");
+		setTitle("Gestión de Vacunas");
 		setBounds(100, 100, 800, 500);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -83,7 +83,7 @@ public class ConsultarVacunas extends JDialog {
 			}
 		};
 
-		String[] headers = {"C�digo", "Nombre", "Descripci�n"};
+		String[] headers = {"Código", "Nombre", "Descripción"};
 		model.setColumnIdentifiers(headers);
 		table.setModel(model);
 
@@ -144,7 +144,7 @@ public class ConsultarVacunas extends JDialog {
 			btnDelete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if(seleccionado != null) {
-						int opt = JOptionPane.showConfirmDialog(null, "�Seguro desea eliminar la vacuna " + seleccionado.getNombre() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
+						int opt = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar la vacuna " + seleccionado.getNombre() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
 						if(opt == JOptionPane.YES_OPTION) {
 							boolean exito = (boolean) ClienteSocket.enviar("DELETE_VACUNA", seleccionado);
 							if(exito) {

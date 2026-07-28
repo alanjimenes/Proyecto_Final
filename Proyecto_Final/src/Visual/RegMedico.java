@@ -58,7 +58,7 @@ public class RegMedico extends JDialog {
 	public RegMedico(Medico medicoEditar) {
 		initComponents();
 		this.medicoActual = medicoEditar;
-		setTitle("Modificar M�dico");
+		setTitle("Modificar Médico");
 		okButton.setText("Actualizar");
 
 		txtCedula.setText(medicoEditar.getCedula());
@@ -79,7 +79,7 @@ public class RegMedico extends JDialog {
 	}
 
 	private void initComponents() {
-		setTitle("Registrar M�dico");
+		setTitle("Registrar Médico");
 		setBounds(100, 100, 1074, 509);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -88,7 +88,7 @@ public class RegMedico extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		JLabel lblCedula = new JLabel("C�dula:");
+		JLabel lblCedula = new JLabel("Cédula:");
 		lblCedula.setForeground(Color.WHITE);
 		lblCedula.setFont(new Font("Bahnschrift", Font.BOLD, 14));
 		lblCedula.setBounds(28, 163, 80, 14);
@@ -158,7 +158,7 @@ public class RegMedico extends JDialog {
 			}
 		});
 
-		JLabel lblTelefono = new JLabel("Tel�fono:");
+		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Bahnschrift", Font.BOLD, 14));
 		lblTelefono.setBounds(371, 225, 80, 14);
@@ -188,7 +188,7 @@ public class RegMedico extends JDialog {
 			}
 		});
 
-		JLabel lblDireccion = new JLabel("Direcci�n:");
+		JLabel lblDireccion = new JLabel("Dirección:");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Bahnschrift", Font.BOLD, 14));
 		lblDireccion.setBounds(28, 222, 80, 14);
@@ -344,26 +344,26 @@ public class RegMedico extends JDialog {
 
 		if (fechaNac.isAfter(LocalDate.now())) {
 			JOptionPane.showMessageDialog(null, "La fecha de nacimiento no puede ser una fecha futura.",
-					"Error de Validaci�n", JOptionPane.ERROR_MESSAGE);
+					"Error de Validación", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
 		LocalDate fechaMinima = LocalDate.now().minusYears(23);
 
 		if (fechaNac.isAfter(fechaMinima)) {
-			JOptionPane.showMessageDialog(null, "El m�dico debe tener al menos 23 a�os de edad.", "Error de Validaci�n",
+			JOptionPane.showMessageDialog(null, "El médico debe tener al menos 23 años de edad.", "Error de Validación",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
 		if (medicoActual == null) {
 			if (txtCedula.getText().isEmpty()) {
-				JOptionPane.showMessageDialog(null, "La c�dula es obligatoria.");
+				JOptionPane.showMessageDialog(null, "La cédula es obligatoria.");
 				return;
 			}
 			Medico existe = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", txtCedula.getText());
 			if (existe != null) {
-				JOptionPane.showMessageDialog(null, "Ya existe un m�dico con esa c�dula.");
+				JOptionPane.showMessageDialog(null, "Ya existe un médico con esa cédula.");
 				return;
 			}
 
@@ -374,7 +374,7 @@ public class RegMedico extends JDialog {
 			boolean exito = (boolean) ClienteSocket.enviar("REG_MEDICO", nuevoMedico);
 
 			if (exito) {
-				JOptionPane.showMessageDialog(null, "M�dico registrado en el Servidor.");
+				JOptionPane.showMessageDialog(null, "Médico registrado en el Servidor.");
 				limpiarCampos();
 			} else {
 				JOptionPane.showMessageDialog(null, "Error al guardar en servidor.");
@@ -391,7 +391,7 @@ public class RegMedico extends JDialog {
 			boolean exito = (boolean) ClienteSocket.enviar("UPDATE_MEDICO", medicoActual);
 
 			if (exito) {
-				JOptionPane.showMessageDialog(null, "M�dico actualizado.");
+				JOptionPane.showMessageDialog(null, "Médico actualizado.");
 				dispose();
 			} else {
 				JOptionPane.showMessageDialog(null, "Error al actualizar.");

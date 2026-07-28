@@ -71,7 +71,7 @@ public class RegVacuna extends JDialog {
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 
-		JLabel lblDesc = new JLabel("Descripci�n:");
+		JLabel lblDesc = new JLabel("Descripción:");
 		lblDesc.setForeground(Color.WHITE);
 		lblDesc.setFont(new Font("Bahnschrift", Font.BOLD, 14));
 		lblDesc.setBounds(25, 90, 130, 14);
@@ -117,7 +117,7 @@ public class RegVacuna extends JDialog {
 
 	private void registrarVacuna() {
 		if(txtNombre.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "El nombre no puede estar vac�o.");
+			JOptionPane.showMessageDialog(null, "El nombre no puede estar vacío.");
 			return;
 		}
 

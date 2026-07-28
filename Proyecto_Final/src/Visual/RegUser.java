@@ -187,7 +187,7 @@ public class RegUser extends JDialog {
 							dispose();
 						} else {
 							JOptionPane.showMessageDialog(contentPanel,
-									"El nombre de usuario '" + userTxt + "' ya est� en uso.", "Usuario Duplicado",
+									"El nombre de usuario '" + userTxt + "' ya está en uso.", "Usuario Duplicado",
 									JOptionPane.ERROR_MESSAGE);
 						}
 					} else {

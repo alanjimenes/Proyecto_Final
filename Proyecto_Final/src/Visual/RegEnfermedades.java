@@ -66,7 +66,7 @@ public class RegEnfermedades extends JDialog {
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 
-		JLabel lblDesc = new JLabel("Descripci�n / S�ntomas:");
+		JLabel lblDesc = new JLabel("Descripción / Síntomas:");
 		lblDesc.setForeground(Color.WHITE);
 		lblDesc.setFont(new Font("Bahnschrift", Font.BOLD, 14));
 		lblDesc.setBounds(25, 120, 200, 14);
@@ -87,7 +87,7 @@ public class RegEnfermedades extends JDialog {
 		chkVigilancia.setBounds(25, 210, 300, 23);
 		contentPanel.add(chkVigilancia);
 
-		JLabel lblTitulo = new JLabel("Gesti�n de Enfermedades");
+		JLabel lblTitulo = new JLabel("Gestión de Enfermedades");
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 20));

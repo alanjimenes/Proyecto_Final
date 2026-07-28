@@ -63,12 +63,12 @@ public class Principal extends JFrame {
 	public Principal(User usuarioLogueado) {
 		this.usuarioActual = usuarioLogueado;
 
-		// CONFIGURACI�N B�SICA DE LA VENTANA
+		// CONFIGURACIÓN BÁSICA DE LA VENTANA
 		try {
 			setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
 		} catch (Exception e) {
 		}
-		setTitle("Sistema de Gesti�n Hospitalaria - Usuario: " + usuarioActual.getUsuario());
+		setTitle("Sistema de Gestión Hospitalaria - Usuario: " + usuarioActual.getUsuario());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		dim = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(dim.width, dim.height);
@@ -82,7 +82,7 @@ public class Principal extends JFrame {
 		setJMenuBar(menuBar);
 
 		// --- MEN� CITAS ---
-		menuCitas = new JMenu("  Gesti�n Citas  ");
+		menuCitas = new JMenu("  Gestión Citas  ");
 		menuCitas.setForeground(Color.WHITE);
 		try {
 			menuCitas.setIcon(new ImageIcon(Principal.class.getResource("/img/cita.png")));
@@ -101,7 +101,7 @@ public class Principal extends JFrame {
 		menuCitas.add(itemCrearCita);
 
 		// --- MEN� PACIENTES ---
-		menuPacientes = new JMenu("  Gesti�n Pacientes  ");
+		menuPacientes = new JMenu("  Gestión Pacientes  ");
 		menuPacientes.setForeground(Color.WHITE);
 		try {
 			menuPacientes.setIcon(new ImageIcon(Principal.class.getResource("/img/gestion-de-clientes.png")));
@@ -153,8 +153,8 @@ public class Principal extends JFrame {
 		});
 		menuConsulta.add(itemVerMisCitas);
 
-		// --- MEN� ADMINISTRACI�N ---
-		menuAdministracion = new JMenu("  Administraci�n");
+		// --- MENÚ ADMINISTRACIÓN ---
+		menuAdministracion = new JMenu("  Administración");
 		menuAdministracion.setForeground(Color.WHITE);
 		try {
 			menuAdministracion.setIcon(new ImageIcon(Principal.class.getResource("/img/doctor.png")));
@@ -184,10 +184,10 @@ public class Principal extends JFrame {
 		});
 		menuAdministracion.add(itemReportes);
 
-		JMenu menuGestionMedicos = new JMenu("Gestionar M�dicos");
+		JMenu menuGestionMedicos = new JMenu("Gestionar Médicos");
 		menuGestionMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
 
-		JMenuItem itemRegMedico = new JMenuItem("Registrar M�dico");
+		JMenuItem itemRegMedico = new JMenuItem("Registrar Médico");
 		itemRegMedico.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
 		itemRegMedico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -198,7 +198,7 @@ public class Principal extends JFrame {
 		});
 		menuGestionMedicos.add(itemRegMedico);
 
-		JMenuItem itemListarMedicos = new JMenuItem("Listar M�dicos");
+		JMenuItem itemListarMedicos = new JMenuItem("Listar Médicos");
 		itemListarMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
 		itemListarMedicos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -282,7 +282,7 @@ public class Principal extends JFrame {
 		panelDashboardCentral.setLayout(new GridLayout(1, 1, 20, 0));
 		contentPane.add(panelDashboardCentral, BorderLayout.CENTER);
 
-		// INYECCION DE GR�FICOS (Mantenemos la l�gica pero dentro del constructor)
+		// INYECCION DE GRÁFICOS (Mantenemos la lógica pero dentro del constructor)
 		panelDashboardCentral.add(crearPanelEstadistico());
 
 		// PANEL INFERIOR (RELOJ Y LOGOUT)
@@ -301,7 +301,7 @@ public class Principal extends JFrame {
 		JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		panelBoton.setOpaque(false);
 
-		JButton btnLogout = new JButton("Cerrar Sesi�n");
+		JButton btnLogout = new JButton("Cerrar Sesión");
 		btnLogout.setFont(new Font("Bahnschrift", Font.BOLD, 16));
 		// Aseg�rate de que Estilos exista, si no, borra esta l�nea
 		try {
@@ -313,8 +313,8 @@ public class Principal extends JFrame {
 
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int confirm = JOptionPane.showConfirmDialog(null, "�Est� seguro de que desea cerrar sesi�n?",
-						"Cerrar Sesi�n", JOptionPane.YES_NO_OPTION);
+				int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?",
+						"Cerrar Sesión", JOptionPane.YES_NO_OPTION);
 				if (confirm == JOptionPane.YES_OPTION) {
 					dispose();
 					Login login = new Login();
@@ -332,7 +332,7 @@ public class Principal extends JFrame {
 	}
 
 	// --------------------------------------------------------------------------------
-	// M�TODOS AUXILIARES (L�GICA)
+	// MÉTODOS AUXILIARES (LÓGICA)
 	// --------------------------------------------------------------------------------
 
 	private void configurarAccesosPorRol() {
@@ -359,7 +359,7 @@ public class Principal extends JFrame {
 	}
 
 	private void abrirDialogoDeCitas() {
-		JDialog dialogCitas = new JDialog(Principal.this, "Gesti�n de Citas", true);
+		JDialog dialogCitas = new JDialog(Principal.this, "Gestión de Citas", true);
 		GestionCitas panel = new GestionCitas();
 		dialogCitas.getContentPane().add(panel);
 		dialogCitas.setSize(1130, 750);
@@ -394,7 +394,7 @@ public class Principal extends JFrame {
 
 		String rol = usuarioActual.getRol();
 
-		if (rol.equalsIgnoreCase("Medico")) {
+		if (rol.equalsIgnoreCase("Médico")) {
 			JPanel panelMedico = new JPanel(new GridLayout(1, 2, 20, 0));
 			panelMedico.setBackground(Color.WHITE);
 			panelMedico.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -509,7 +509,7 @@ public class Principal extends JFrame {
 			try { Estilos.estilarBoton(btnEnf, Color.WHITE, Color.BLACK); } catch (Exception e) {}
 			btnEnf.addActionListener(e -> actualizarGrafico("ENFERMEDADES"));
 
-			JButton btnVac = new JButton("Vacunaci�n");
+			JButton btnVac = new JButton("Vacunación");
 			try { Estilos.estilarBoton(btnVac, Color.WHITE, Color.BLACK); } catch (Exception e) {}
 			btnVac.addActionListener(e -> actualizarGrafico("VACUNAS"));
 
@@ -635,7 +635,7 @@ public class Principal extends JFrame {
 			CategoryPlot plot = chart.getCategoryPlot();
 			BarRenderer renderer = (BarRenderer) plot.getRenderer();
 
-			// COLOR VERDE QUIR�RGICO
+			// COLOR VERDE QUIRÚRGICO
 			renderer.setSeriesPaint(0, new Color(0, 150, 136));
 
 			configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);

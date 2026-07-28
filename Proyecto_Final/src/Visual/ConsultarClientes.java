@@ -46,7 +46,7 @@ public class ConsultarClientes extends JDialog {
 	public ConsultarClientes() {
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage(ConsultarClientes.class.getResource("/img/seguro-de-salud.png")));
-		setTitle("Gestion de Clientes");
+		setTitle("Gestión de Clientes");
 		setBounds(100, 100, 1000, 600);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -73,7 +73,7 @@ public class ConsultarClientes extends JDialog {
 						return false;
 					}
 				};
-				String[] headers = { "Expediente", "C�dula", "Nombre", "Apellido", "Tel�fono", "Estado Salud" };
+				String[] headers = { "Expediente", "C�dula", "Nombre", "Apellido", "Teléfono", "Estado Salud" };
 				modelo.setColumnIdentifiers(headers);
 				table.setModel(modelo);
 

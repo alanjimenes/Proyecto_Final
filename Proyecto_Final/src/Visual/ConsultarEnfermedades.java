@@ -39,7 +39,7 @@ public class ConsultarEnfermedades extends JDialog {
 	private JTextField txtFiltro;
 
 	public ConsultarEnfermedades() {
-		setTitle("Cat�logo de Enfermedades");
+		setTitle("Catálogo de Enfermedades");
 		setBounds(100, 100, 750, 500);
 		setLocationRelativeTo(null);
 		setModal(true);
@@ -55,7 +55,7 @@ public class ConsultarEnfermedades extends JDialog {
 		panelNorte.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 10));
 		contentPanel.add(panelNorte, BorderLayout.NORTH);
 
-		JLabel lblTitulo = new JLabel("Gesti�n de Enfermedades");
+		JLabel lblTitulo = new JLabel("Gestión de Enfermedades");
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
 		panelNorte.add(lblTitulo);
@@ -102,7 +102,7 @@ public class ConsultarEnfermedades extends JDialog {
 			}
 		});
 
-		model = new DefaultTableModel(new Object[] { "C�digo", "Nombre", "Vigilancia" }, 0) {
+		model = new DefaultTableModel(new Object[] { "Código", "Nombre", "Vigilancia" }, 0) {
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
@@ -167,7 +167,7 @@ public class ConsultarEnfermedades extends JDialog {
 		btnDelete.addActionListener(e -> {
 			if (seleccionado != null) {
 				int opt = JOptionPane.showConfirmDialog(null, 
-						"�Seguro desea desactivar la enfermedad " + seleccionado.getNombre() + "?", 
+						"¿Seguro desea desactivar la enfermedad " + seleccionado.getNombre() + "?",
 						"Confirmar", JOptionPane.YES_NO_OPTION);
 				if (opt == JOptionPane.YES_OPTION) {
 					seleccionado.setActivo(false); 
@@ -206,7 +206,7 @@ public class ConsultarEnfermedades extends JDialog {
 
 		for (Enfermedad enf : listaEnfermedadesGlobal) {
 			if (enf.isActivo() && (filtro.isEmpty() || enf.getNombre().toLowerCase().contains(filtro))) {
-				String vig = enf.isVigilancia() ? "S� (ALERTA)" : "No";
+				String vig = enf.isVigilancia() ? "Sí (ALERTA)" : "No";
 				model.addRow(new Object[] { enf.getCodigo_sick(), enf.getNombre(), vig });
 			}
 		}
