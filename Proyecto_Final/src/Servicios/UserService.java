@@ -64,11 +64,10 @@ public class UserService {
 
         try {
             conn = ConexionDB.getConexion();
-            conn.setAutoCommit(false); // Iniciar transacción
+            conn.setAutoCommit(false);
 
             int codigoUsuario = 0;
 
-            // 1. Insertar Usuario y recuperar ID generado
             try (PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
                 stmtUser.setString(1, user.getUsuario());
                 stmtUser.setString(2, user.getPassword());
@@ -107,13 +106,13 @@ public class UserService {
                 }
             }
 
-            conn.commit(); // Confirmar transacción
+            conn.commit();
             return true;
 
         } catch (SQLException e) {
             if (conn != null) {
                 try {
-                    conn.rollback(); // Revertir en caso de error
+                    conn.rollback();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -123,8 +122,8 @@ public class UserService {
         } finally {
             if (conn != null) {
                 try {
-                    conn.setAutoCommit(true); // Restaurar autocommit
-                    conn.close(); // Asegurar cierre de conexión
+                    conn.setAutoCommit(true);
+                    conn.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

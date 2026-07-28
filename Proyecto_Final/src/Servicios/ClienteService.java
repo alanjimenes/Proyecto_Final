@@ -61,7 +61,7 @@ public class ClienteService {
 
     public boolean actualizarCliente(Cliente cli) {
         String sqlPersona = "update persona set persona.fechanacimiento = ?, persona.nombre = ?, persona.apellido = ?, persona.telefono = ?, persona.direccion = ?, persona.estado = ? where persona.cedula = ?";
-        String sqlCliente = "update cliente set cliente.enfermo = ?, cliente.numexpediente = ?, cliente.genero = ? where cliente.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = ?)";
+        String sqlCliente = "update cliente set cliente.enfermo = ?, cliente.numexpediente = ?, persona.genero = ? where cliente.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = ?)";
 
         try (Connection conn = ConexionDB.getConexion()) {
             conn.setAutoCommit(false);
@@ -111,7 +111,7 @@ public class ClienteService {
 
     public Cliente buscarClientePorCodigo(String codigoExpediente) {
         Cliente cliente = null;
-        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, cliente.genero from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona where cliente.numexpediente = ?";
+        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, persona.genero from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona where cliente.numexpediente = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -143,7 +143,7 @@ public class ClienteService {
 
     public Cliente buscarClientePorCedula(String cedula) {
         Cliente cliente = null;
-        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, cliente.genero from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona where persona.cedula = ?";
+        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, persona.genero from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona where persona.cedula = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -175,7 +175,7 @@ public class ClienteService {
 
     public ArrayList<Cliente> getClientes() {
         ArrayList<Cliente> lista = new ArrayList<>();
-        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, cliente.genero from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona";
+        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, persona.genero from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
