@@ -36,7 +36,9 @@ public class UserService {
     }
 
     public boolean existeUsuario(String usuario) {
-        String sql = "select codigo_usuario from Usuario where nombreUsuario = ? ";
+        String sql = "select codigo_usuario " +
+                "from Usuario " +
+                "where nombreUsuario = ? ";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -54,11 +56,15 @@ public class UserService {
     }
 
     public boolean registrarUsuario(User user) {
-        String sqlUser = "insert into Usuario (nombreUsuario, password, rol) values (?, ?, ?)";
+        String sqlUser = "insert into Usuario (nombreUsuario, password, rol) values " +
+                "(?, ?, ?)";
 
-        String sqlPersona = " select codigo_persona from Persona where cedula = ? ";
+        String sqlPersona = " select codigo_persona " +
+                "from Persona " +
+                "where cedula = ? ";
 
-        String sqlUpdate = " update Medico set codigo_usuario = ? where codigo_persona = ?";
+        String sqlUpdate = " update Medico set codigo_usuario = ? " +
+                "where codigo_persona = ?";
 
         Connection conn = null;
 
@@ -134,7 +140,9 @@ public class UserService {
     public ArrayList<User> listarUsuarios() {
         ArrayList<User> lista = new ArrayList<>();
 
-        String sql = "select nombreUsuario, password, rol from Usuario order by nombreUsuario";
+        String sql = "select nombreUsuario, password, rol " +
+                "from Usuario " +
+                "order by nombreUsuario";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
@@ -150,7 +158,8 @@ public class UserService {
     }
 
     public boolean eliminarUsuario(String usuario) {
-        String sql = "delete from Usuario where nombreUsuario = ?";
+        String sql = "delete from Usuario " +
+                "where nombreUsuario = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -166,7 +175,8 @@ public class UserService {
     }
 
     public boolean actualizarUsuario(User user) {
-        String sql = "update Usuario set password = ?, rol = ? where nombreUsuario = ?";
+        String sql = "update Usuario set password = ?, rol = ? " +
+                "where nombreUsuario = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 

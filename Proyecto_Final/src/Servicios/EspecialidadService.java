@@ -12,7 +12,8 @@ import java.util.ArrayList;
 public class EspecialidadService {
 
     public boolean registrarEspecialidad(Especialidad esp) {
-        String sql = "insert into especialidad (nombre) values (?)";
+        String sql = "insert into especialidad (nombre) values " +
+                "(?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -27,7 +28,8 @@ public class EspecialidadService {
 
     public ArrayList<Especialidad> listarEspecialidades() {
         ArrayList<Especialidad> lista = new ArrayList<>();
-        String sql = "select especialidad.codigo_especialidad, especialidad.nombre from especialidad";
+        String sql = "select especialidad.codigo_especialidad, especialidad.nombre " +
+                "from especialidad";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -48,7 +50,9 @@ public class EspecialidadService {
 
     public Especialidad buscarEspecialidadPorNombre(String nombre) {
         Especialidad especialidad = null;
-        String sql = "select especialidad.codigo_especialidad, especialidad.nombre from especialidad where especialidad.nombre = ?";
+        String sql = "select especialidad.codigo_especialidad, especialidad.nombre " +
+                "from especialidad " +
+                "where especialidad.nombre = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -70,7 +74,8 @@ public class EspecialidadService {
     }
 
     public boolean actualizarEspecialidad(Especialidad esp) {
-        String sql = "update especialidad set especialidad.nombre = ? where especialidad.codigo_especialidad = ?";
+        String sql = "update especialidad set especialidad.nombre = ? " +
+                "where especialidad.codigo_especialidad = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -85,7 +90,8 @@ public class EspecialidadService {
     }
 
     public boolean eliminarEspecialidad(String codigo) {
-        String sql = "delete from especialidad where especialidad.codigo_especialidad = ?";
+        String sql = "delete from especialidad " +
+                "where especialidad.codigo_especialidad = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

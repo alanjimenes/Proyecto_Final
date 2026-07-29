@@ -16,7 +16,13 @@ import logico.Medico;
 public class CitaService {
 
     public boolean crearCita(Cita cita, String cedulaMedico, String cedulaCliente) {
-        String sql = "insert into cita (codigo_medico, codigo_cliente, fechacita, estado, motivo) values ((select persona.codigo_persona from persona where persona.cedula = ?), (select persona.codigo_persona from persona where persona.cedula = ?), ?, ?, ?)";
+        String sql = "insert into cita (codigo_medico, codigo_cliente, fechacita, estado, motivo) values ((" +
+                "select persona.codigo_persona " +
+                "from persona " +
+                "where persona.cedula = ?),(" +
+                "select persona.codigo_persona " +
+                "from persona " +
+                "where persona.cedula = ?), ?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -67,7 +73,9 @@ public class CitaService {
 
     public int contarCitasPorDia(int codigoMedico, LocalDate fecha) {
         int total = 0;
-        String sql = "select count(cita.codigo_cita) AS total from cita where cita.codigo_medico = ? and cast(cita.fechacita AS date) = ?";
+        String sql = "select count(cita.codigo_cita) AS total " +
+                "from cita " +
+                "where cita.codigo_medico = ? and cast(cita.fechacita AS date) = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -87,7 +95,9 @@ public class CitaService {
 
     public int contarCitasPorMes(int mes, int anio) {
         int total = 0;
-        String sql = "select count(cita.codigo_cita) AS total from cita where month(cita.fechacita) = ? and year(cita.fechacita) = ? and cita.estado = 'Completada'";
+        String sql = "select count(cita.codigo_cita) AS total " +
+                "from cita  " +
+                "where month(cita.fechacita) = ? and year(cita.fechacita) = ? and cita.estado = 'Completada'";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

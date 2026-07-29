@@ -12,8 +12,16 @@ public class ConsultaService {
 
 
     public boolean registrarConsultaCompleta(Consulta con, String cedulaMedico, String cedulaCliente) {
-        String sqlConsulta = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) values (?, ?, ?, (select persona.codigo_persona from persona where persona.cedula = ?), (select persona.codigo_persona from persona where persona.cedula = ?))";
-        String sqlEnfermedad = "insert into enfermedad_consulta (codigo_enfermedad, codigo_consulta) values (?, ?)";
+        String sqlConsulta = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) values " +
+                "(?, ?, ?, (" +
+                "select persona.codigo_persona " +
+                "from persona " +
+                "where persona.cedula = ?), (" +
+                "select persona.codigo_persona " +
+                "from persona " +
+                "where persona.cedula = ?))";
+        String sqlEnfermedad = "insert into enfermedad_consulta (codigo_enfermedad, codigo_consulta) values " +
+                "(?, ?)";
 
         try (Connection conn = Utils.ConexionDB.getConexion()) {
             conn.setAutoCommit(false);
@@ -55,7 +63,8 @@ public class ConsultaService {
     }
 
     public int iniciarConsulta(Consulta con, int codigoMedico, int codigoCliente) {
-        String sql = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) values (?, ?, ?, ?, ?)";
+        String sql = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) values " +
+                "(?, ?, ?, ?, ?)";
         int generatedId = -1;
 
         try (Connection conn = Utils.ConexionDB.getConexion();
@@ -79,8 +88,10 @@ public class ConsultaService {
     }
 
     public boolean guardarConsulta(int codigoConsulta, String sintomas, String diagnostico, ArrayList<Enfermedad> enfermedades) {
-        String sqlUpdate = "update consulta set consulta.sintomas = ?, consulta.diagnostico = ? where consulta.codigo_cons = ?";
-        String sqlEnfermedad = "insert into enfermedad_consulta (codigo_enfermedad, codigo_consulta) values (?, ?)";
+        String sqlUpdate = "update consulta set consulta.sintomas = ?, consulta.diagnostico = ? " +
+                "where consulta.codigo_cons = ?";
+        String sqlEnfermedad = "insert into enfermedad_consulta (codigo_enfermedad, codigo_consulta) values " +
+                "(?, ?)";
 
         try (Connection conn = Utils.ConexionDB.getConexion()) {
             conn.setAutoCommit(false);
@@ -115,7 +126,9 @@ public class ConsultaService {
 
     public ArrayList<Consulta> getTodasLasConsultas() {
         ArrayList<Consulta> lista = new ArrayList<>();
-        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico, consulta.resumen from consulta";
+        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico, " +
+                "consulta.resumen " +
+                "from consulta";
 
         try (Connection conn = Utils.ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -141,7 +154,9 @@ public class ConsultaService {
 
     public ArrayList<Consulta> getConsultasPorRango(LocalDate desde, LocalDate hasta) {
         ArrayList<Consulta> lista = new ArrayList<>();
-        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico from consulta where consulta.fechaconsulta >= ? and consulta.fechaconsulta <= ?";
+        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico " +
+                "from consulta " +
+                "where consulta.fechaconsulta >= ? and consulta.fechaconsulta <= ?";
 
         try (Connection conn = Utils.ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -169,7 +184,11 @@ public class ConsultaService {
 
     public ArrayList<Consulta> getConsultasPorDoctor(String cedulaDoctor) {
         ArrayList<Consulta> lista = new ArrayList<>();
-        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico from consulta inner join medico on consulta.codigo_medico = medico.codigo_persona inner join persona on medico.codigo_persona = persona.codigo_persona where persona.cedula = ?";
+        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico " +
+                "from consulta " +
+                "inner join medico on consulta.codigo_medico = medico.codigo_persona " +
+                "inner join persona on medico.codigo_persona = persona.codigo_persona " +
+                "where persona.cedula = ?";
 
         try (Connection conn = Utils.ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -196,7 +215,11 @@ public class ConsultaService {
 
     public ArrayList<Consulta> getConsultasPorCliente(String cedulaCliente) {
         ArrayList<Consulta> lista = new ArrayList<>();
-        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico from consulta inner join cliente on consulta.codigo_cliente = cliente.codigo_persona inner join persona on cliente.codigo_persona = persona.codigo_persona where persona.cedula = ?";
+        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico " +
+                "from consulta " +
+                "inner join cliente on consulta.codigo_cliente = cliente.codigo_persona " +
+                "inner join persona on cliente.codigo_persona = persona.codigo_persona " +
+                "where persona.cedula = ?";
 
         try (Connection conn = Utils.ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
