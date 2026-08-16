@@ -2,52 +2,25 @@ package logico;
 
 import java.io.Serializable;
 
-public class User implements Serializable{
-
-	private static final long serialVersionUID = 1L;
-	private String rol;
-	private String usuario;
+public class User implements Serializable {
+	private int codigoUsuario;
+	private String nombreUsuario;
 	private String password;
-	private String cedula;
+	private String rol;
 
-	public User(String rol, String usuario, String password, String cedula) {
-		super();
-		this.rol = rol;
-		this.usuario = usuario;
+	public User(int codigoUsuario, String nombreUsuario, String password, String rol) {
+		this.codigoUsuario = codigoUsuario;
+		this.nombreUsuario = nombreUsuario;
 		this.password = password;
-		this.cedula = cedula;
-	}
-
-	public String getRol() {
-		return rol;
-	}
-
-	public void setRol(String rol) {
 		this.rol = rol;
 	}
 
-	public String getUsuario() {
-		return usuario;
-	}
-
-	public void setUsuario(String usuario) {
-		this.usuario = usuario;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getCedula() {
-		return cedula;
-	}
-
-	public void setCedula(String cedula) {
-		this.cedula = cedula;
-	}
+	public int getCodigoUsuario() { return codigoUsuario; }
+	public void setCodigoUsuario(int codigoUsuario) { this.codigoUsuario = codigoUsuario; }
+	public String getNombreUsuario() { return nombreUsuario; }
+	public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
+	public String getPassword() { return password; }
+	public void setPassword(String password) { this.password = password; }
+	public String getRol() { return rol; }
+	public void setRol(String rol) { this.rol = rol; }
 }
-

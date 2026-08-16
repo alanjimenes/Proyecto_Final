@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import java.sql.Statement;
 
 import Utils.ClienteSocket;
 import Utils.Estilos;
