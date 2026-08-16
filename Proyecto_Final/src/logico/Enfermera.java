@@ -7,10 +7,6 @@ public class Enfermera extends Persona implements Serializable {
     private User usuario;
     private String turno;
 
-    public Enfermera() {
-        super();
-    }
-
     public Enfermera(int codigoPersona, LocalDate fechaNacimiento, String nombre, String apellido, String cedula, String telefono, boolean estado, String direccion, String genero, User usuario, String turno) {
         super(codigoPersona, fechaNacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero);
         this.usuario = usuario;

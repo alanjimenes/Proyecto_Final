@@ -9,12 +9,16 @@ public class User implements Serializable {
 	private String rol;
 
 	public User(int codigoUsuario, String nombreUsuario, String password, String rol) {
+		super();
 		this.codigoUsuario = codigoUsuario;
 		this.nombreUsuario = nombreUsuario;
 		this.password = password;
 		this.rol = rol;
 	}
 
+	public String getUsuario() {
+		return nombreUsuario;
+	}
 	public int getCodigoUsuario() { return codigoUsuario; }
 	public void setCodigoUsuario(int codigoUsuario) { this.codigoUsuario = codigoUsuario; }
 	public String getNombreUsuario() { return nombreUsuario; }

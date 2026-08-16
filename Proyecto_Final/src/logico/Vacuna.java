@@ -15,7 +15,10 @@ public class Vacuna implements Serializable {
 		this.activo = activo;
 	}
 
-	public int getCodigoVacuna() { return codigoVacuna; }
+	public int getCodigoVacuna() {
+		return codigoVacuna;
+	}
+
 	public void setCodigoVacuna(int codigoVacuna) { this.codigoVacuna = codigoVacuna; }
 	public String getNombre() { return nombre; }
 	public void setNombre(String nombre) { this.nombre = nombre; }
