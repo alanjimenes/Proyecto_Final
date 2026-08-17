@@ -1,39 +1,23 @@
 package Visual;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableModel;
-
 import Utils.ClienteSocket;
 import Utils.Estilos;
 import com.toedter.calendar.IDateEvaluator;
 import com.toedter.calendar.JDateChooser;
-
 import logico.Cita;
 import logico.Cliente;
 import logico.Medico;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeListener;
+import java.time.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class GestionCitas extends JPanel {
 
