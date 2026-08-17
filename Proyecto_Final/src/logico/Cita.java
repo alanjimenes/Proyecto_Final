@@ -1,74 +1,42 @@
 package logico;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Cita implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-	private String codigo_cita;
-	private LocalDateTime fechaHora;
+public class Cita {
+	private int codigoCita;
+	private LocalDateTime fechaCita;
 	private Cliente cliente;
 	private Medico medico;
 	private String estado;
 	private String motivo;
 
-	public Cita(LocalDateTime fechaHora, Cliente cliente, Medico medico, String estado, String motivo) {
-		super();
-		this.fechaHora = fechaHora;
+	public Cita() {
+	}
+
+	public Cita(int codigoCita, LocalDateTime fechaCita, Cliente cliente, Medico medico, String estado, String motivo) {
+		this.codigoCita = codigoCita;
+		this.fechaCita = fechaCita;
 		this.cliente = cliente;
 		this.medico = medico;
 		this.estado = estado;
 		this.motivo = motivo;
 	}
 
-	public String getCodigo_cita() {
-		return codigo_cita;
-	}
+	public int getCodigoCita() { return codigoCita; }
+	public void setCodigoCita(int codigoCita) { this.codigoCita = codigoCita; }
 
-	public void setCodigo_cita(String codigo_cita) {
-		this.codigo_cita = codigo_cita;
-	}
+	public LocalDateTime getFechaCita() { return fechaCita; }
+	public void setFechaCita(LocalDateTime fechaCita) { this.fechaCita = fechaCita; }
 
-	public LocalDateTime getFechaHora() {
-		return fechaHora;
-	}
+	public Cliente getCliente() { return cliente; }
+	public void setCliente(Cliente cliente) { this.cliente = cliente; }
 
-	public void setFechaHora(LocalDateTime fechaHora) {
-		this.fechaHora = fechaHora;
-	}
+	public Medico getMedico() { return medico; }
+	public void setMedico(Medico medico) { this.medico = medico; }
 
-	public Cliente getCliente() {
-		return cliente;
-	}
+	public String getEstado() { return estado; }
+	public void setEstado(String estado) { this.estado = estado; }
 
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
-	}
-
-	public Medico getMedico() {
-		return medico;
-	}
-
-	public void setMedico(Medico medico) {
-		this.medico = medico;
-	}
-
-	public String getEstado() {
-		return estado;
-	}
-
-	public void setEstado(String estado) {
-		this.estado = estado;
-	}
-
-	public String getMotivo() {
-		return motivo;
-	}
-
-	public void setMotivo(String motivo) {
-		this.motivo = motivo;
-	}
-
-
+	public String getMotivo() { return motivo; }
+	public void setMotivo(String motivo) { this.motivo = motivo; }
 }

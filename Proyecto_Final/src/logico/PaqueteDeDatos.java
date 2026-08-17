@@ -8,6 +8,9 @@ public class PaqueteDeDatos implements Serializable {
 	private Object objeto;
 	private Object respuesta;
 
+	public PaqueteDeDatos() {
+	}
+
 	public PaqueteDeDatos(String comando, Object objeto) {
 		this.comando = comando;
 		this.objeto = objeto;
@@ -36,5 +39,4 @@ public class PaqueteDeDatos implements Serializable {
 	public void setRespuesta(Object respuesta) {
 		this.respuesta = respuesta;
 	}
-
 }

@@ -1,12 +1,13 @@
 package logico;
 
-import java.io.Serializable;
-
-public class Vacuna implements Serializable {
+public class Vacuna {
 	private int codigoVacuna;
 	private String nombre;
 	private String descripcion;
 	private boolean activo;
+
+	public Vacuna() {
+	}
 
 	public Vacuna(int codigoVacuna, String nombre, String descripcion, boolean activo) {
 		this.codigoVacuna = codigoVacuna;

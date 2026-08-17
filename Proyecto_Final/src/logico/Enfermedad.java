@@ -1,75 +1,40 @@
 package logico;
 
-import java.io.Serializable;
-import java.util.Objects;
-
-public class Enfermedad implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private String codigo_sick;
-	private String nombre;
-	private String descripcion;
-	private boolean vigilancia;
+public class Enfermedad {
+	private int codigoEnfermedad;
 	private boolean activo;
+	private String nombre;
+	private boolean vigilancia;
+	private String descripcion;
 
-	public Enfermedad(String codigo_sick, String nombre, String descripcion, boolean vigilancia) {
-		super();
-		this.codigo_sick = codigo_sick;
+	public Enfermedad() {
+	}
+
+	public Enfermedad(int codigoEnfermedad, boolean activo, String nombre, boolean vigilancia, String descripcion) {
+		this.codigoEnfermedad = codigoEnfermedad;
+		this.activo = activo;
 		this.nombre = nombre;
-		this.descripcion = descripcion;
 		this.vigilancia = vigilancia;
-		this.activo = true;
-	}
-
-	public String getCodigo_sick() {
-		return codigo_sick;
-	}
-
-	public void setCodigo_sick(String codigo_sick) {
-		this.codigo_sick = codigo_sick;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
 
-	public boolean isVigilancia() {
-		return vigilancia;
-	}
+	public int getCodigoEnfermedad() { return codigoEnfermedad; }
+	public void setCodigoEnfermedad(int codigoEnfermedad) { this.codigoEnfermedad = codigoEnfermedad; }
 
-	public void setVigilancia(boolean vigilancia) {
-		this.vigilancia = vigilancia;
-	}
+	public boolean isActivo() { return activo; }
+	public void setActivo(boolean activo) { this.activo = activo; }
+
+	public String getNombre() { return nombre; }
+	public void setNombre(String nombre) { this.nombre = nombre; }
+
+	public boolean isVigilancia() { return vigilancia; }
+	public void setVigilancia(boolean vigilancia) { this.vigilancia = vigilancia; }
+
+	public String getDescripcion() { return descripcion; }
+	public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
 	@Override
 	public String toString() {
-		return nombre; 
-	}
-	public boolean isActivo() { 
-		return activo; 
-	}
-	public void setActivo(boolean activo) { 
-		this.activo = activo; 
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof Enfermedad))
-			return false;
-		Enfermedad that = (Enfermedad) o;
-		return Objects.equals(codigo_sick, that.codigo_sick);
+		return nombre;
 	}
 }

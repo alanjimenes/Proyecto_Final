@@ -1,76 +1,34 @@
 package logico;
 
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
-public class Cliente extends Persona implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class Cliente extends Persona {
 	private String numExpediente;
-	private Historial historial;
 	private boolean enfermo;
-	private ArrayList<RegistroVacunacion> regVacunas;
-	private String genero;
+	private String antecedentes;
 
-	public Cliente(String cedula, String nombre, String apellido, String telefono, LocalDate fechaNacimiento,
-			String direccion, boolean activo, String numExpediente, Historial historial, boolean enfermo,
-			ArrayList<RegistroVacunacion> regVacunas, String genero) {
+	public Cliente() {
+		super();
+	}
 
-		super(cedula, nombre, apellido, telefono, fechaNacimiento, direccion, activo);
-
+	public Cliente(int codigoPersona, LocalDate fechaNacimiento, String nombre, String apellido, String cedula, String telefono, boolean estado, String direccion, String genero, String numExpediente, boolean enfermo, String antecedentes) {
+		super(codigoPersona, fechaNacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero);
 		this.numExpediente = numExpediente;
-		this.historial = historial;
 		this.enfermo = enfermo;
-		this.regVacunas = regVacunas;
-		this.genero = genero;
+		this.antecedentes = antecedentes;
 	}
 
-	public String getNumExpediente() {
-		return numExpediente;
-	}
+	public String getNumExpediente() { return numExpediente; }
+	public void setNumExpediente(String numExpediente) { this.numExpediente = numExpediente; }
 
-	public void setNumExpediente(String numExpediente) {
-		this.numExpediente = numExpediente;
-	}
+	public boolean isEnfermo() { return enfermo; }
+	public void setEnfermo(boolean enfermo) { this.enfermo = enfermo; }
 
-	public Historial getHistorial() {
-		return historial;
-	}
+	public String getAntecedentes() { return antecedentes; }
+	public void setAntecedentes(String antecedentes) { this.antecedentes = antecedentes; }
 
-	public void setHistorial(Historial historial) {
-		this.historial = historial;
-	}
-
-	public boolean isEnfermo() {
-		return enfermo;
-	}
-
-	public void setEnfermo(boolean enfermo) {
-		this.enfermo = enfermo;
-	}
-
-	public ArrayList<RegistroVacunacion> getRegVacunas() {
-		return regVacunas;
-	}
-
-	public void setRegVacunas(ArrayList<RegistroVacunacion> regVacunas) {
-		this.regVacunas = regVacunas;
-	}
-
-	public boolean isActivo() {
-		return activo;
-	}
-
-	public void setActivo(boolean activo) {
-		this.activo = activo;
-	}
-
-	public String getGenero() {
-		return genero;
-	}
-
-	public void setGenero(String genero) {
-		this.genero = genero;
+	@Override
+	public String toString() {
+		return nombre + " " + apellido + " (Exp: " + numExpediente + ")";
 	}
 }

@@ -1,11 +1,13 @@
 package logico;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Enfermera extends Persona implements Serializable {
+public class Enfermera extends Persona {
     private User usuario;
     private String turno;
+
+    public Enfermera() {
+    }
 
     public Enfermera(int codigoPersona, LocalDate fechaNacimiento, String nombre, String apellido, String cedula, String telefono, boolean estado, String direccion, String genero, User usuario, String turno) {
         super(codigoPersona, fechaNacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero);

@@ -1,42 +1,39 @@
 package logico;
 
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
-public class Agenda implements Serializable {
+public class Agenda {
 
-	private static final long serialVersionUID = 1L;
-
-	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora) {
-		if (medico.getCitasAsignadas() == null) {
+	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora, ArrayList<Cita> citasDelDia) {
+		if (citasDelDia == null || citasDelDia.isEmpty()) {
 			return true;
 		}
 
-		LocalDate diaDeLaCita = fechaHora.toLocalDate();
-		int contadorCitasDia = 0;
+		int contadorCitasActivas = 0;
+		for (Cita cita : citasDelDia) {
+			if (!cita.getEstado().equalsIgnoreCase("Cancelada")) {
+				contadorCitasActivas++;
+			}
+		}
+
+		if (contadorCitasActivas >= medico.getMaxCitasPorDia()) {
+			return false;
+		}
 
 		LocalDateTime finNuevaCita = fechaHora.plusMinutes(30);
 
-		for (Cita citaExistente : medico.getCitasAsignadas()) {
+		for (Cita citaExistente : citasDelDia) {
 			if (citaExistente.getEstado().equalsIgnoreCase("Cancelada")) {
 				continue;
 			}
 
-			LocalDateTime inicioExistente = citaExistente.getFechaHora();
+			LocalDateTime inicioExistente = citaExistente.getFechaCita();
 			LocalDateTime finExistente = inicioExistente.plusMinutes(30);
 
 			if (fechaHora.isBefore(finExistente) && inicioExistente.isBefore(finNuevaCita)) {
 				return false;
 			}
-
-			if (citaExistente.getFechaHora().toLocalDate().isEqual(diaDeLaCita)) {
-				contadorCitasDia++;
-			}
-		}
-
-		if (contadorCitasDia >= medico.getMaxCitasPorDia()) {
-			return false;
 		}
 
 		return true;

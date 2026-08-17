@@ -117,8 +117,7 @@ public class Flujo extends Thread {
                     //MEDICO
                     case "REG_MEDICO":
                         Medico m = (Medico) paquete.getObjeto();
-                        String codEspLimpio = m.getEspecialidad().getCodigo_espe().replaceAll("[^0-9]", "");
-                        int idEspecialidad = Integer.parseInt(codEspLimpio);
+                        int idEspecialidad = m.getEspecialidad().getCodigoEspecialidad();
                         boolean exitoMed = medicoService.agregarMedico(m, 0, idEspecialidad);
                         paquete.setRespuesta(exitoMed);
                         break;
@@ -214,7 +213,7 @@ public class Flujo extends Thread {
                     //CITAS
                     case "REG_CITA":
                         Cita c = (Cita) paquete.getObjeto();
-                        java.time.LocalDateTime inicioCita = c.getFechaHora();
+                        java.time.LocalDateTime inicioCita = c.getFechaCita();
                         java.time.LocalDateTime finCita = inicioCita.plusMinutes(30);
                         boolean disponible = medicoService.verificarDisponibilidad(c.getMedico().getCedula(), inicioCita, finCita);
                         if (disponible) {
@@ -236,11 +235,11 @@ public class Flujo extends Thread {
 
                     case "EDIT_CITA":
                         Cita citaMod = (Cita) paquete.getObjeto();
-                        java.time.LocalDateTime inicioMod = citaMod.getFechaHora();
+                        java.time.LocalDateTime inicioMod = citaMod.getFechaCita();
                         java.time.LocalDateTime finMod = inicioMod.plusMinutes(30);
                         boolean disponibleMod = medicoService.verificarDisponibilidad(citaMod.getMedico().getCedula(), inicioMod, finMod);
                         if (disponibleMod) {
-                            boolean exitoEditCita = citaService.editCita(Integer.parseInt(citaMod.getCodigo_cita()), citaMod.getFechaHora(), citaMod.getMedico().getCedula());
+                            boolean exitoEditCita = citaService.editCita(citaMod.getCodigoCita(), citaMod.getFechaCita(), citaMod.getMedico().getCedula());
                             paquete.setRespuesta(exitoEditCita);
                         } else {
                             paquete.setRespuesta(false);
@@ -249,7 +248,7 @@ public class Flujo extends Thread {
 
                     case "CANCEL_CITA":
                         Cita cCancel = (Cita) paquete.getObjeto();
-                        boolean exitoCancelCita = citaService.cancelCita(Integer.parseInt(cCancel.getCodigo_cita()));
+                        boolean exitoCancelCita = citaService.cancelCita(cCancel.getCodigoCita());
                         paquete.setRespuesta(exitoCancelCita);
                         break;
 
@@ -272,8 +271,8 @@ public class Flujo extends Thread {
 
                     case "APLICAR_VACUNA":
                         RegistroVacunacion reg = (RegistroVacunacion) paquete.getObjeto();
-                        int idVacuna = Integer.parseInt(reg.getVacuna().getCodigo_vacun());
-                        boolean exitoApliVac = vacunaService.aplicarVacunaCliente(reg.getCliente().getCedula(), idVacuna, Timestamp.valueOf(reg.getFecha().atStartOfDay()));
+                        int idVacuna = reg.getLote().getVacuna().getCodigoVacuna();
+                        boolean exitoApliVac = vacunaService.aplicarVacunaCliente(reg.getCliente().getCedula(), idVacuna, Timestamp.valueOf(reg.getFecha()));
                         paquete.setRespuesta(exitoApliVac);
                         break;
 
@@ -286,24 +285,24 @@ public class Flujo extends Thread {
                         break;
 
 
-					case "LISTAR_USUARIOS":
+                    case "LISTAR_USUARIOS":
 
-						paquete.setRespuesta(userService.listarUsuarios());
-						break;
+                        paquete.setRespuesta(userService.listarUsuarios());
+                        break;
 
-					case "ELIMINAR_USUARIO":
+                    case "ELIMINAR_USUARIO":
 
-						String usuario = (String) paquete.getObjeto();
-						paquete.setRespuesta(userService.eliminarUsuario(usuario));
+                        String usuario = (String) paquete.getObjeto();
+                        paquete.setRespuesta(userService.eliminarUsuario(usuario));
 
-						break;
+                        break;
 
-					case "ACTUALIZAR_USUARIO":
+                    case "ACTUALIZAR_USUARIO":
 
-						User editar = (User) paquete.getObjeto();
-						paquete.setRespuesta(userService.actualizarUsuario(editar));
+                        User editar = (User) paquete.getObjeto();
+                        paquete.setRespuesta(userService.actualizarUsuario(editar));
 
-						break;
+                        break;
                 }
 
                 FlujoEscritura.writeObject(paquete);

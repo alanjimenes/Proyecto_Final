@@ -1,37 +1,25 @@
 package logico;
 
-import java.io.Serializable;
-
-public class Especialidad implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private String codigo_espe;
+public class Especialidad {
+	private int codigoEspecialidad;
 	private String nombre;
 
-	public Especialidad(String codigo_espe, String nombre) {
-		super();
-		this.codigo_espe = codigo_espe;
+	public Especialidad() {
+	}
+
+	public Especialidad(int codigoEspecialidad, String nombre) {
+		this.codigoEspecialidad = codigoEspecialidad;
 		this.nombre = nombre;
 	}
 
+	public int getCodigoEspecialidad() { return codigoEspecialidad; }
+	public void setCodigoEspecialidad(int codigoEspecialidad) { this.codigoEspecialidad = codigoEspecialidad; }
 
-	public void setCodigo_espe(String codigo_espe) {
-		this.codigo_espe = codigo_espe;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getCodigo_espe() {
-		return codigo_espe;
-	}
+	public String getNombre() { return nombre; }
+	public void setNombre(String nombre) { this.nombre = nombre; }
 
 	@Override
 	public String toString() {
-		return nombre; // VITAL PARA LA INTERFAZ
+		return nombre;
 	}
 }
