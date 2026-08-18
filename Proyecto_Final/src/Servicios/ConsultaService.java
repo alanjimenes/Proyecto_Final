@@ -3,6 +3,7 @@ package Servicios;
 import Utils.ConexionDB;
 import logico.Consulta;
 import logico.Enfermedad;
+import logico.RecetaMedica;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -10,24 +11,27 @@ import java.util.ArrayList;
 
 public class ConsultaService {
 
-
     public boolean registrarConsultaCompleta(Consulta con, String cedulaMedico, String cedulaCliente) {
         String sqlConsulta = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) values " +
                 "(?, ?, ?, (" +
-                "select persona.codigo_persona " +
+                "select codigo_persona " +
                 "from persona " +
-                "where persona.cedula = ?), (" +
-                "select persona.codigo_persona " +
+                "where cedula = ?), (" +
+                "select codigo_persona " +
                 "from persona " +
-                "where persona.cedula = ?))";
-        String sqlEnfermedad = "insert into enfermedad_consulta (codigo_enfermedad, codigo_consulta) values " +
-                "(?, ?)";
+                "where cedula = ?))";
 
-        try (Connection conn = Utils.ConexionDB.getConexion()) {
+        Connection conn = null;
+        RecetaService recetaService = new RecetaService();
+        EvaluacionFisicaService evaluacionService = new EvaluacionFisicaService();
+        EnfermedadConsultaService enfermedadService = new EnfermedadConsultaService();
+
+        try {
+            conn = ConexionDB.getConexion();
             conn.setAutoCommit(false);
             int generatedId = -1;
 
-            try (PreparedStatement stmtCons = conn.prepareStatement(sqlConsulta, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement stmtCons = conn.prepareStatement(sqlConsulta, Statement.RETURN_GENERATED_KEYS)) {
                 stmtCons.setTimestamp(1, Timestamp.valueOf(con.getFechaConsulta().atStartOfDay()));
                 stmtCons.setString(2, con.getSintomas());
                 stmtCons.setString(3, con.getDiagnostico());
@@ -35,30 +39,56 @@ public class ConsultaService {
                 stmtCons.setString(5, cedulaCliente);
                 stmtCons.executeUpdate();
 
-                ResultSet rs = stmtCons.getGeneratedKeys();
-                if (rs.next()) {
-                    generatedId = rs.getInt(1);
+                try (ResultSet rs = stmtCons.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        generatedId = rs.getInt(1);
+                    }
                 }
             }
 
-            if (generatedId != -1 && con.getEnfermedadesDiag() != null && !con.getEnfermedadesDiag().isEmpty()) {
-                try (PreparedStatement stmtEnf = conn.prepareStatement(sqlEnfermedad)) {
-                    for (Enfermedad enf : con.getEnfermedadesDiag()) {
-                        stmtEnf.setInt(1, Integer.parseInt(enf.getCodigo_sick()));
-                        stmtEnf.setInt(2, generatedId);
-                        stmtEnf.addBatch();
-                    }
-                    stmtEnf.executeBatch();
+            if (generatedId <= 0) {
+                conn.rollback();
+                return false;
+            }
+
+            if (con.getEvaluacion() != null) {
+                evaluacionService.registrarEvaluacion(conn, con.getEvaluacion(), generatedId);
+            }
+
+            if (con.getRecetas() != null && !con.getRecetas().isEmpty()) {
+                for (RecetaMedica receta : con.getRecetas()) {
+                    recetaService.registrarReceta(conn, receta, generatedId);
+                }
+            }
+
+            if (con.getEnfermedadesDiag() != null && !con.getEnfermedadesDiag().isEmpty()) {
+                for (Enfermedad enf : con.getEnfermedadesDiag()) {
+                    enfermedadService.registrarDiagnostico(conn, enf, generatedId);
                 }
             }
 
             conn.commit();
-            conn.setAutoCommit(true);
             return true;
 
         } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
             return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -67,8 +97,8 @@ public class ConsultaService {
                 "(?, ?, ?, ?, ?)";
         int generatedId = -1;
 
-        try (Connection conn = Utils.ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = ConexionDB.getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setTimestamp(1, Timestamp.valueOf(con.getFechaConsulta().atStartOfDay()));
             stmt.setString(2, con.getSintomas());
@@ -77,9 +107,10 @@ public class ConsultaService {
             stmt.setInt(5, codigoCliente);
             stmt.executeUpdate();
 
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                generatedId = rs.getInt(1);
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    generatedId = rs.getInt(1);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -88,12 +119,15 @@ public class ConsultaService {
     }
 
     public boolean guardarConsulta(int codigoConsulta, String sintomas, String diagnostico, ArrayList<Enfermedad> enfermedades) {
-        String sqlUpdate = "update consulta set consulta.sintomas = ?, consulta.diagnostico = ? " +
-                "where consulta.codigo_cons = ?";
+        String sqlUpdate = "update consulta set sintomas = ?, diagnostico = ? " +
+                "where codigo_cons = ?";
         String sqlEnfermedad = "insert into enfermedad_consulta (codigo_enfermedad, codigo_consulta) values " +
                 "(?, ?)";
 
-        try (Connection conn = Utils.ConexionDB.getConexion()) {
+        Connection conn = null;
+
+        try {
+            conn = ConexionDB.getConexion();
             conn.setAutoCommit(false);
 
             try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
@@ -106,7 +140,7 @@ public class ConsultaService {
             if (enfermedades != null && !enfermedades.isEmpty()) {
                 try (PreparedStatement stmtEnf = conn.prepareStatement(sqlEnfermedad)) {
                     for (Enfermedad enf : enfermedades) {
-                        stmtEnf.setInt(1, Integer.parseInt(enf.getCodigo_sick()));
+                        stmtEnf.setInt(1, enf.getCodigoEnfermedad());
                         stmtEnf.setInt(2, codigoConsulta);
                         stmtEnf.addBatch();
                     }
@@ -115,35 +149,45 @@ public class ConsultaService {
             }
 
             conn.commit();
-            conn.setAutoCommit(true);
             return true;
 
         } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
             return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     public ArrayList<Consulta> getTodasLasConsultas() {
         ArrayList<Consulta> lista = new ArrayList<>();
-        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico, " +
-                "consulta.resumen " +
+        String sql = "select codigo_cons, fechaconsulta, sintomas, diagnostico " +
                 "from consulta";
 
-        try (Connection conn = Utils.ConexionDB.getConexion();
+        try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Consulta consulta = new Consulta(
-                        String.valueOf(rs.getInt("codigo_cons")),
-                        rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate(),
-                        rs.getString("sintomas"),
-                        rs.getString("diagnostico"),
-                        null,
-                        null
-                );
-                consulta.setRecetaMedica(rs.getString("resumen"));
+                Consulta consulta = new Consulta();
+                consulta.setCodigoConsulta(rs.getInt("codigo_cons"));
+                consulta.setFechaConsulta(rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate());
+                consulta.setSintomas(rs.getString("sintomas"));
+                consulta.setDiagnostico(rs.getString("diagnostico"));
                 lista.add(consulta);
             }
         } catch (SQLException e) {
@@ -154,27 +198,24 @@ public class ConsultaService {
 
     public ArrayList<Consulta> getConsultasPorRango(LocalDate desde, LocalDate hasta) {
         ArrayList<Consulta> lista = new ArrayList<>();
-        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico " +
+        String sql = "select codigo_cons, fechaconsulta, sintomas, diagnostico " +
                 "from consulta " +
-                "where consulta.fechaconsulta >= ? and consulta.fechaconsulta <= ?";
+                "where fechaconsulta >= ? and fechaconsulta <= ?";
 
-        try (Connection conn = Utils.ConexionDB.getConexion();
+        try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setTimestamp(1, Timestamp.valueOf(desde.atStartOfDay()));
             stmt.setTimestamp(2, Timestamp.valueOf(hasta.atTime(23, 59, 59)));
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Consulta consulta = new Consulta(
-                        String.valueOf(rs.getInt("codigo_cons")),
-                        rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate(),
-                        rs.getString("sintomas"),
-                        rs.getString("diagnostico"),
-                        null,
-                        null
-                );
-                lista.add(consulta);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Consulta consulta = new Consulta();
+                    consulta.setCodigoConsulta(rs.getInt("codigo_cons"));
+                    consulta.setFechaConsulta(rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate());
+                    consulta.setSintomas(rs.getString("sintomas"));
+                    consulta.setDiagnostico(rs.getString("diagnostico"));
+                    lista.add(consulta);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -190,22 +231,19 @@ public class ConsultaService {
                 "inner join persona on medico.codigo_persona = persona.codigo_persona " +
                 "where persona.cedula = ?";
 
-        try (Connection conn = Utils.ConexionDB.getConexion();
+        try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedulaDoctor);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Consulta consulta = new Consulta(
-                        String.valueOf(rs.getInt("codigo_cons")),
-                        rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate(),
-                        rs.getString("sintomas"),
-                        rs.getString("diagnostico"),
-                        null,
-                        null
-                );
-                lista.add(consulta);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Consulta consulta = new Consulta();
+                    consulta.setCodigoConsulta(rs.getInt("codigo_cons"));
+                    consulta.setFechaConsulta(rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate());
+                    consulta.setSintomas(rs.getString("sintomas"));
+                    consulta.setDiagnostico(rs.getString("diagnostico"));
+                    lista.add(consulta);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -221,22 +259,19 @@ public class ConsultaService {
                 "inner join persona on cliente.codigo_persona = persona.codigo_persona " +
                 "where persona.cedula = ?";
 
-        try (Connection conn = Utils.ConexionDB.getConexion();
+        try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedulaCliente);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Consulta consulta = new Consulta(
-                        String.valueOf(rs.getInt("codigo_cons")),
-                        rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate(),
-                        rs.getString("sintomas"),
-                        rs.getString("diagnostico"),
-                        null,
-                        null
-                );
-                lista.add(consulta);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Consulta consulta = new Consulta();
+                    consulta.setCodigoConsulta(rs.getInt("codigo_cons"));
+                    consulta.setFechaConsulta(rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate());
+                    consulta.setSintomas(rs.getString("sintomas"));
+                    consulta.setDiagnostico(rs.getString("diagnostico"));
+                    lista.add(consulta);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

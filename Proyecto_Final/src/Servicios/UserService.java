@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.sql.Statement;
 
 import Utils.ConexionDB;
 import logico.User;
@@ -14,8 +13,7 @@ public class UserService {
 
     public User login(String usuario, String password) {
         User user = null;
-
-        String sql = "select nombreUsuario, password, rol from Usuario where nombreUsuario = ? and password = ? ";
+        String sql = "select codigo_usuario, nombreusuario, password, rol from usuario where nombreusuario = ? and password = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -24,7 +22,7 @@ public class UserService {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    user = new User(rs.getString("rol"), rs.getString("nombreUsuario"), rs.getString("password"), "");
+                    user = new User(rs.getInt("codigo_usuario"), rs.getString("nombreusuario"), rs.getString("password"), rs.getString("rol"));
                 }
             }
 
@@ -36,9 +34,7 @@ public class UserService {
     }
 
     public boolean existeUsuario(String usuario) {
-        String sql = "select codigo_usuario " +
-                "from Usuario " +
-                "where nombreUsuario = ? ";
+        String sql = "select codigo_usuario from usuario where nombreusuario = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -56,15 +52,7 @@ public class UserService {
     }
 
     public boolean registrarUsuario(User user) {
-        String sqlUser = "insert into Usuario (nombreUsuario, password, rol) values " +
-                "(?, ?, ?)";
-
-        String sqlPersona = " select codigo_persona " +
-                "from Persona " +
-                "where cedula = ? ";
-
-        String sqlUpdate = " update Medico set codigo_usuario = ? " +
-                "where codigo_persona = ?";
+        String sqlUser = "insert into usuario (nombreusuario, password, rol) values (?, ?, ?)";
 
         Connection conn = null;
 
@@ -72,44 +60,11 @@ public class UserService {
             conn = ConexionDB.getConexion();
             conn.setAutoCommit(false);
 
-            int codigoUsuario = 0;
-
-            try (PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
-                stmtUser.setString(1, user.getUsuario());
+            try (PreparedStatement stmtUser = conn.prepareStatement(sqlUser)) {
+                stmtUser.setString(1, user.getNombreUsuario());
                 stmtUser.setString(2, user.getPassword());
                 stmtUser.setString(3, user.getRol());
-
                 stmtUser.executeUpdate();
-
-                try (ResultSet rs = stmtUser.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        codigoUsuario = rs.getInt(1);
-                    }
-                }
-            }
-
-            // 2. Validar lógica adicional si es Médico
-            if (user.getRol().equalsIgnoreCase("Medico")) {
-                int codigoPersona = 0;
-
-                try (PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona)) {
-                    stmtPersona.setString(1, user.getCedula());
-
-                    try (ResultSet rs = stmtPersona.executeQuery()) {
-                        if (rs.next()) {
-                            codigoPersona = rs.getInt("codigo_persona");
-                        } else {
-                            conn.rollback();
-                            return false;
-                        }
-                    }
-                }
-
-                try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
-                    stmtUpdate.setInt(1, codigoUsuario);
-                    stmtUpdate.setInt(2, codigoPersona);
-                    stmtUpdate.executeUpdate();
-                }
             }
 
             conn.commit();
@@ -139,15 +94,12 @@ public class UserService {
 
     public ArrayList<User> listarUsuarios() {
         ArrayList<User> lista = new ArrayList<>();
-
-        String sql = "select nombreUsuario, password, rol " +
-                "from Usuario " +
-                "order by nombreUsuario";
+        String sql = "select codigo_usuario, nombreusuario, password, rol from usuario order by nombreusuario";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                lista.add(new User(rs.getString("rol"), rs.getString("nombreUsuario"), rs.getString("password"), ""));
+                lista.add(new User(rs.getInt("codigo_usuario"), rs.getString("nombreusuario"), rs.getString("password"), rs.getString("rol")));
             }
 
         } catch (SQLException e) {
@@ -158,13 +110,11 @@ public class UserService {
     }
 
     public boolean eliminarUsuario(String usuario) {
-        String sql = "delete from Usuario " +
-                "where nombreUsuario = ?";
+        String sql = "delete from usuario where nombreusuario = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, usuario);
-
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -175,14 +125,13 @@ public class UserService {
     }
 
     public boolean actualizarUsuario(User user) {
-        String sql = "update Usuario set password = ?, rol = ? " +
-                "where nombreUsuario = ?";
+        String sql = "update usuario set password = ?, rol = ? where nombreusuario = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, user.getPassword());
             stmt.setString(2, user.getRol());
-            stmt.setString(3, user.getUsuario());
+            stmt.setString(3, user.getNombreUsuario());
 
             return stmt.executeUpdate() > 0;
 

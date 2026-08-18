@@ -1,40 +1,30 @@
 package logico;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Consulta {
-	private int codigoCons;
-	private Medico medico;
-	private Cliente cliente;
-	private LocalDateTime fechaConsulta;
+	private int codigoConsulta;
+	private LocalDate fechaConsulta;
 	private String sintomas;
 	private String diagnostico;
-	private boolean addResumen;
+	private Medico medico;
+	private Cliente cliente;
+	private boolean bajoVigilancia;
+	private EvaluacionFisica evaluacion;
+	private ArrayList<RecetaMedica> recetas;
+	private ArrayList<Enfermedad> enfermedadesDiag;
 
 	public Consulta() {
+		this.recetas = new ArrayList<>();
+		this.enfermedadesDiag = new ArrayList<>();
 	}
 
-	public Consulta(int codigoCons, Medico medico, Cliente cliente, LocalDateTime fechaConsulta, String sintomas, String diagnostico, boolean addResumen) {
-		this.codigoCons = codigoCons;
-		this.medico = medico;
-		this.cliente = cliente;
-		this.fechaConsulta = fechaConsulta;
-		this.sintomas = sintomas;
-		this.diagnostico = diagnostico;
-		this.addResumen = addResumen;
-	}
+	public int getCodigoConsulta() { return codigoConsulta; }
+	public void setCodigoConsulta(int codigoConsulta) { this.codigoConsulta = codigoConsulta; }
 
-	public int getCodigoCons() { return codigoCons; }
-	public void setCodigoCons(int codigoCons) { this.codigoCons = codigoCons; }
-
-	public Medico getMedico() { return medico; }
-	public void setMedico(Medico medico) { this.medico = medico; }
-
-	public Cliente getCliente() { return cliente; }
-	public void setCliente(Cliente cliente) { this.cliente = cliente; }
-
-	public LocalDateTime getFechaConsulta() { return fechaConsulta; }
-	public void setFechaConsulta(LocalDateTime fechaConsulta) { this.fechaConsulta = fechaConsulta; }
+	public LocalDate getFechaConsulta() { return fechaConsulta; }
+	public void setFechaConsulta(LocalDate fechaConsulta) { this.fechaConsulta = fechaConsulta; }
 
 	public String getSintomas() { return sintomas; }
 	public void setSintomas(String sintomas) { this.sintomas = sintomas; }
@@ -42,6 +32,21 @@ public class Consulta {
 	public String getDiagnostico() { return diagnostico; }
 	public void setDiagnostico(String diagnostico) { this.diagnostico = diagnostico; }
 
-	public boolean isAddResumen() { return addResumen; }
-	public void setAddResumen(boolean addResumen) { this.addResumen = addResumen; }
+	public Medico getMedico() { return medico; }
+	public void setMedico(Medico medico) { this.medico = medico; }
+
+	public Cliente getCliente() { return cliente; }
+	public void setCliente(Cliente cliente) { this.cliente = cliente; }
+
+	public boolean bajoVigilancia() { return bajoVigilancia; }
+	public void setBajoVigilancia(boolean bajoVigilancia) { this.bajoVigilancia = bajoVigilancia; }
+
+	public EvaluacionFisica getEvaluacion() { return evaluacion; }
+	public void setEvaluacion(EvaluacionFisica evaluacion) { this.evaluacion = evaluacion; }
+
+	public ArrayList<RecetaMedica> getRecetas() { return recetas; }
+	public void setRecetas(ArrayList<RecetaMedica> recetas) { this.recetas = recetas; }
+
+	public ArrayList<Enfermedad> getEnfermedadesDiag() { return enfermedadesDiag; }
+	public void setEnfermedadesDiag(ArrayList<Enfermedad> enfermedadesDiag) { this.enfermedadesDiag = enfermedadesDiag; }
 }
