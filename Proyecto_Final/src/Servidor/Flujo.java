@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Flujo extends Thread {
     Socket nsfd;
@@ -37,13 +38,13 @@ public class Flujo extends Thread {
             return;
         }
 
-        Servicios.ClienteService clienteService = new Servicios.ClienteService();
-        Servicios.MedicoService medicoService = new Servicios.MedicoService();
-        Servicios.EnfermedadService enfermedadService = new Servicios.EnfermedadService();
-        Servicios.EspecialidadService especialidadService = new Servicios.EspecialidadService();
-        Servicios.CitaService citaService = new Servicios.CitaService();
-        Servicios.ConsultaService consultaService = new Servicios.ConsultaService();
-        Servicios.VacunaService vacunaService = new Servicios.VacunaService();
+        ClienteService clienteService = new ClienteService();
+        MedicoService medicoService = new MedicoService();
+        EnfermedadService enfermedadService = new EnfermedadService();
+        EspecialidadService especialidadService = new EspecialidadService();
+        CitaService citaService = new CitaService();
+        ConsultaService consultaService = new ConsultaService();
+        VacunaService vacunaService = new VacunaService();
 
         try {
             while (true) {
@@ -62,7 +63,7 @@ public class Flujo extends Thread {
                 switch (comando.toUpperCase()) {
                     case "LOGIN":
                         User login = (User) paquete.getObjeto();
-                        User respuesta = userService.login(login.getUsuario(), login.getPassword());
+                        User respuesta = userService.login(login.getNombreUsuario(), login.getPassword());
                         paquete.setRespuesta(respuesta);
                         break;
 
@@ -70,7 +71,7 @@ public class Flujo extends Thread {
 
                         User nuevo = (User) paquete.getObjeto();
 
-                        if (userService.existeUsuario(nuevo.getUsuario())) {
+                        if (userService.existeUsuario(nuevo.getNombreUsuario())) {
 
                             paquete.setRespuesta(false);
 
@@ -213,8 +214,8 @@ public class Flujo extends Thread {
                     //CITAS
                     case "REG_CITA":
                         Cita c = (Cita) paquete.getObjeto();
-                        java.time.LocalDateTime inicioCita = c.getFechaCita();
-                        java.time.LocalDateTime finCita = inicioCita.plusMinutes(30);
+                        LocalDateTime inicioCita = c.getFechaCita();
+                        LocalDateTime finCita = inicioCita.plusMinutes(30);
                         boolean disponible = medicoService.verificarDisponibilidad(c.getMedico().getCedula(), inicioCita, finCita);
                         if (disponible) {
                             boolean exitoCita = citaService.crearCita(c, c.getMedico().getCedula(), c.getCliente().getCedula());
@@ -235,8 +236,8 @@ public class Flujo extends Thread {
 
                     case "EDIT_CITA":
                         Cita citaMod = (Cita) paquete.getObjeto();
-                        java.time.LocalDateTime inicioMod = citaMod.getFechaCita();
-                        java.time.LocalDateTime finMod = inicioMod.plusMinutes(30);
+                        LocalDateTime inicioMod = citaMod.getFechaCita();
+                        LocalDateTime finMod = inicioMod.plusMinutes(30);
                         boolean disponibleMod = medicoService.verificarDisponibilidad(citaMod.getMedico().getCedula(), inicioMod, finMod);
                         if (disponibleMod) {
                             boolean exitoEditCita = citaService.editCita(citaMod.getCodigoCita(), citaMod.getFechaCita(), citaMod.getMedico().getCedula());

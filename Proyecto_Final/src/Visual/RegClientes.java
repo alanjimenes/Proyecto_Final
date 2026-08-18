@@ -4,6 +4,7 @@ import Utils.ClienteSocket;
 import Utils.Estilos;
 import com.toedter.calendar.JDateChooser;
 import logico.Cliente;
+import logico.Historial;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -30,8 +31,9 @@ public class RegClientes extends JDialog {
 
     public RegClientes() {
         setResizable(false);
-        setIconImage(
-                Toolkit.getDefaultToolkit().getImage(RegClientes.class.getResource("/img/gestion-de-clientes.png")));
+        try {
+            setIconImage(Toolkit.getDefaultToolkit().getImage(RegClientes.class.getResource("/img/gestion-de-clientes.png")));
+        } catch (Exception e) {}
         initComponents();
         this.clienteActual = null;
     }
@@ -315,7 +317,7 @@ public class RegClientes extends JDialog {
         if (edad < 16) {
             if (txtCedula.getText().length() < 5) {
                 JOptionPane.showMessageDialog(null,
-                        "Paciente menor de 16 años. Por favor ingrese el n�mero de Pasaporte o ID de menor.",
+                        "Paciente menor de 16 años. Por favor ingrese el número de Pasaporte o ID de menor.",
                         "Identificación Requerida", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -336,8 +338,19 @@ public class RegClientes extends JDialog {
                 return;
             }
 
-            Cliente nuevoCliente = new Cliente(0, fechaNacimiento, txtNombre.getText(), txtApellido.getText(), txtCedula.getText(), txtTelefono.getText(), true,
-                    txtDireccion.getText(), cbxGenero.getSelectedItem().toString(), "", false, "");
+            Cliente nuevoCliente = new Cliente();
+            nuevoCliente.setFechaNacimiento(fechaNacimiento);
+            nuevoCliente.setNombre(txtNombre.getText());
+            nuevoCliente.setApellido(txtApellido.getText());
+            nuevoCliente.setCedula(txtCedula.getText());
+            nuevoCliente.setTelefono(txtTelefono.getText());
+            nuevoCliente.setDireccion(txtDireccion.getText());
+            nuevoCliente.setGenero(cbxGenero.getSelectedItem().toString());
+            nuevoCliente.setEstado(true);
+            nuevoCliente.setEnfermo(false);
+            nuevoCliente.setNumExpediente("");
+            nuevoCliente.setAntecedentes("");
+            nuevoCliente.setHistorial(new Historial());
 
             boolean exito = (boolean) ClienteSocket.enviar("REG_CLIENTE", nuevoCliente);
 

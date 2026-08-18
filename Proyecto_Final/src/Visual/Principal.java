@@ -48,7 +48,7 @@ public class Principal extends JFrame {
             setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
         } catch (Exception e) {
         }
-        setTitle("Sistema de Gestión Hospitalaria - Usuario: " + usuarioActual.getUsuario());
+        setTitle("Sistema de Gestión Hospitalaria - Usuario: " + usuarioActual.getNombreUsuario());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dim = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(dim.width, dim.height);
@@ -240,7 +240,7 @@ public class Principal extends JFrame {
 
         // USUARIO LABEL (Derecha)
         menuBar.add(javax.swing.Box.createHorizontalGlue());
-        lblUsuario = new JLabel("Usuario: " + usuarioActual.getUsuario() + " (" + usuarioActual.getRol() + ")  ");
+        lblUsuario = new JLabel("Usuario: " + usuarioActual.getNombreUsuario() + " (" + usuarioActual.getRol() + ")  ");
         lblUsuario.setForeground(Color.WHITE);
         lblUsuario.setFont(new Font("Bahnschrift", Font.BOLD, 16));
         try {
