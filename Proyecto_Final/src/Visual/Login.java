@@ -131,7 +131,6 @@ public class Login extends JFrame {
 	}
 
 	private void intentarLogin() {
-		// TRIM() ES LA CLAVE: Borra espacios al principio y final
 		String usuario = textField.getText().trim();
 		String clave = new String(passwordField.getPassword());
 
@@ -141,7 +140,7 @@ public class Login extends JFrame {
 			return;
 		}
 
-		User userTemp = new User(null, usuario, clave, null);
+		User userTemp = new User(0, usuario, clave, "");
 		Object respuesta = ClienteSocket.enviar("LOGIN", userTemp);
 
 		if (respuesta instanceof User) {

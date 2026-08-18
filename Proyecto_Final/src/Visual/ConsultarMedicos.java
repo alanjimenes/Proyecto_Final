@@ -243,7 +243,7 @@ public class ConsultarMedicos extends JDialog {
 		String f = texto.toLowerCase();
 
 		for (Medico med : listaMedicosGlobal) {
-			if (med.isActivo() && (f.isEmpty() || med.getNombre().toLowerCase().contains(f))) {
+			if (med.isEstado() && (f.isEmpty() || med.getNombre().toLowerCase().contains(f))) {
 				row[0] = med.getCedula();
 				row[1] = med.getNombre();
 				row[2] = med.getApellido();

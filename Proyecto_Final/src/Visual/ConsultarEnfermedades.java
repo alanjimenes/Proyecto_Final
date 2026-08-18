@@ -166,11 +166,11 @@ public class ConsultarEnfermedades extends JDialog {
 		btnDelete.setEnabled(false);
 		btnDelete.addActionListener(e -> {
 			if (seleccionado != null) {
-				int opt = JOptionPane.showConfirmDialog(null, 
+				int opt = JOptionPane.showConfirmDialog(null,
 						"¿Seguro desea desactivar la enfermedad " + seleccionado.getNombre() + "?",
 						"Confirmar", JOptionPane.YES_NO_OPTION);
 				if (opt == JOptionPane.YES_OPTION) {
-					seleccionado.setActivo(false); 
+					seleccionado.setActivo(false);
 					boolean exito = (boolean) ClienteSocket.enviar("UPDATE_ENFERMEDAD", seleccionado);
 
 					if (exito) {
@@ -193,7 +193,7 @@ public class ConsultarEnfermedades extends JDialog {
 
 	@SuppressWarnings("unchecked")
 	public void cargarEnfermedadesServer() {
-		listaEnfermedadesGlobal = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null); 
+		listaEnfermedadesGlobal = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
 		if (listaEnfermedadesGlobal == null)
 			listaEnfermedadesGlobal = new ArrayList<>();
 
@@ -205,16 +205,21 @@ public class ConsultarEnfermedades extends JDialog {
 		String filtro = texto.toLowerCase();
 
 		for (Enfermedad enf : listaEnfermedadesGlobal) {
-			if (enf.isActivo() && (filtro.isEmpty() || enf.getNombre().toLowerCase().contains(filtro))) {
+			if (filtro.isEmpty() || enf.getNombre().toLowerCase().contains(filtro)) {
 				String vig = enf.isVigilancia() ? "Sí (ALERTA)" : "No";
-				model.addRow(new Object[] { enf.getCodigo_sick(), enf.getNombre(), vig });
+				model.addRow(new Object[] { enf.getCodigoEnfermedad(), enf.getNombre(), vig });
 			}
 		}
 	}
 
 	private Enfermedad buscarEnfermedadLocal(String codigo) {
-		for (Enfermedad e : listaEnfermedadesGlobal) {
-			if (e.getCodigo_sick().equals(codigo)) return e;
+		try {
+			int codigoInt = Integer.parseInt(codigo);
+			for (Enfermedad e : listaEnfermedadesGlobal) {
+				if (e.getCodigoEnfermedad() == codigoInt) return e;
+			}
+		} catch (NumberFormatException ex) {
+			ex.printStackTrace();
 		}
 		return null;
 	}

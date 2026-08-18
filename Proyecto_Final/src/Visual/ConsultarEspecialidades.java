@@ -35,12 +35,11 @@ public class ConsultarEspecialidades extends JDialog {
 	private Especialidad seleccionado = null;
 	private JButton btnUpdate;
 	private JButton btnDelete;
+	private ArrayList<Especialidad> listaGlobalEspecialidades;
 
 	public ConsultarEspecialidades() {
-		//setIconImage(Toolkit.getDefaultToolkit().getImage(ConsultarEspecialidades.class.getResource("/img/seguro-de-salud.png")));
-
 		setTitle("Gestión de Especialidades");
-		setBounds(100, 100, 700, 500); 
+		setBounds(100, 100, 700, 500);
 		setResizable(false);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -67,8 +66,10 @@ public class ConsultarEspecialidades extends JDialog {
 				if (index >= 0) {
 					String codigo = table.getValueAt(index, 0).toString();
 					seleccionado = buscarLocal(codigo);
-					btnUpdate.setEnabled(true);
-					btnDelete.setEnabled(true);
+					if (seleccionado != null) {
+						btnUpdate.setEnabled(true);
+						btnDelete.setEnabled(true);
+					}
 				}
 			}
 		});
@@ -122,7 +123,7 @@ public class ConsultarEspecialidades extends JDialog {
 			Estilos.estilarBoton(btnUpdate, new Color(41, 128, 185), Color.WHITE);
 			btnUpdate.setEnabled(false);
 			btnUpdate.addActionListener(e -> {
-				if(seleccionado != null) { 
+				if(seleccionado != null) {
 					RegEspecialidad reg = new RegEspecialidad(seleccionado);
 					reg.setModal(true);
 					reg.setVisible(true);
@@ -139,7 +140,7 @@ public class ConsultarEspecialidades extends JDialog {
 				if(seleccionado != null) {
 					int opt = JOptionPane.showConfirmDialog(null, "¿Eliminar especialidad?", "Confirmar", JOptionPane.YES_NO_OPTION);
 					if(opt == JOptionPane.YES_OPTION) {
-						ClienteSocket.enviar("DELETE_ESPECIALIDAD", seleccionado);
+						ClienteSocket.enviar("DELETE_ESPECIALIDAD", seleccionado.getCodigoEspecialidad() + "");
 						cargarEspecialidades();
 						resetBotones();
 					}
@@ -165,22 +166,25 @@ public class ConsultarEspecialidades extends JDialog {
 	@SuppressWarnings("unchecked")
 	private void cargarEspecialidades() {
 		model.setRowCount(0);
-		ArrayList<Especialidad> lista = (ArrayList<Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
+		listaGlobalEspecialidades = (ArrayList<Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
 
-		if (lista != null) {
-			for (Especialidad esp : lista) {
-				model.addRow(new Object[] { esp.getCodigo_espe(), esp.getNombre() });
+		if (listaGlobalEspecialidades != null) {
+			for (Especialidad esp : listaGlobalEspecialidades) {
+				model.addRow(new Object[] { esp.getCodigoEspecialidad(), esp.getNombre() });
 			}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private Especialidad buscarLocal(String codigo) {
-		ArrayList<Especialidad> lista = (ArrayList<Especialidad>) ClienteSocket.enviar("LISTAR_ESPECIALIDADES", null);
-		if (lista != null) {
-			for (Especialidad esp : lista) {
-				if(esp.getCodigo_espe().equals(codigo)) return esp;
+		try {
+			int codigoInt = Integer.parseInt(codigo);
+			if (listaGlobalEspecialidades != null) {
+				for (Especialidad esp : listaGlobalEspecialidades) {
+					if (esp.getCodigoEspecialidad() == codigoInt) return esp;
+				}
 			}
+		} catch (NumberFormatException ex) {
+			ex.printStackTrace();
 		}
 		return null;
 	}
