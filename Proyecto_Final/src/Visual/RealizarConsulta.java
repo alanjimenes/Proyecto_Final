@@ -1,34 +1,16 @@
 package Visual;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-
 import Utils.ClienteSocket;
 import Utils.Estilos;
 import Utils.GeneradorReportes;
 import logico.*;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class RealizarConsulta extends JDialog {
 

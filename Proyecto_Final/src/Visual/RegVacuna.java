@@ -1,33 +1,21 @@
 package Visual;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-
 import Utils.ClienteSocket;
 import Utils.Estilos;
 import logico.Vacuna;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class RegVacuna extends JDialog {
 
-	private final JPanel contentPanel = new JPanel(); 
+	private final JPanel contentPanel = new JPanel();
 	private JTextField txtNombre;
 	private JTextArea txtDescripcion;
-	private Vacuna vacunaActual = null; 
+	private Vacuna vacunaActual = null;
 	private JButton okButton;
 
 	public RegVacuna() {
@@ -48,8 +36,7 @@ public class RegVacuna extends JDialog {
 
 	private void init() {
 		setResizable(false);
-		try { 
-			//setIconImage(Toolkit.getDefaultToolkit().getImage(RegVacuna.class.getResource("/img/vacuna.png")));
+		try {
 		} catch (Exception e) {}
 
 		setBounds(100, 100, 450, 300);
@@ -112,7 +99,7 @@ public class RegVacuna extends JDialog {
 		});
 		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE);
 		btnLimpiar.setBounds(181, 250, 110, 35);
-		contentPanel.add(btnLimpiar); 
+		contentPanel.add(btnLimpiar);
 	}
 
 	private void registrarVacuna() {
@@ -122,11 +109,7 @@ public class RegVacuna extends JDialog {
 		}
 
 		if (vacunaActual == null) {
-			ArrayList<Vacuna> lista = (ArrayList<Vacuna>) ClienteSocket.enviar("LISTAR_VACUNAS", null);
-			int id = (lista != null) ? lista.size() + 1 : 1;
-			String codigo = "VAC-" + id;
-
-			Vacuna aux = new Vacuna(codigo, txtNombre.getText(), txtDescripcion.getText());
+			Vacuna aux = new Vacuna(0, txtNombre.getText(), txtDescripcion.getText(), true);
 			Object respuesta = ClienteSocket.enviar("REG_VACUNA", aux);
 			boolean exito = (respuesta != null && (boolean) respuesta);
 

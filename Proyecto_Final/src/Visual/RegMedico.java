@@ -1,35 +1,20 @@
 package Visual;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Toolkit;
+import Utils.ClienteSocket;
+import Utils.Estilos;
+import com.toedter.calendar.JDateChooser;
+import logico.Especialidad;
+import logico.Medico;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.border.EmptyBorder;
-
-import Utils.ClienteSocket;
-import Utils.Estilos;
-import com.toedter.calendar.JDateChooser;
-
-import logico.Especialidad;
-import logico.Medico;
 
 public class RegMedico extends JDialog {
 

@@ -1,15 +1,20 @@
 package logico;
 
+import java.util.ArrayList;
+
 public class Historial {
     private int codigoHistorial;
     private Cliente cliente;
+    private ArrayList<Consulta> consultas;
 
     public Historial() {
+        this.consultas = new ArrayList<>();
     }
 
     public Historial(int codigoHistorial, Cliente cliente) {
         this.codigoHistorial = codigoHistorial;
         this.cliente = cliente;
+        this.consultas = new ArrayList<>();
     }
 
     public int getCodigoHistorial() {
@@ -26,5 +31,13 @@ public class Historial {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public ArrayList<Consulta> getConsultas() {
+        return consultas;
+    }
+
+    public void setConsultas(ArrayList<Consulta> consultas) {
+        this.consultas = consultas;
     }
 }

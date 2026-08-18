@@ -5,6 +5,7 @@ public class User {
 	private String nombreUsuario;
 	private String password;
 	private String rol;
+	private String cedula;
 
 	public User() {
 	}
@@ -16,8 +17,12 @@ public class User {
 		this.rol = rol;
 	}
 
-	public String getUsuario() {
-		return nombreUsuario;
+	public User(int codigoUsuario, String nombreUsuario, String password, String rol, String cedula) {
+		this.codigoUsuario = codigoUsuario;
+		this.nombreUsuario = nombreUsuario;
+		this.password = password;
+		this.rol = rol;
+		this.cedula = cedula;
 	}
 
 	public int getCodigoUsuario() { return codigoUsuario; }
@@ -31,4 +36,7 @@ public class User {
 
 	public String getRol() { return rol; }
 	public void setRol(String rol) { this.rol = rol; }
+
+	public String getCedula() { return cedula; }
+	public void setCedula(String cedula) { this.cedula = cedula; }
 }

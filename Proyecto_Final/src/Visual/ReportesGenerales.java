@@ -1,45 +1,25 @@
 package Visual;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.time.LocalDate;
-import java.time.Period; // �IMPORTANTE PARA CALCULAR EDAD!
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import Utils.ClienteSocket;
+import Utils.Estilos;
+import Utils.GeneradorPDF;
+import com.toedter.calendar.JDateChooser;
+import logico.*;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-
-import Utils.ClienteSocket;
-import Utils.Estilos;
-import Utils.GeneradorPDF;
-import com.toedter.calendar.JDateChooser;
-
-import logico.Cita;
-import logico.Cliente;
-import logico.Consulta;
-import logico.Enfermedad;
-import logico.Medico;
-import logico.Vacuna;
+import java.awt.*;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ReportesGenerales extends JDialog {
 
@@ -75,7 +55,7 @@ public class ReportesGenerales extends JDialog {
 		JPanel panelNorte = new JPanel();
 		panelNorte.setBackground(colorPrimario);
 		panelNorte.setBorder(new EmptyBorder(10, 10, 10, 10));
-		JLabel lblTitulo = new JLabel("Reportes e Indicadores de Gesti�n");
+		JLabel lblTitulo = new JLabel("Reportes e Indicadores de Gestión");
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 24));
 		panelNorte.add(lblTitulo);
@@ -91,12 +71,11 @@ public class ReportesGenerales extends JDialog {
 		tabbedPane.addTab("5. Casos Activos", crearPanelEnfermedadesActuales());
 		tabbedPane.addTab("6. Rendimiento Médico", crearPanelConsultasMedicoFecha());
 		tabbedPane.addTab("7. Epidemiología", crearPanelEnfermedadFecha());
-		tabbedPane.addTab("9. D�as Pico", crearPanelDiasPico());
+		tabbedPane.addTab("9. Días Pico", crearPanelDiasPico());
 		tabbedPane.addTab("10. Demografía (Sexo)", crearPanelSexoFecha());
 		tabbedPane.addTab("11. Demografía (Edad)", crearPanelEdades());
 
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
-
 
 		JPanel panelSur = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		panelSur.setBackground(colorPrimario);
@@ -124,7 +103,7 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarCitasPorFecha());
 
-		return armarPanelFiltroTabla(modelCitasFecha, "Resumen de Citas por Fecha", 
+		return armarPanelFiltroTabla(modelCitasFecha, "Resumen de Citas por Fecha",
 				new Object[]{new JLabel("Desde:"), d1Citas, new JLabel("Hasta:"), d2Citas, btnGenerar});
 	}
 
@@ -138,7 +117,7 @@ public class ReportesGenerales extends JDialog {
 			int totalRango = 0;
 			if(listaCitasGlobal != null) {
 				for(Cita c : listaCitasGlobal) {
-					LocalDate fechaCita = c.getFechaHora().toLocalDate();
+					LocalDate fechaCita = c.getFechaCita().toLocalDate();
 					if(!fechaCita.isBefore(inicio) && !fechaCita.isAfter(fin)) {
 						String key = fechaCita.toString();
 						conteo.put(key, conteo.getOrDefault(key, 0) + 1);
@@ -161,7 +140,7 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarConsultasPorFecha());
 
-		return armarPanelFiltroTabla(modelConsultasFecha, "Resumen de Consultas Realizadas", 
+		return armarPanelFiltroTabla(modelConsultasFecha, "Resumen de Consultas Realizadas",
 				new Object[]{new JLabel("Desde:"), d1Cons, new JLabel("Hasta:"), d2Cons, btnGenerar});
 	}
 
@@ -219,7 +198,7 @@ public class ReportesGenerales extends JDialog {
 
 		if(listaVacunasGlobal != null) {
 			for(Vacuna v : listaVacunasGlobal) {
-				modelVacunas.addRow(new Object[]{v.getCodigo_vacun(), v.getNombre(), v.getDescripcion()});
+				modelVacunas.addRow(new Object[]{v.getCodigoVacuna(), v.getNombre(), v.getDescripcion()});
 			}
 		}
 		return panel;
@@ -239,7 +218,7 @@ public class ReportesGenerales extends JDialog {
 		Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
 		btnGenerar.addActionListener(e -> generarEnfermedadesActuales());
 
-		return armarPanelFiltroTabla(modelEnfEsp, "Pacientes Enfermos (Actuales)", 
+		return armarPanelFiltroTabla(modelEnfEsp, "Pacientes Enfermos (Actuales)",
 				new Object[]{new JLabel("Enfermedad:"), cbEnfermedad, chkVigilanciaOnly, btnGenerar});
 	}
 
@@ -420,7 +399,7 @@ public class ReportesGenerales extends JDialog {
 
 		if(listaClientesGlobal != null) {
 			for(Cliente cli : listaClientesGlobal) {
-				String genero = cli.getGenero(); 
+				String genero = cli.getGenero();
 				if(genero == null) genero = "Desconocido";
 
 				for(Consulta con : cli.getHistorial().getConsultas()) {
@@ -445,7 +424,7 @@ public class ReportesGenerales extends JDialog {
 		modelEdades = new DefaultTableModel(new String[]{"Rango de Edad", "Cantidad Pacientes", "Porcentaje"}, 0);
 		JPanel panel = armarPanelFiltroTabla(modelEdades, "Distribución Demográfica por Edad", new Object[]{});
 
-		int[] contadores = new int[5]; 
+		int[] contadores = new int[5];
 		String[] etiquetas = {"Niños (0-12)", "Adolescentes (13-19)", "Jóvenes (20-39)", "Adultos (40-59)", "Adultos Mayores (60+)"};
 		int totalPacientes = 0;
 
@@ -489,7 +468,7 @@ public class ReportesGenerales extends JDialog {
 		JButton btnPDF = new JButton("Exportar PDF");
 		Estilos.estilarBoton(btnPDF, colorRojo, Color.WHITE);
 		btnPDF.addActionListener(e -> {
-			JTable tempTable = new JTable(model); 
+			JTable tempTable = new JTable(model);
 			GeneradorPDF.exportarJTablePDF(tempTable, tituloPDF);
 		});
 		top.add(btnPDF);

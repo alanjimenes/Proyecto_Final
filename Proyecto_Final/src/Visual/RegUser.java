@@ -1,28 +1,16 @@
 package Visual;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-
 import Utils.ClienteSocket;
 import Utils.Estilos;
 import logico.Medico;
 import logico.User;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class RegUser extends JDialog {
 
@@ -120,7 +108,6 @@ public class RegUser extends JDialog {
 		cbMedicos.setVisible(false);
 		contentPanel.add(cbMedicos);
 
-		// --- AQUI EMPIEZA LO QUE ARREGLO ---
 		{
 			JButton okButton = new JButton("Registrar");
 			Estilos.estilarBoton(okButton, new Color(99, 163, 97), Color.WHITE);
@@ -170,12 +157,11 @@ public class RegUser extends JDialog {
 						}
 					}
 
-					User user = new User(tipo, userTxt, pass1, cedulaLink);
+					User user = new User(0, userTxt, pass1, tipo);
+					user.setCedula(cedulaLink);
 
-					// ENVIAMOS AL SERVER
 					Object respuestaServidor = ClienteSocket.enviar("REG_USER", user);
 
-					// --- MANEJO DE ERRORES CORRECTO ---
 					if (respuestaServidor == null) {
 						JOptionPane.showMessageDialog(contentPanel,
 								"Error grave: No hubo respuesta del servidor.\n",
@@ -197,7 +183,6 @@ public class RegUser extends JDialog {
 			okButton.setActionCommand("OK");
 			getRootPane().setDefaultButton(okButton);
 		}
-		// --- FIN DE LO QUE ARREGLO ---
 
 		{
 			JButton cancelButton = new JButton("Cancel");
