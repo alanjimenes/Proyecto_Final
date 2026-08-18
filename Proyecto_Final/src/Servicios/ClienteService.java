@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
 import java.util.ArrayList;
+
 import logico.Cliente;
 import Utils.ConexionDB;
 
@@ -18,25 +19,31 @@ public class ClienteService {
         String sqlCliente = "insert into cliente (codigo_persona, numexpediente, enfermo) values " +
                 "(?, ?, ?)";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        Connection conn = null;
 
+        try {
+            conn = ConexionDB.getConexion();
             conn.setAutoCommit(false);
 
-            stmtPersona.setDate(1, Date.valueOf(cli.getFechaNacimiento()));
-            stmtPersona.setString(2, cli.getNombre());
-            stmtPersona.setString(3, cli.getApellido());
-            stmtPersona.setString(4, cli.getCedula());
-            stmtPersona.setString(5, cli.getTelefono());
-            stmtPersona.setBoolean(6, cli.isActivo());
-            stmtPersona.setString(7, cli.getDireccion());
-            stmtPersona.setString(8, cli.getGenero());
-
-            stmtPersona.executeUpdate();
-            ResultSet rs = stmtPersona.getGeneratedKeys();
             int idPersona = 0;
-            if (rs.next()) {
-                idPersona = rs.getInt(1);
+
+            try (PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                stmtPersona.setDate(1, Date.valueOf(cli.getFechaNacimiento()));
+                stmtPersona.setString(2, cli.getNombre());
+                stmtPersona.setString(3, cli.getApellido());
+                stmtPersona.setString(4, cli.getCedula());
+                stmtPersona.setString(5, cli.getTelefono());
+                stmtPersona.setBoolean(6, cli.getEstado());
+                stmtPersona.setString(7, cli.getDireccion());
+                stmtPersona.setString(8, cli.getGenero());
+
+                stmtPersona.executeUpdate();
+
+                try (ResultSet rs = stmtPersona.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        idPersona = rs.getInt(1);
+                    }
+                }
             }
 
             try (PreparedStatement stmtCliente = conn.prepareStatement(sqlCliente)) {
@@ -53,26 +60,45 @@ public class ClienteService {
             }
 
             conn.commit();
-            conn.setAutoCommit(true);
             return true;
 
         } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
             return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     public boolean actualizarCliente(Cliente cli) {
-        String sqlPersona = "update persona set persona.fechanacimiento = ?, persona.nombre = ?, " +
-                "persona.apellido = ?, persona.telefono = ?, persona.direccion = ?, persona.estado = ? , persona.genero = ? " +
-                "where persona.cedula = ?";
-        String sqlCliente = "update cliente set cliente.enfermo = ?, cliente.numexpediente = ?" +
-                "where cliente.codigo_persona = (" +
-                "select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?)";
+        String sqlPersona = "update persona set fechanacimiento = ?, nombre = ?, " +
+                "apellido = ?, telefono = ?, direccion = ?, estado = ?, genero = ? " +
+                "where cedula = ?";
 
-        try (Connection conn = ConexionDB.getConexion()) {
+        String sqlCliente = "update cliente set enfermo = ?, numexpediente = ? " +
+                "where codigo_persona = (" +
+                "select codigo_persona " +
+                "from persona " +
+                "where cedula = ?)";
+
+        Connection conn = null;
+
+        try {
+            conn = ConexionDB.getConexion();
             conn.setAutoCommit(false);
 
             try (PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona)) {
@@ -81,9 +107,9 @@ public class ClienteService {
                 stmtPersona.setString(3, cli.getApellido());
                 stmtPersona.setString(4, cli.getTelefono());
                 stmtPersona.setString(5, cli.getDireccion());
-                stmtPersona.setBoolean(6, cli.isActivo());
-                stmtPersona.setString(7, cli.getCedula());
-                stmtPersona.setString(8, cli.getGenero());
+                stmtPersona.setBoolean(6, cli.getEstado());
+                stmtPersona.setString(7, cli.getGenero());
+                stmtPersona.setString(8, cli.getCedula()); // Cédula al final para el WHERE
                 stmtPersona.executeUpdate();
             }
 
@@ -95,18 +121,33 @@ public class ClienteService {
             }
 
             conn.commit();
-            conn.setAutoCommit(true);
             return true;
 
         } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
             return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     public boolean desactivarCliente(String cedula) {
-        String sql = "update persona set persona.estado = 0 " +
-                "where persona.cedula = ?";
+        String sql = "update persona set estado = 0 where cedula = ?";
+
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -132,23 +173,24 @@ public class ClienteService {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, codigoExpediente);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                cliente = new Cliente(
-                        rs.getString("cedula"),
-                        rs.getString("nombre"),
-                        rs.getString("apellido"),
-                        rs.getString("telefono"),
-                        rs.getDate("fechanacimiento").toLocalDate(),
-                        rs.getString("direccion"),
-                        rs.getBoolean("estado"),
-                        rs.getString("numexpediente"),
-                        null,
-                        rs.getBoolean("enfermo"),
-                        new ArrayList<>(),
-                        rs.getString("genero")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    cliente = new Cliente(
+                            rs.getInt("codigo_persona"),
+                            rs.getDate("fechanacimiento").toLocalDate(),
+                            rs.getString("nombre"),
+                            rs.getString("apellido"),
+                            rs.getString("cedula"),
+                            rs.getString("telefono"),
+                            rs.getBoolean("estado"),
+                            rs.getString("direccion"),
+                            rs.getString("genero"),
+                            rs.getString("numexpediente"),
+                            rs.getBoolean("enfermo"),
+                            ""
+                    );
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -169,23 +211,24 @@ public class ClienteService {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedula);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                cliente = new Cliente(
-                        rs.getString("cedula"),
-                        rs.getString("nombre"),
-                        rs.getString("apellido"),
-                        rs.getString("telefono"),
-                        rs.getDate("fechanacimiento").toLocalDate(),
-                        rs.getString("direccion"),
-                        rs.getBoolean("estado"),
-                        rs.getString("numexpediente"),
-                        null,
-                        rs.getBoolean("enfermo"),
-                        new ArrayList<>(),
-                        rs.getString("genero")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    cliente = new Cliente(
+                            rs.getInt("codigo_persona"),
+                            rs.getDate("fechanacimiento").toLocalDate(),
+                            rs.getString("nombre"),
+                            rs.getString("apellido"),
+                            rs.getString("cedula"),
+                            rs.getString("telefono"),
+                            rs.getBoolean("estado"),
+                            rs.getString("direccion"),
+                            rs.getString("genero"),
+                            rs.getString("numexpediente"),
+                            rs.getBoolean("enfermo"),
+                            ""
+                    );
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -207,18 +250,19 @@ public class ClienteService {
 
             while (rs.next()) {
                 Cliente cliente = new Cliente(
-                        rs.getString("cedula"),
+
+                        rs.getInt("codigo_persona"),
+                        rs.getDate("fechanacimiento").toLocalDate(),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
+                        rs.getString("cedula"),
                         rs.getString("telefono"),
-                        rs.getDate("fechanacimiento").toLocalDate(),
-                        rs.getString("direccion"),
                         rs.getBoolean("estado"),
+                        rs.getString("direccion"),
+                        rs.getString("genero"),
                         rs.getString("numexpediente"),
-                        null,
                         rs.getBoolean("enfermo"),
-                        new ArrayList<>(),
-                        rs.getString("genero")
+                        ""
                 );
                 lista.add(cliente);
             }
