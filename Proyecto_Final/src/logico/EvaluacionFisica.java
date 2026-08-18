@@ -1,23 +1,24 @@
 package logico;
 
-public class EvaluacionFisica {
+public class EvaluacionFisica implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private int codigoEvaluacion;
     private Consulta consulta;
     private float temperatura;
     private int frecuenciaCardiaca;
-    private String persionArterial;
+    private String presionArterial;
     private float peso;
     private float talla;
 
     public EvaluacionFisica() {
     }
 
-    public EvaluacionFisica(int codigoEvaluacion, Consulta consulta, float temperatura, int frecuenciaCardiaca, String persionArterial, float peso, float talla) {
+    public EvaluacionFisica(int codigoEvaluacion, Consulta consulta, float temperatura, int frecuenciaCardiaca, String presionArterial, float peso, float talla) {
         this.codigoEvaluacion = codigoEvaluacion;
         this.consulta = consulta;
         this.temperatura = temperatura;
         this.frecuenciaCardiaca = frecuenciaCardiaca;
-        this.persionArterial = persionArterial;
+        this.presionArterial = presionArterial;
         this.peso = peso;
         this.talla = talla;
     }
@@ -55,11 +56,11 @@ public class EvaluacionFisica {
     }
 
     public String getPresionArterial() {
-        return persionArterial;
+        return presionArterial;
     }
 
     public void setPresionArterial(String persionArterial) {
-        this.persionArterial = persionArterial;
+        this.presionArterial = persionArterial;
     }
 
     public float getPeso() {

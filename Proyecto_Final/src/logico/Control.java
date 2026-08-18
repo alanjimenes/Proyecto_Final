@@ -5,7 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Control {
+public class Control implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private static Control control;
 	private User loginUser;

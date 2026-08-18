@@ -2,7 +2,8 @@ package logico;
 
 import java.time.LocalDateTime;
 
-public class RegistroVacunacion {
+public class RegistroVacunacion implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 	private int codigoReg;
 	private Cliente cliente;
 	private LoteVacuna lote;

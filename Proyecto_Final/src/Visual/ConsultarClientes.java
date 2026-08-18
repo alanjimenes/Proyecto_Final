@@ -187,7 +187,7 @@ public class ConsultarClientes extends JDialog {
 		String f = filtro.toLowerCase();
 
 		for (Cliente cli : listaGlobalClientes) {
-			if (cli.isEstado()
+			if (cli.getEstado()
 					&& (f.isEmpty() || cli.getNombre().toLowerCase().contains(f) || cli.getCedula().contains(f))) {
 				row[0] = cli.getNumExpediente();
 				row[1] = cli.getCedula();

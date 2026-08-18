@@ -1,6 +1,7 @@
 package logico;
 
-public class RecetaMedica {
+public class RecetaMedica implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private int codigoRec;
     private Consulta consulta;
     private Medicamento medicamento;

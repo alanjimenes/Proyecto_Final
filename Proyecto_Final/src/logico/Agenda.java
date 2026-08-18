@@ -3,7 +3,8 @@ package logico;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class Agenda {
+public class Agenda implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 
 	public boolean medicoDisponible(Medico medico, LocalDateTime fechaHora, ArrayList<Cita> citasDelDia) {
 		if (citasDelDia == null || citasDelDia.isEmpty()) {

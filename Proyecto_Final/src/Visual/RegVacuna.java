@@ -1,14 +1,26 @@
 package Visual;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
 import Utils.ClienteSocket;
 import Utils.Estilos;
 import logico.Vacuna;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class RegVacuna extends JDialog {
 
@@ -36,10 +48,7 @@ public class RegVacuna extends JDialog {
 
 	private void init() {
 		setResizable(false);
-		try {
-		} catch (Exception e) {}
-
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 450, 340);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(new Color(60, 70, 123));
@@ -72,6 +81,25 @@ public class RegVacuna extends JDialog {
 		txtDescripcion.setLineWrap(true);
 		scrollPane.setViewportView(txtDescripcion);
 
+		JButton btnLimpiar = new JButton("Limpiar");
+		btnLimpiar.addActionListener(e -> {
+			txtNombre.setText("");
+			txtDescripcion.setText("");
+		});
+		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE);
+		btnLimpiar.setBounds(295, 210, 110, 35);
+		contentPanel.add(btnLimpiar);
+
+		JButton btnLote = new JButton("Añadir Lote");
+		Estilos.estilarBoton(btnLote, new Color(41, 128, 185), Color.WHITE);
+		btnLote.setBounds(25, 210, 130, 35);
+		btnLote.addActionListener(e -> {
+			RegLoteVacuna regLote = new RegLoteVacuna();
+			regLote.setModal(true);
+			regLote.setVisible(true);
+		});
+		contentPanel.add(btnLote);
+
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
@@ -91,15 +119,6 @@ public class RegVacuna extends JDialog {
 		Estilos.estilarBoton(cancelButton, new Color(231, 76, 60), Color.WHITE);
 		cancelButton.addActionListener(e -> dispose());
 		buttonPane.add(cancelButton);
-
-		JButton btnLimpiar = new JButton("Limpiar");
-		btnLimpiar.addActionListener(e -> {
-			txtNombre.setText("");
-			txtDescripcion.setText("");
-		});
-		Estilos.estilarBoton(btnLimpiar, new Color(127, 140, 141), Color.WHITE);
-		btnLimpiar.setBounds(181, 250, 110, 35);
-		contentPanel.add(btnLimpiar);
 	}
 
 	private void registrarVacuna() {

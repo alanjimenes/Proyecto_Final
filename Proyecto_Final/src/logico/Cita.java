@@ -2,7 +2,8 @@ package logico;
 
 import java.time.LocalDateTime;
 
-public class Cita {
+public class Cita implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 	private int codigoCita;
 	private LocalDateTime fechaCita;
 	private Cliente cliente;

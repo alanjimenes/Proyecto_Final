@@ -1,6 +1,7 @@
 package logico;
 
-public class TipoAnalisis {
+public class TipoAnalisis implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private int codigoTipo;
     private String nombre;
     private String descripcion;

@@ -3,7 +3,8 @@ package logico;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Consulta {
+public class Consulta implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private int codigoConsulta;
     private LocalDate fechaConsulta;
     private String sintomas;

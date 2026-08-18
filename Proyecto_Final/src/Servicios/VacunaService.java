@@ -8,14 +8,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import logico.Cliente;
+import logico.Historial;
 import logico.Vacuna;
 import Utils.ConexionDB;
 
 public class VacunaService {
 
     public boolean agregarVacuna(Vacuna vac) {
-        String sql = "insert into vacuna (nombre, descripcion) values " +
-                "(?, ?)";
+        String sql = "insert into vacuna (nombre, descripcion) values (?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -32,19 +32,19 @@ public class VacunaService {
 
     public ArrayList<Vacuna> listarVacunas() {
         ArrayList<Vacuna> lista = new ArrayList<>();
-        String sql = "select vacuna.codigo_vacuna, vacuna.nombre, vacuna.descripcion " +
-                "from vacuna";
+        String sql = "select vacuna.codigo_vacuna, vacuna.nombre, vacuna.descripcion from vacuna";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                lista.add(new Vacuna(
-                        String.valueOf(rs.getInt("codigo_vacuna")),
-                        rs.getString("nombre"),
-                        rs.getString("descripcion")
-                ));
+                Vacuna vac = new Vacuna();
+                vac.setCodigoVacuna(rs.getInt("codigo_vacuna"));
+                vac.setNombre(rs.getString("nombre"));
+                vac.setDescripcion(rs.getString("descripcion"));
+                vac.setActivo(true);
+                lista.add(vac);
             }
 
         } catch (SQLException e) {
@@ -54,10 +54,7 @@ public class VacunaService {
     }
 
     public boolean aplicarVacunaCliente(String cedulaCliente, int codigoVacuna, Timestamp fecha) {
-        String sql = "insert into regvacuna (codigo_cliente, codigo_vacuna, fecha, aplicada) values ((" +
-                "select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?), ?, ?, ?)";
+        String sql = "insert into regvacuna (codigo_cliente, codigo_vacuna, fecha, aplicada) values ((select persona.codigo_persona from persona where persona.cedula = ?), ?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -76,10 +73,7 @@ public class VacunaService {
 
     public HashMap<String, Integer> getFrecuenciaVacunas() {
         HashMap<String, Integer> mapa = new HashMap<>();
-        String sql = "select vacuna.nombre, count(regvacuna.codigo_reg) AS total " +
-                "from vacuna " +
-                "inner join regvacuna on vacuna.codigo_vacuna = regvacuna.codigo_vacuna " +
-                "group by vacuna.nombre";
+        String sql = "select vacuna.nombre, count(regvacuna.codigo_reg) AS total from vacuna inner join regvacuna on vacuna.codigo_vacuna = regvacuna.codigo_vacuna group by vacuna.nombre";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -97,13 +91,7 @@ public class VacunaService {
 
     public ArrayList<Cliente> getClientesPorVacuna(String nombreVacuna) {
         ArrayList<Cliente> lista = new ArrayList<>();
-        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, " +
-                "persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo " +
-                "from cliente " +
-                "inner join persona on cliente.codigo_persona = persona.codigo_persona " +
-                "inner join regvacuna on cliente.codigo_persona = regvacuna.codigo_cliente " +
-                "inner join vacuna on regvacuna.codigo_vacuna = vacuna.codigo_vacuna " +
-                "where vacuna.nombre = ?";
+        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, persona.genero, cliente.numexpediente, cliente.enfermo, cliente.antecedentes from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona inner join regvacuna on cliente.codigo_persona = regvacuna.codigo_cliente inner join vacuna on regvacuna.codigo_vacuna = vacuna.codigo_vacuna where vacuna.nombre = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -112,20 +100,25 @@ public class VacunaService {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Cliente cliente = new Cliente(
-                        rs.getString("cedula"),
-                        rs.getString("nombre"),
-                        rs.getString("apellido"),
-                        rs.getString("telefono"),
-                        rs.getDate("fechanacimiento").toLocalDate(),
-                        rs.getString("direccion"),
-                        rs.getBoolean("estado"),
-                        rs.getString("numexpediente"),
-                        null,
-                        rs.getBoolean("enfermo"),
-                        new ArrayList<>(),
-                        "N/A"
-                );
+                Cliente cliente = new Cliente();
+                cliente.setCodigoPersona(rs.getInt("codigo_persona"));
+                cliente.setNombre(rs.getString("nombre"));
+                cliente.setApellido(rs.getString("apellido"));
+                cliente.setCedula(rs.getString("cedula"));
+                cliente.setTelefono(rs.getString("telefono"));
+
+                if (rs.getDate("fechanacimiento") != null) {
+                    cliente.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
+                }
+
+                cliente.setDireccion(rs.getString("direccion"));
+                cliente.setEstado(rs.getBoolean("estado"));
+                cliente.setGenero(rs.getString("genero"));
+                cliente.setNumExpediente(rs.getString("numexpediente"));
+                cliente.setEnfermo(rs.getBoolean("enfermo"));
+                cliente.setAntecedentes(rs.getString("antecedentes"));
+                cliente.setHistorial(new Historial());
+
                 lista.add(cliente);
             }
 

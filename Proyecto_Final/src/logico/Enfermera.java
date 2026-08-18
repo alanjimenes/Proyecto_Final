@@ -2,7 +2,8 @@ package logico;
 
 import java.time.LocalDate;
 
-public class Enfermera extends Persona {
+public class Enfermera extends Persona implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private User usuario;
     private String turno;
 

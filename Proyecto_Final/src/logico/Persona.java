@@ -3,7 +3,8 @@ package logico;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Persona implements Serializable {
+public class Persona implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 	protected int codigoPersona;
 	protected LocalDate fechaNacimiento;
 	protected String nombre;
@@ -41,7 +42,7 @@ public class Persona implements Serializable {
 	public void setCedula(String cedula) { this.cedula = cedula; }
 	public String getTelefono() { return telefono; }
 	public void setTelefono(String telefono) { this.telefono = telefono; }
-	public boolean isEstado() { return estado; }
+	public boolean getEstado() { return estado; }
 	public void setEstado(boolean estado) { this.estado = estado; }
 	public String getDireccion() { return direccion; }
 	public void setDireccion(String direccion) { this.direccion = direccion; }

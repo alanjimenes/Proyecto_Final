@@ -3,7 +3,8 @@ package logico;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Medico extends Persona {
+public class Medico extends Persona implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private int maxCitasPorDia;
     private User usuario;
     private Especialidad especialidad;

@@ -2,7 +2,8 @@ package logico;
 
 import java.time.LocalDate;
 
-public class LoteVacuna {
+public class LoteVacuna implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private int codigoLote;
     private Vacuna vacuna;
     private String noLote;

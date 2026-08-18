@@ -3,6 +3,7 @@ package Visual;
 import Utils.ClienteSocket;
 import Utils.Estilos;
 import logico.Medico;
+import logico.Enfermera;
 import logico.User;
 
 import javax.swing.*;
@@ -19,7 +20,7 @@ public class RegUser extends JDialog {
 	private JPasswordField passField_1;
 	private JPasswordField passField_2;
 	private JComboBox<String> comboBox;
-	private JComboBox<String> cbMedicos;
+	private JComboBox<String> cbPersonal;
 	private JLabel lblCedulaLink;
 
 	public static void main(String[] args) {
@@ -79,7 +80,7 @@ public class RegUser extends JDialog {
 		comboBox = new JComboBox<String>();
 		comboBox.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		comboBox.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "<Seleccione>", "Administrador", "Asistente", "Medico" }));
+				new String[] { "<Seleccione>", "Administrador", "Asistente", "Medico", "Enfermera" }));
 		comboBox.setBounds(265, 66, 147, 20);
 		contentPanel.add(comboBox);
 
@@ -95,18 +96,18 @@ public class RegUser extends JDialog {
 		passField_2.setBounds(265, 179, 180, 20);
 		contentPanel.add(passField_2);
 
-		lblCedulaLink = new JLabel("Seleccione Médico:");
+		lblCedulaLink = new JLabel("Seleccione Personal:");
 		lblCedulaLink.setForeground(Color.WHITE);
 		lblCedulaLink.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		lblCedulaLink.setBounds(69, 254, 180, 20);
 		lblCedulaLink.setVisible(false);
 		contentPanel.add(lblCedulaLink);
 
-		cbMedicos = new JComboBox<String>();
-		cbMedicos.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
-		cbMedicos.setBounds(265, 255, 180, 20);
-		cbMedicos.setVisible(false);
-		contentPanel.add(cbMedicos);
+		cbPersonal = new JComboBox<String>();
+		cbPersonal.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+		cbPersonal.setBounds(265, 255, 180, 20);
+		cbPersonal.setVisible(false);
+		contentPanel.add(cbPersonal);
 
 		{
 			JButton okButton = new JButton("Registrar");
@@ -140,19 +141,19 @@ public class RegUser extends JDialog {
 					String tipo = comboBox.getSelectedItem().toString();
 					String cedulaLink = "";
 
-					if (tipo.equalsIgnoreCase("Medico")) {
-						if (cbMedicos.getSelectedItem() == null
-								|| cbMedicos.getSelectedItem().toString().startsWith("<Seleccione")) {
-							JOptionPane.showMessageDialog(contentPanel, "Debe seleccionar un médico de la lista.");
+					if (tipo.equalsIgnoreCase("Medico") || tipo.equalsIgnoreCase("Enfermera")) {
+						if (cbPersonal.getSelectedItem() == null
+								|| cbPersonal.getSelectedItem().toString().startsWith("<Seleccione")) {
+							JOptionPane.showMessageDialog(contentPanel, "Debe seleccionar un personal de la lista.");
 							return;
 						}
-						String seleccion = cbMedicos.getSelectedItem().toString();
+						String seleccion = cbPersonal.getSelectedItem().toString();
 						try {
 							int inicio = seleccion.lastIndexOf("(") + 1;
 							int fin = seleccion.lastIndexOf(")");
 							cedulaLink = seleccion.substring(inicio, fin);
 						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(contentPanel, "Error al procesar la cédula del médico.");
+							JOptionPane.showMessageDialog(contentPanel, "Error al procesar la cédula.");
 							return;
 						}
 					}
@@ -197,11 +198,17 @@ public class RegUser extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				String seleccionado = comboBox.getSelectedItem().toString();
 				if (seleccionado.equalsIgnoreCase("Medico")) {
-					cbMedicos.setVisible(true);
+					lblCedulaLink.setText("Seleccione Médico:");
+					cbPersonal.setVisible(true);
 					lblCedulaLink.setVisible(true);
 					cargarListaMedicos();
+				} else if (seleccionado.equalsIgnoreCase("Enfermera")) {
+					lblCedulaLink.setText("Seleccione Enfermera:");
+					cbPersonal.setVisible(true);
+					lblCedulaLink.setVisible(true);
+					cargarListaEnfermeras();
 				} else {
-					cbMedicos.setVisible(false);
+					cbPersonal.setVisible(false);
 					lblCedulaLink.setVisible(false);
 				}
 			}
@@ -210,14 +217,28 @@ public class RegUser extends JDialog {
 
 	@SuppressWarnings("unchecked")
 	private void cargarListaMedicos() {
-		cbMedicos.removeAllItems();
-		cbMedicos.addItem("<Seleccione Médico>");
+		cbPersonal.removeAllItems();
+		cbPersonal.addItem("<Seleccione Médico>");
 		Object respuesta = ClienteSocket.enviar("LISTAR_MEDICOS", null);
 
 		if (respuesta != null && respuesta instanceof java.util.ArrayList) {
 			ArrayList<Medico> lista = (ArrayList<Medico>) respuesta;
 			for (Medico med : lista) {
-				cbMedicos.addItem(med.getNombre() + " (" + med.getCedula() + ")");
+				cbPersonal.addItem(med.getNombre() + " (" + med.getCedula() + ")");
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void cargarListaEnfermeras() {
+		cbPersonal.removeAllItems();
+		cbPersonal.addItem("<Seleccione Enfermera>");
+		Object respuesta = ClienteSocket.enviar("LISTAR_ENFERMERAS", null);
+
+		if (respuesta != null && respuesta instanceof java.util.ArrayList) {
+			ArrayList<Enfermera> lista = (ArrayList<Enfermera>) respuesta;
+			for (Enfermera enf : lista) {
+				cbPersonal.addItem(enf.getNombre() + " (" + enf.getCedula() + ")");
 			}
 		}
 	}

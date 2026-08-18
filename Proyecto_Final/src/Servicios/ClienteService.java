@@ -13,11 +13,8 @@ import Utils.ConexionDB;
 public class ClienteService {
 
     public boolean registrarNuevoCliente(Cliente cli) {
-        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) values " +
-                "(?, ?, ?, ?, ?, ?, ?, ?)";
-
-        String sqlCliente = "insert into cliente (codigo_persona, numexpediente, enfermo) values " +
-                "(?, ?, ?)";
+        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) values (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlCliente = "insert into cliente (codigo_persona, numexpediente, enfermo, antecedentes) values (?, ?, ?, ?)";
 
         Connection conn = null;
 
@@ -56,6 +53,7 @@ public class ClienteService {
 
                 stmtCliente.setString(2, exp);
                 stmtCliente.setBoolean(3, cli.isEnfermo());
+                stmtCliente.setString(4, cli.getAntecedentes());
                 stmtCliente.executeUpdate();
             }
 
@@ -85,15 +83,8 @@ public class ClienteService {
     }
 
     public boolean actualizarCliente(Cliente cli) {
-        String sqlPersona = "update persona set fechanacimiento = ?, nombre = ?, " +
-                "apellido = ?, telefono = ?, direccion = ?, estado = ?, genero = ? " +
-                "where cedula = ?";
-
-        String sqlCliente = "update cliente set enfermo = ?, numexpediente = ? " +
-                "where codigo_persona = (" +
-                "select codigo_persona " +
-                "from persona " +
-                "where cedula = ?)";
+        String sqlPersona = "update persona set fechanacimiento = ?, nombre = ?, apellido = ?, telefono = ?, direccion = ?, estado = ?, genero = ? where cedula = ?";
+        String sqlCliente = "update cliente set enfermo = ?, numexpediente = ?, antecedentes = ? where codigo_persona = (select codigo_persona from persona where cedula = ?)";
 
         Connection conn = null;
 
@@ -109,14 +100,15 @@ public class ClienteService {
                 stmtPersona.setString(5, cli.getDireccion());
                 stmtPersona.setBoolean(6, cli.getEstado());
                 stmtPersona.setString(7, cli.getGenero());
-                stmtPersona.setString(8, cli.getCedula()); // Cédula al final para el WHERE
+                stmtPersona.setString(8, cli.getCedula());
                 stmtPersona.executeUpdate();
             }
 
             try (PreparedStatement stmtCliente = conn.prepareStatement(sqlCliente)) {
                 stmtCliente.setBoolean(1, cli.isEnfermo());
                 stmtCliente.setString(2, cli.getNumExpediente());
-                stmtCliente.setString(3, cli.getCedula());
+                stmtCliente.setString(3, cli.getAntecedentes());
+                stmtCliente.setString(4, cli.getCedula());
                 stmtCliente.executeUpdate();
             }
 
@@ -162,12 +154,7 @@ public class ClienteService {
 
     public Cliente buscarClientePorCodigo(String codigoExpediente) {
         Cliente cliente = null;
-        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, " +
-                "persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, " +
-                "cliente.numexpediente, cliente.enfermo, persona.genero " +
-                "from cliente " +
-                "inner join persona on cliente.codigo_persona = persona.codigo_persona " +
-                "where cliente.numexpediente = ?";
+        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, persona.genero, cliente.antecedentes from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona where cliente.numexpediente = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -176,20 +163,22 @@ public class ClienteService {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    cliente = new Cliente(
-                            rs.getInt("codigo_persona"),
-                            rs.getDate("fechanacimiento").toLocalDate(),
-                            rs.getString("nombre"),
-                            rs.getString("apellido"),
-                            rs.getString("cedula"),
-                            rs.getString("telefono"),
-                            rs.getBoolean("estado"),
-                            rs.getString("direccion"),
-                            rs.getString("genero"),
-                            rs.getString("numexpediente"),
-                            rs.getBoolean("enfermo"),
-                            ""
-                    );
+                    cliente = new Cliente();
+                    cliente.setCodigoPersona(rs.getInt("codigo_persona"));
+                    cliente.setNombre(rs.getString("nombre"));
+                    cliente.setApellido(rs.getString("apellido"));
+                    cliente.setCedula(rs.getString("cedula"));
+                    cliente.setTelefono(rs.getString("telefono"));
+                    if(rs.getDate("fechanacimiento") != null) {
+                        cliente.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
+                    }
+                    cliente.setDireccion(rs.getString("direccion"));
+                    cliente.setEstado(rs.getBoolean("estado"));
+                    cliente.setGenero(rs.getString("genero"));
+                    cliente.setNumExpediente(rs.getString("numexpediente"));
+                    cliente.setEnfermo(rs.getBoolean("enfermo"));
+                    cliente.setAntecedentes(rs.getString("antecedentes"));
+                    cliente.setHistorial(new Historial());
                 }
             }
         } catch (SQLException e) {
@@ -200,12 +189,7 @@ public class ClienteService {
 
     public Cliente buscarClientePorCedula(String cedula) {
         Cliente cliente = null;
-        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, " +
-                "persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, " +
-                "cliente.enfermo, persona.genero " +
-                "from cliente " +
-                "inner join persona on cliente.codigo_persona = persona.codigo_persona " +
-                "where persona.cedula = ?";
+        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, persona.genero, cliente.antecedentes from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona where persona.cedula = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -214,20 +198,22 @@ public class ClienteService {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    cliente = new Cliente(
-                            rs.getInt("codigo_persona"),
-                            rs.getDate("fechanacimiento").toLocalDate(),
-                            rs.getString("nombre"),
-                            rs.getString("apellido"),
-                            rs.getString("cedula"),
-                            rs.getString("telefono"),
-                            rs.getBoolean("estado"),
-                            rs.getString("direccion"),
-                            rs.getString("genero"),
-                            rs.getString("numexpediente"),
-                            rs.getBoolean("enfermo"),
-                            ""
-                    );
+                    cliente = new Cliente();
+                    cliente.setCodigoPersona(rs.getInt("codigo_persona"));
+                    cliente.setNombre(rs.getString("nombre"));
+                    cliente.setApellido(rs.getString("apellido"));
+                    cliente.setCedula(rs.getString("cedula"));
+                    cliente.setTelefono(rs.getString("telefono"));
+                    if(rs.getDate("fechanacimiento") != null) {
+                        cliente.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
+                    }
+                    cliente.setDireccion(rs.getString("direccion"));
+                    cliente.setEstado(rs.getBoolean("estado"));
+                    cliente.setGenero(rs.getString("genero"));
+                    cliente.setNumExpediente(rs.getString("numexpediente"));
+                    cliente.setEnfermo(rs.getBoolean("enfermo"));
+                    cliente.setAntecedentes(rs.getString("antecedentes"));
+                    cliente.setHistorial(new Historial());
                 }
             }
         } catch (SQLException e) {
@@ -238,32 +224,29 @@ public class ClienteService {
 
     public ArrayList<Cliente> getClientes() {
         ArrayList<Cliente> lista = new ArrayList<>();
-        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, " +
-                "persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, " +
-                "cliente.enfermo, persona.genero " +
-                "from cliente " +
-                "inner join persona on cliente.codigo_persona = persona.codigo_persona";
+        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, persona.genero, cliente.antecedentes from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Cliente cliente = new Cliente(
-
-                        rs.getInt("codigo_persona"),
-                        rs.getDate("fechanacimiento").toLocalDate(),
-                        rs.getString("nombre"),
-                        rs.getString("apellido"),
-                        rs.getString("cedula"),
-                        rs.getString("telefono"),
-                        rs.getBoolean("estado"),
-                        rs.getString("direccion"),
-                        rs.getString("genero"),
-                        rs.getString("numexpediente"),
-                        rs.getBoolean("enfermo"),
-                        ""
-                );
+                Cliente cliente = new Cliente();
+                cliente.setCodigoPersona(rs.getInt("codigo_persona"));
+                cliente.setNombre(rs.getString("nombre"));
+                cliente.setApellido(rs.getString("apellido"));
+                cliente.setCedula(rs.getString("cedula"));
+                cliente.setTelefono(rs.getString("telefono"));
+                if(rs.getDate("fechanacimiento") != null) {
+                    cliente.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
+                }
+                cliente.setDireccion(rs.getString("direccion"));
+                cliente.setEstado(rs.getBoolean("estado"));
+                cliente.setGenero(rs.getString("genero"));
+                cliente.setNumExpediente(rs.getString("numexpediente"));
+                cliente.setEnfermo(rs.getBoolean("enfermo"));
+                cliente.setAntecedentes(rs.getString("antecedentes"));
+                cliente.setHistorial(new Historial());
                 lista.add(cliente);
             }
         } catch (SQLException e) {
@@ -275,12 +258,7 @@ public class ClienteService {
     public Historial obtenerHistorialPorCliente(int codigoCliente) {
         Historial historial = null;
 
-        // 1. Consultar los datos del historial y del cliente (incluyendo antecedentes)
-        String sqlHistorial = "select h.codigohistorial, p.codigopersona, p.nombre, p.apellido, p.cedula, c.antecedentes " +
-                "from historial h " +
-                "inner join cliente c on h.codigocliente = c.codigopersona " +
-                "inner join persona p on c.codigopersona = p.codigopersona " +
-                "where h.codigocliente = ?";
+        String sqlHistorial = "select historial.codigo_historial, persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, cliente.antecedentes from historial inner join cliente on historial.codigo_cliente = cliente.codigo_persona inner join persona on cliente.codigo_persona = persona.codigo_persona where historial.codigo_cliente = ?";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement psHist = con.prepareStatement(sqlHistorial)) {
@@ -290,15 +268,14 @@ public class ClienteService {
 
             if (rsHist.next()) {
                 historial = new Historial();
-                historial.setCodigoHistorial(rsHist.getInt("codigohistorial"));
+                historial.setCodigoHistorial(rsHist.getInt("codigo_historial"));
 
-                // Instanciar el Cliente y asignarle sus datos y antecedentes
                 Cliente cliente = new Cliente();
-                cliente.setCodigoPersona(rsHist.getInt("codigopersona"));
+                cliente.setCodigoPersona(rsHist.getInt("codigo_persona"));
                 cliente.setNombre(rsHist.getString("nombre"));
                 cliente.setApellido(rsHist.getString("apellido"));
                 cliente.setCedula(rsHist.getString("cedula"));
-                cliente.setAntecedentes(rsHist.getString("antecedentes")); // Guardados en Cliente
+                cliente.setAntecedentes(rsHist.getString("antecedentes"));
 
                 historial.setCliente(cliente);
             }
@@ -312,14 +289,7 @@ public class ClienteService {
     private ArrayList<Consulta> obtenerConsultasPorCliente(Connection con, int codigoCliente) {
         ArrayList<Consulta> lista = new ArrayList<>();
 
-        String sqlConsultas = "select c.codigoconsulta, c.fechaconsulta, c.sintomas, c.diagnostico, " +
-                "c.recetamedica, " +
-                "m.codigopersona, p.nombre as nombremedico, p.apellido as apellidomedico " +
-                "from consulta c " +
-                "inner join medico m on c.codigomedico = m.codigopersona " +
-                "inner join persona p on m.codigopersona = p.codigopersona " +
-                "where c.codigocliente = ? " +
-                "order by c.fechaconsulta desc";
+        String sqlConsultas = "select consulta.codigo_cons, consulta.fecha, consulta.sintomas, consulta.diagnostico, medico.codigo_persona, persona.nombre AS nombremedico, persona.apellido AS apellidomedico from consulta inner join medico on consulta.codigo_medico = medico.codigo_persona inner join persona on medico.codigo_persona = persona.codigo_persona where consulta.codigo_cliente = ? order by consulta.fecha desc";
 
         try (PreparedStatement ps = con.prepareStatement(sqlConsultas)) {
             ps.setInt(1, codigoCliente);
@@ -327,24 +297,17 @@ public class ClienteService {
 
             while (rs.next()) {
                 Consulta consulta = new Consulta();
-                consulta.setCodigoConsulta(rs.getInt("codigoconsulta"));
+                consulta.setCodigoConsulta(rs.getInt("codigo_cons"));
 
-                if (rs.getDate("fechaconsulta") != null) {
-                    consulta.setFechaConsulta(rs.getDate("fechaconsulta").toLocalDate());
+                if (rs.getDate("fecha") != null) {
+                    consulta.setFechaConsulta(rs.getDate("fecha").toLocalDate());
                 }
 
                 consulta.setSintomas(rs.getString("sintomas"));
                 consulta.setDiagnostico(rs.getString("diagnostico"));
 
-                String textoReceta = rs.getString("recetamedica");
-                if (textoReceta != null && !textoReceta.isEmpty()) {
-                    RecetaMedica receta = new RecetaMedica();
-                    consulta.getRecetas().add(receta);
-                }
-
-                // Datos del Médico asignado
                 Medico medico = new Medico();
-                medico.setCodigoPersona(rs.getInt("codigoPersona"));
+                medico.setCodigoPersona(rs.getInt("codigo_persona"));
                 medico.setNombre(rs.getString("nombremedico"));
                 medico.setApellido(rs.getString("apellidomedico"));
                 consulta.setMedico(medico);
@@ -358,4 +321,3 @@ public class ClienteService {
         return lista;
     }
 }
-
