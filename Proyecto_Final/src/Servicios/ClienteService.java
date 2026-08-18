@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Date;
 import java.util.ArrayList;
 
-import logico.Cliente;
+import logico.*;
 import Utils.ConexionDB;
 
 public class ClienteService {
@@ -271,4 +271,91 @@ public class ClienteService {
         }
         return lista;
     }
+
+    public Historial obtenerHistorialPorCliente(int codigoCliente) {
+        Historial historial = null;
+
+        // 1. Consultar los datos del historial y del cliente (incluyendo antecedentes)
+        String sqlHistorial = "select h.codigohistorial, p.codigopersona, p.nombre, p.apellido, p.cedula, c.antecedentes " +
+                "from historial h " +
+                "inner join cliente c on h.codigocliente = c.codigopersona " +
+                "inner join persona p on c.codigopersona = p.codigopersona " +
+                "where h.codigocliente = ?";
+
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement psHist = con.prepareStatement(sqlHistorial)) {
+
+            psHist.setInt(1, codigoCliente);
+            ResultSet rsHist = psHist.executeQuery();
+
+            if (rsHist.next()) {
+                historial = new Historial();
+                historial.setCodigoHistorial(rsHist.getInt("codigohistorial"));
+
+                // Instanciar el Cliente y asignarle sus datos y antecedentes
+                Cliente cliente = new Cliente();
+                cliente.setCodigoPersona(rsHist.getInt("codigopersona"));
+                cliente.setNombre(rsHist.getString("nombre"));
+                cliente.setApellido(rsHist.getString("apellido"));
+                cliente.setCedula(rsHist.getString("cedula"));
+                cliente.setAntecedentes(rsHist.getString("antecedentes")); // Guardados en Cliente
+
+                historial.setCliente(cliente);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return historial;
+    }
+
+    private ArrayList<Consulta> obtenerConsultasPorCliente(Connection con, int codigoCliente) {
+        ArrayList<Consulta> lista = new ArrayList<>();
+
+        String sqlConsultas = "select c.codigoconsulta, c.fechaconsulta, c.sintomas, c.diagnostico, " +
+                "c.recetamedica, " +
+                "m.codigopersona, p.nombre as nombremedico, p.apellido as apellidomedico " +
+                "from consulta c " +
+                "inner join medico m on c.codigomedico = m.codigopersona " +
+                "inner join persona p on m.codigopersona = p.codigopersona " +
+                "where c.codigocliente = ? " +
+                "order by c.fechaconsulta desc";
+
+        try (PreparedStatement ps = con.prepareStatement(sqlConsultas)) {
+            ps.setInt(1, codigoCliente);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Consulta consulta = new Consulta();
+                consulta.setCodigoConsulta(rs.getInt("codigoconsulta"));
+
+                if (rs.getDate("fechaconsulta") != null) {
+                    consulta.setFechaConsulta(rs.getDate("fechaconsulta").toLocalDate());
+                }
+
+                consulta.setSintomas(rs.getString("sintomas"));
+                consulta.setDiagnostico(rs.getString("diagnostico"));
+
+                String textoReceta = rs.getString("recetamedica");
+                if (textoReceta != null && !textoReceta.isEmpty()) {
+                    RecetaMedica receta = new RecetaMedica();
+                    consulta.getRecetas().add(receta);
+                }
+
+                // Datos del Médico asignado
+                Medico medico = new Medico();
+                medico.setCodigoPersona(rs.getInt("codigoPersona"));
+                medico.setNombre(rs.getString("nombremedico"));
+                medico.setApellido(rs.getString("apellidomedico"));
+                consulta.setMedico(medico);
+
+                lista.add(consulta);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
 }
+

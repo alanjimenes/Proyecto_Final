@@ -22,24 +22,59 @@ public class EvaluacionFisica {
         this.talla = talla;
     }
 
-    public int getCodigoEvaluacion() { return codigoEvaluacion; }
-    public void setCodigoEvaluacion(int codigoEvaluacion) { this.codigoEvaluacion = codigoEvaluacion; }
+    public int getCodigoEvaluacion() {
+        return codigoEvaluacion;
+    }
 
-    public Consulta getConsulta() { return consulta; }
-    public void setConsulta(Consulta consulta) { this.consulta = consulta; }
+    public void setCodigoEvaluacion(int codigoEvaluacion) {
+        this.codigoEvaluacion = codigoEvaluacion;
+    }
 
-    public float getTemperatura() { return temperatura; }
-    public void setTemperatura(float temperatura) { this.temperatura = temperatura; }
+    public Consulta getConsulta() {
+        return consulta;
+    }
 
-    public int getFrecuenciaCardiaca() { return frecuenciaCardiaca; }
-    public void setFrecuenciaCardiaca(int frecuenciaCardiaca) { this.frecuenciaCardiaca = frecuenciaCardiaca; }
+    public void setConsulta(Consulta consulta) {
+        this.consulta = consulta;
+    }
 
-    public String getPersionArterial() { return persionArterial; }
-    public void setPersionArterial(String persionArterial) { this.persionArterial = persionArterial; }
+    public float getTemperatura() {
+        return temperatura;
+    }
 
-    public float getPeso() { return peso; }
-    public void setPeso(float peso) { this.peso = peso; }
+    public void setTemperatura(float temperatura) {
+        this.temperatura = temperatura;
+    }
 
-    public float getTalla() { return talla; }
-    public void setTalla(float talla) { this.talla = talla; }
+    public int getFrecuenciaCardiaca() {
+        return frecuenciaCardiaca;
+    }
+
+    public void setFrecuenciaCardiaca(int frecuenciaCardiaca) {
+        this.frecuenciaCardiaca = frecuenciaCardiaca;
+    }
+
+    public String getPresionArterial() {
+        return persionArterial;
+    }
+
+    public void setPresionArterial(String persionArterial) {
+        this.persionArterial = persionArterial;
+    }
+
+    public float getPeso() {
+        return peso;
+    }
+
+    public void setPeso(float peso) {
+        this.peso = peso;
+    }
+
+    public float getTalla() {
+        return talla;
+    }
+
+    public void setTalla(float talla) {
+        this.talla = talla;
+    }
 }

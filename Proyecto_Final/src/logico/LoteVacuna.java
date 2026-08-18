@@ -20,18 +20,45 @@ public class LoteVacuna {
         this.cantidad = cantidad;
     }
 
-    public int getCodigoLote() { return codigoLote; }
-    public void setCodigoLote(int codigoLote) { this.codigoLote = codigoLote; }
+    public int getCodigoLote() {
+        return codigoLote;
+    }
 
-    public Vacuna getVacuna() { return vacuna; }
-    public void setVacuna(Vacuna vacuna) { this.vacuna = vacuna; }
+    public void setCodigoLote(int codigoLote) {
+        this.codigoLote = codigoLote;
+    }
 
-    public String getNoLote() { return noLote; }
-    public void setNoLote(String noLote) { this.noLote = noLote; }
+    public Vacuna getVacuna() {
+        return vacuna;
+    }
 
-    public LocalDate getFechaVencimiento() { return fechaVencimiento; }
-    public void setFechaVencimiento(LocalDate fechaVencimiento) { this.fechaVencimiento = fechaVencimiento; }
+    public void setVacuna(Vacuna vacuna) {
+        this.vacuna = vacuna;
+    }
 
-    public int getCantidad() { return cantidad; }
-    public void setCantidad(int cantidad) { this.cantidad = cantidad; }
+    public String getNoLote() {
+        return noLote;
+    }
+
+    public void setNoLote(String noLote) {
+        this.noLote = noLote;
+    }
+
+    public LocalDate getFechaVencimiento() {
+        return fechaVencimiento;
+    }
+
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+
 }
