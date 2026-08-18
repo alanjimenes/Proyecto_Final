@@ -45,6 +45,13 @@ public class Flujo extends Thread {
         CitaService citaService = new CitaService();
         ConsultaService consultaService = new ConsultaService();
         VacunaService vacunaService = new VacunaService();
+        EnfermeraService enfermeraService = new EnfermeraService();
+        LoteVacunaService loteVacunaService = new LoteVacunaService();
+        EvaluacionFisicaService evaluacionFisicaService = new EvaluacionFisicaService();
+        MedicamentoService medicamentoService = new MedicamentoService();
+        RecetaMedicaService recetaMedicaService = new RecetaMedicaService();
+        TipoAnalisisService tipoAnalisisService = new TipoAnalisisService();
+        AnalisisService analisisService = new AnalisisService();
 
         try {
             while (true) {
@@ -281,11 +288,6 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(false);
                         break;
 
-                    default:
-                        paquete.setRespuesta(null);
-                        break;
-
-
                     case "LISTAR_USUARIOS":
 
                         paquete.setRespuesta(userService.listarUsuarios());
@@ -303,6 +305,78 @@ public class Flujo extends Thread {
                         User editar = (User) paquete.getObjeto();
                         paquete.setRespuesta(userService.actualizarUsuario(editar));
 
+                        break;
+
+                    // ENFERMERA
+                    case "REG_ENFERMERA":
+                        Enfermera enfReg = (Enfermera) paquete.getObjeto();
+                        paquete.setRespuesta(enfermeraService.agregarEnfermera(enfReg));
+                        break;
+
+                    case "LISTAR_ENFERMERAS":
+                        paquete.setRespuesta(enfermeraService.listarEnfermeras());
+                        break;
+
+                    case "UPDATE_ENFERMERA":
+                        Enfermera enfUpd = (Enfermera) paquete.getObjeto();
+                        paquete.setRespuesta(enfermeraService.actualizarEnfermera(enfUpd));
+                        break;
+
+                    case "DELETE_ENFERMERA":
+                        Enfermera enfDel = (Enfermera) paquete.getObjeto();
+                        paquete.setRespuesta(enfermeraService.desactivarEnfermera(enfDel.getCedula()));
+                        break;
+
+                    // LOTEVACUNA
+                    case "REG_LOTE_VACUNA":
+                        LoteVacuna lote = (LoteVacuna) paquete.getObjeto();
+                        paquete.setRespuesta(loteVacunaService.registrarLote(lote));
+                        break;
+
+                    case "LISTAR_LOTES_VACUNAS":
+                        paquete.setRespuesta(loteVacunaService.listarLotes());
+                        break;
+
+                    // EVALUACIONFISICA
+                    case "REG_EVALUACION_FISICA":
+                        EvaluacionFisica eval = (EvaluacionFisica) paquete.getObjeto();
+                        paquete.setRespuesta(evaluacionFisicaService.registrarEvaluacion(eval));
+                        break;
+
+                    // MEDICAMENTO
+                    case "REG_MEDICAMENTO":
+                        Medicamento medicamento = (Medicamento) paquete.getObjeto();
+                        paquete.setRespuesta(medicamentoService.registrarMedicamento(medicamento));
+                        break;
+
+                    case "LISTAR_MEDICAMENTOS":
+                        paquete.setRespuesta(medicamentoService.listarMedicamentos());
+                        break;
+
+                    // RECETAMEDICA
+                    case "REG_RECETA_MEDICA":
+                        RecetaMedica receta = (RecetaMedica) paquete.getObjeto();
+                        paquete.setRespuesta(recetaMedicaService.registrarReceta(receta));
+                        break;
+
+                    // TIPOANALISIS
+                    case "REG_TIPO_ANALISIS":
+                        TipoAnalisis tAnalisis = (TipoAnalisis) paquete.getObjeto();
+                        paquete.setRespuesta(tipoAnalisisService.registrarTipoAnalisis(tAnalisis));
+                        break;
+
+                    case "LISTAR_TIPOS_ANALISIS":
+                        paquete.setRespuesta(tipoAnalisisService.listarTiposAnalisis());
+                        break;
+
+                    // ANALISIS
+                    case "REG_ANALISIS":
+                        Analisis analisis = (Analisis) paquete.getObjeto();
+                        paquete.setRespuesta(analisisService.registrarAnalisis(analisis));
+                        break;
+
+                    default:
+                        paquete.setRespuesta(null);
                         break;
                 }
 

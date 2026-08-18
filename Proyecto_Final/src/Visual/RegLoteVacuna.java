@@ -20,7 +20,7 @@ public class RegLoteVacuna extends JDialog {
     private JSpinner spnCantidad;
     private JDateChooser txtFechaVencimiento;
     private JComboBox<String> cbxVacuna;
-    private ArrayList<Vacuna> listaVacunas;
+    private ArrayList<Vacuna> listaVacunas = new ArrayList<>();
 
     public RegLoteVacuna() {
         setTitle("Registrar Lote de Vacuna");
@@ -102,19 +102,41 @@ public class RegLoteVacuna extends JDialog {
     }
 
     private void registrarLote() {
-        if (cbxVacuna.getSelectedIndex() == 0 || txtNoLote.getText().trim().isEmpty() || txtFechaVencimiento.getDate() == null) {
-            JOptionPane.showMessageDialog(this, "Debe completar todos los campos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        if (cbxVacuna.getSelectedIndex() <= 0 || txtNoLote.getText().trim().isEmpty() || txtFechaVencimiento.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Debe completar todos los campos obligatorios.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        LocalDate fechaVenc = txtFechaVencimiento.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (listaVacunas == null || listaVacunas.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay vacunas cargadas en el sistema.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int index = cbxVacuna.getSelectedIndex() - 1;
+        if (index < 0 || index >= listaVacunas.size()) {
+            JOptionPane.showMessageDialog(this, "Seleccione una vacuna válida de la lista.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Vacuna vacunaSeleccionada = listaVacunas.get(index);
+        if (vacunaSeleccionada == null) {
+            JOptionPane.showMessageDialog(this, "La vacuna seleccionada es inválida.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        java.util.Date utilDate = txtFechaVencimiento.getDate();
+        if (utilDate == null) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha de vencimiento.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        LocalDate fechaVenc = utilDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         if (fechaVenc.isBefore(LocalDate.now())) {
             JOptionPane.showMessageDialog(this, "La fecha de vencimiento no puede ser en el pasado.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        Vacuna vacunaSeleccionada = listaVacunas.get(cbxVacuna.getSelectedIndex() - 1);
         int cantidad = (int) spnCantidad.getValue();
 
         LoteVacuna lote = new LoteVacuna();
@@ -124,7 +146,8 @@ public class RegLoteVacuna extends JDialog {
         lote.setFechaVencimiento(fechaVenc);
         lote.setCantidad(cantidad);
 
-        boolean exito = (boolean) ClienteSocket.enviar("REG_LOTE_VACUNA", lote);
+        Object respuesta = ClienteSocket.enviar("REG_LOTE_VACUNA", lote);
+        boolean exito = (respuesta != null && respuesta instanceof Boolean && (boolean) respuesta);
 
         if (exito) {
             JOptionPane.showMessageDialog(this, "Lote registrado con éxito.");
