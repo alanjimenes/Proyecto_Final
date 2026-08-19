@@ -13,14 +13,40 @@ import Utils.ConexionDB;
 public class EnfermeraService {
 
     public boolean crearEnfermera(Enfermera enfermera) {
-        String sql = "insert into enfermera (codigo_persona, turno) values (?, ?)";
+        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) values (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlEnf = "insert into enfermera (codigo_persona, turno) values (?, ?)";
+
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, enfermera.getCodigoPersona());
-            stmt.setString(2, enfermera.getTurno());
+            conn.setAutoCommit(false);
 
-            return stmt.executeUpdate() > 0;
+            stmtPersona.setDate(1, Date.valueOf(enfermera.getFechaNacimiento()));
+            stmtPersona.setString(2, enfermera.getNombre());
+            stmtPersona.setString(3, enfermera.getApellido());
+            stmtPersona.setString(4, enfermera.getCedula());
+            stmtPersona.setString(5, enfermera.getTelefono());
+            stmtPersona.setBoolean(6, enfermera.getEstado());
+            stmtPersona.setString(7, enfermera.getDireccion());
+            stmtPersona.setString(8, enfermera.getGenero());
+
+            stmtPersona.executeUpdate();
+            ResultSet rs = stmtPersona.getGeneratedKeys();
+            int idPersona = 0;
+            if (rs.next()) {
+                idPersona = rs.getInt(1);
+            }
+
+            try (PreparedStatement stmtEnf = conn.prepareStatement(sqlEnf)) {
+                stmtEnf.setInt(1, idPersona);
+                stmtEnf.setString(2, enfermera.getTurno());
+                stmtEnf.executeUpdate();
+            }
+
+            conn.commit();
+            conn.setAutoCommit(true);
+            return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -28,14 +54,34 @@ public class EnfermeraService {
     }
 
     public boolean editEnfermera(Enfermera enfermera) {
-        String sql = "update enfermera set turno = ? where codigo_persona = ?";
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sqlPersona = "update persona set persona.fechanacimiento = ?, persona.nombre = ?, persona.apellido = ?, persona.telefono = ?, persona.direccion = ?, persona.estado = ?, persona.genero = ? where persona.cedula = ?";
+        String sqlEnf = "update enfermera set enfermera.turno = ? where enfermera.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = ?)";
 
-            stmt.setString(1, enfermera.getTurno());
-            stmt.setInt(2, enfermera.getCodigoPersona());
+        try (Connection conn = ConexionDB.getConexion()) {
+            conn.setAutoCommit(false);
 
-            return stmt.executeUpdate() > 0;
+            try (PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona)) {
+                stmtPersona.setDate(1, Date.valueOf(enfermera.getFechaNacimiento()));
+                stmtPersona.setString(2, enfermera.getNombre());
+                stmtPersona.setString(3, enfermera.getApellido());
+                stmtPersona.setString(4, enfermera.getTelefono());
+                stmtPersona.setString(5, enfermera.getDireccion());
+                stmtPersona.setBoolean(6, enfermera.getEstado());
+                stmtPersona.setString(7, enfermera.getGenero());
+                stmtPersona.setString(8, enfermera.getCedula());
+                stmtPersona.executeUpdate();
+            }
+
+            try (PreparedStatement stmtEnf = conn.prepareStatement(sqlEnf)) {
+                stmtEnf.setString(1, enfermera.getTurno());
+                stmtEnf.setString(2, enfermera.getCedula());
+                stmtEnf.executeUpdate();
+            }
+
+            conn.commit();
+            conn.setAutoCommit(true);
+            return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -44,9 +90,7 @@ public class EnfermeraService {
 
     public Enfermera buscarEnfermera(String cedula) {
         Enfermera enfermera = null;
-        String sql = "select p.codigo_persona, p.cedula, p.nombre, p.apellido, e.turno " +
-                "from enfermera e inner join persona p on e.codigo_persona = p.codigo_persona " +
-                "where p.cedula = ?";
+        String sql = "select persona.codigo_persona, persona.cedula, persona.nombre, persona.apellido, persona.fechanacimiento, persona.telefono, persona.direccion, persona.estado, persona.genero, enfermera.turno from enfermera inner join persona on enfermera.codigo_persona = persona.codigo_persona where persona.cedula = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -60,6 +104,13 @@ public class EnfermeraService {
                 enfermera.setCedula(rs.getString("cedula"));
                 enfermera.setNombre(rs.getString("nombre"));
                 enfermera.setApellido(rs.getString("apellido"));
+                if (rs.getDate("fechanacimiento") != null) {
+                    enfermera.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
+                }
+                enfermera.setTelefono(rs.getString("telefono"));
+                enfermera.setDireccion(rs.getString("direccion"));
+                enfermera.setEstado(rs.getBoolean("estado"));
+                enfermera.setGenero(rs.getString("genero"));
                 enfermera.setTurno(rs.getString("turno"));
             }
         } catch (SQLException e) {
@@ -70,8 +121,7 @@ public class EnfermeraService {
 
     public ArrayList<Enfermera> listarEnfermeras() {
         ArrayList<Enfermera> lista = new ArrayList<>();
-        String sql = "select p.codigo_persona, p.cedula, p.nombre, p.apellido, p.telefono, p.direccion, p.genero, p.estado, e.turno " +
-                "from enfermera e inner join persona p on e.codigo_persona = p.codigo_persona";
+        String sql = "select persona.codigo_persona, persona.cedula, persona.nombre, persona.apellido, persona.telefono, persona.direccion, persona.genero, persona.estado, persona.fechanacimiento, enfermera.turno from enfermera inner join persona on enfermera.codigo_persona = persona.codigo_persona";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -87,6 +137,9 @@ public class EnfermeraService {
                 enfermera.setDireccion(rs.getString("direccion"));
                 enfermera.setGenero(rs.getString("genero"));
                 enfermera.setEstado(rs.getBoolean("estado"));
+                if (rs.getDate("fechanacimiento") != null) {
+                    enfermera.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
+                }
                 enfermera.setTurno(rs.getString("turno"));
 
                 lista.add(enfermera);
@@ -98,7 +151,7 @@ public class EnfermeraService {
     }
 
     public boolean desactivarEnfermera(String cedula) {
-        String sql = "update persona set estado = false where cedula = ?";
+        String sql = "update persona set persona.estado = 0 where persona.cedula = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

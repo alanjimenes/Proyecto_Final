@@ -29,11 +29,13 @@ public class RegVacuna extends JDialog {
 	private JTextArea txtDescripcion;
 	private Vacuna vacunaActual = null;
 	private JButton okButton;
+	private JButton btnLoteVacuna;
 
 	public RegVacuna() {
 		init();
 		setTitle("Registrar Vacuna");
 		vacunaActual = null;
+		btnLoteVacuna.setEnabled(false);
 	}
 
 	public RegVacuna(Vacuna vacuna) {
@@ -41,6 +43,7 @@ public class RegVacuna extends JDialog {
 		this.vacunaActual = vacuna;
 		setTitle("Modificar Vacuna");
 		okButton.setText("Actualizar");
+		btnLoteVacuna.setEnabled(true);
 
 		txtNombre.setText(vacuna.getNombre());
 		txtDescripcion.setText(vacuna.getDescripcion());
@@ -90,15 +93,15 @@ public class RegVacuna extends JDialog {
 		btnLimpiar.setBounds(295, 210, 110, 35);
 		contentPanel.add(btnLimpiar);
 
-		JButton btnLote = new JButton("Añadir Lote");
-		Estilos.estilarBoton(btnLote, new Color(41, 128, 185), Color.WHITE);
-		btnLote.setBounds(25, 210, 130, 35);
-		btnLote.addActionListener(e -> {
-			RegLoteVacuna regLote = new RegLoteVacuna();
-			regLote.setModal(true);
-			regLote.setVisible(true);
+		btnLoteVacuna = new JButton("LoteVacuna");
+		Estilos.estilarBoton(btnLoteVacuna, new Color(41, 128, 185), Color.WHITE);
+		btnLoteVacuna.setBounds(25, 210, 150, 35);
+		btnLoteVacuna.addActionListener(e -> {
+			ListadoLotesVacuna listadoLotes = new ListadoLotesVacuna(vacunaActual);
+			listadoLotes.setModal(true);
+			listadoLotes.setVisible(true);
 		});
-		contentPanel.add(btnLote);
+		contentPanel.add(btnLoteVacuna);
 
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -122,15 +125,20 @@ public class RegVacuna extends JDialog {
 	}
 
 	private void registrarVacuna() {
-		if(txtNombre.getText().isEmpty()) {
+		if(txtNombre.getText().trim().isEmpty()) {
 			JOptionPane.showMessageDialog(null, "El nombre no puede estar vacío.");
 			return;
 		}
 
 		if (vacunaActual == null) {
-			Vacuna aux = new Vacuna(0, txtNombre.getText(), txtDescripcion.getText(), true);
+			Vacuna aux = new Vacuna();
+			aux.setCodigoVacuna(0);
+			aux.setNombre(txtNombre.getText().trim());
+			aux.setDescripcion(txtDescripcion.getText().trim());
+			aux.setActivo(true);
+
 			Object respuesta = ClienteSocket.enviar("REG_VACUNA", aux);
-			boolean exito = (respuesta != null && (boolean) respuesta);
+			boolean exito = (respuesta != null && respuesta instanceof Boolean && (boolean) respuesta);
 
 			if(exito) {
 				JOptionPane.showMessageDialog(null, "Vacuna creada en el Servidor.");
@@ -139,10 +147,11 @@ public class RegVacuna extends JDialog {
 				JOptionPane.showMessageDialog(null, "Error al registrar vacuna.");
 			}
 		} else {
-			vacunaActual.setNombre(txtNombre.getText());
-			vacunaActual.setDescripcion(txtDescripcion.getText());
+			vacunaActual.setNombre(txtNombre.getText().trim());
+			vacunaActual.setDescripcion(txtDescripcion.getText().trim());
 
-			boolean exito = (boolean) ClienteSocket.enviar("UPDATE_VACUNA", vacunaActual);
+			Object respuesta = ClienteSocket.enviar("UPDATE_VACUNA", vacunaActual);
+			boolean exito = (respuesta != null && respuesta instanceof Boolean && (boolean) respuesta);
 
 			if(exito) {
 				JOptionPane.showMessageDialog(null, "Vacuna actualizada.");

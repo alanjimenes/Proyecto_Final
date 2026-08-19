@@ -21,9 +21,38 @@ public class RegLoteVacuna extends JDialog {
     private JDateChooser txtFechaVencimiento;
     private JComboBox<String> cbxVacuna;
     private ArrayList<Vacuna> listaVacunas = new ArrayList<>();
+    private LoteVacuna loteActual = null;
+    private JButton btnRegistrar;
 
     public RegLoteVacuna() {
+        init();
         setTitle("Registrar Lote de Vacuna");
+    }
+
+    public RegLoteVacuna(LoteVacuna loteEditar) {
+        init();
+        this.loteActual = loteEditar;
+        setTitle("Modificar Lote de Vacuna");
+        btnRegistrar.setText("Actualizar");
+
+        txtNoLote.setText(loteActual.getNoLote());
+        spnCantidad.setValue(loteActual.getCantidad());
+        if (loteActual.getFechaVencimiento() != null) {
+            java.util.Date date = java.util.Date.from(loteActual.getFechaVencimiento().atStartOfDay(ZoneId.systemDefault()).toInstant());
+            txtFechaVencimiento.setDate(date);
+        }
+
+        if (loteActual.getVacuna() != null) {
+            for (int i = 0; i < listaVacunas.size(); i++) {
+                if (listaVacunas.get(i).getCodigoVacuna() == loteActual.getVacuna().getCodigoVacuna()) {
+                    cbxVacuna.setSelectedIndex(i + 1);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void init() {
         setResizable(false);
         setBounds(100, 100, 500, 400);
         setLocationRelativeTo(null);
@@ -74,7 +103,7 @@ public class RegLoteVacuna extends JDialog {
         spnCantidad.setBounds(150, 190, 100, 25);
         contentPanel.add(spnCantidad);
 
-        JButton btnRegistrar = new JButton("Registrar");
+        btnRegistrar = new JButton("Registrar");
         Estilos.estilarBoton(btnRegistrar, new Color(0, 150, 136), Color.WHITE);
         btnRegistrar.setBounds(80, 280, 120, 35);
         btnRegistrar.addActionListener(e -> registrarLote());
@@ -139,21 +168,38 @@ public class RegLoteVacuna extends JDialog {
 
         int cantidad = (int) spnCantidad.getValue();
 
-        LoteVacuna lote = new LoteVacuna();
-        lote.setCodigoLote(0);
-        lote.setVacuna(vacunaSeleccionada);
-        lote.setNoLote(txtNoLote.getText().trim());
-        lote.setFechaVencimiento(fechaVenc);
-        lote.setCantidad(cantidad);
+        if (loteActual == null) {
+            LoteVacuna lote = new LoteVacuna();
+            lote.setCodigoLote(0);
+            lote.setVacuna(vacunaSeleccionada);
+            lote.setNoLote(txtNoLote.getText().trim());
+            lote.setFechaVencimiento(fechaVenc);
+            lote.setCantidad(cantidad);
 
-        Object respuesta = ClienteSocket.enviar("REG_LOTE_VACUNA", lote);
-        boolean exito = (respuesta != null && respuesta instanceof Boolean && (boolean) respuesta);
+            Object respuesta = ClienteSocket.enviar("REG_LOTE_VACUNA", lote);
+            boolean exito = (respuesta != null && respuesta instanceof Boolean && (boolean) respuesta);
 
-        if (exito) {
-            JOptionPane.showMessageDialog(this, "Lote registrado con éxito.");
-            dispose();
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Lote registrado con éxito.");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al registrar el lote en el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
-            JOptionPane.showMessageDialog(this, "Error al registrar el lote en el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
+            loteActual.setVacuna(vacunaSeleccionada);
+            loteActual.setNoLote(txtNoLote.getText().trim());
+            loteActual.setFechaVencimiento(fechaVenc);
+            loteActual.setCantidad(cantidad);
+
+            Object respuesta = ClienteSocket.enviar("UPDATE_LOTE_VACUNA", loteActual);
+            boolean exito = (respuesta != null && respuesta instanceof Boolean && (boolean) respuesta);
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Lote actualizado con éxito.");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al actualizar el lote en el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

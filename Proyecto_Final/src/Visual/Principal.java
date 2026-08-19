@@ -43,7 +43,6 @@ public class Principal extends JFrame {
     public Principal(User usuarioLogueado) {
         this.usuarioActual = usuarioLogueado;
 
-        // CONFIGURACIÓN BÁSICA DE LA VENTANA
         try {
             setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
         } catch (Exception e) {
@@ -55,13 +54,11 @@ public class Principal extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
 
-        // BARRA DE MEN�
         menuBar = new JMenuBar();
         menuBar.setForeground(Color.WHITE);
         menuBar.setBackground(new Color(60, 70, 123));
         setJMenuBar(menuBar);
 
-        // --- MEN� CITAS ---
         menuCitas = new JMenu("  Gestión Citas  ");
         menuCitas.setForeground(Color.WHITE);
         try {
@@ -80,7 +77,6 @@ public class Principal extends JFrame {
         });
         menuCitas.add(itemCrearCita);
 
-        // --- MEN� PACIENTES ---
         menuPacientes = new JMenu("  Gestión Pacientes  ");
         menuPacientes.setForeground(Color.WHITE);
         try {
@@ -112,7 +108,6 @@ public class Principal extends JFrame {
         });
         menuPacientes.add(itemListarPacientes);
 
-        // --- MEN� CONSULTAS ---
         menuConsulta = new JMenu("  Consultas  ");
         menuConsulta.setForeground(Color.WHITE);
         try {
@@ -133,7 +128,6 @@ public class Principal extends JFrame {
         });
         menuConsulta.add(itemVerMisCitas);
 
-        // --- MENÚ ADMINISTRACIÓN ---
         menuAdministracion = new JMenu("  Administración");
         menuAdministracion.setForeground(Color.WHITE);
         try {
@@ -190,6 +184,32 @@ public class Principal extends JFrame {
         menuGestionMedicos.add(itemListarMedicos);
         menuAdministracion.add(menuGestionMedicos);
 
+        JMenu menuGestionEnfermeras = new JMenu("Gestionar Enfermeras");
+        menuGestionEnfermeras.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+
+        JMenuItem itemRegEnfermera = new JMenuItem("Registrar Enfermera");
+        itemRegEnfermera.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemRegEnfermera.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RegEnfermera reg = new RegEnfermera();
+                reg.setModal(true);
+                reg.setVisible(true);
+            }
+        });
+        menuGestionEnfermeras.add(itemRegEnfermera);
+
+        JMenuItem itemListarEnfermeras = new JMenuItem("Listar Enfermeras");
+        itemListarEnfermeras.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemListarEnfermeras.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ConsultarEnfermeras consulta = new ConsultarEnfermeras();
+                consulta.setModal(true);
+                consulta.setVisible(true);
+            }
+        });
+        menuGestionEnfermeras.add(itemListarEnfermeras);
+        menuAdministracion.add(menuGestionEnfermeras);
+
         JMenu menuGestionEspecialidades = new JMenu("Gestionar Especialidades");
         menuGestionEspecialidades.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
 
@@ -238,7 +258,6 @@ public class Principal extends JFrame {
         });
         menuAdministracion.add(itemGestionarEnf);
 
-        // USUARIO LABEL (Derecha)
         menuBar.add(javax.swing.Box.createHorizontalGlue());
         lblUsuario = new JLabel("Usuario: " + usuarioActual.getNombreUsuario() + " (" + usuarioActual.getRol() + ")  ");
         lblUsuario.setForeground(Color.WHITE);
@@ -249,23 +268,19 @@ public class Principal extends JFrame {
         }
         menuBar.add(lblUsuario);
 
-        // PANEL PRINCIPAL
         contentPane = new JPanel();
         contentPane.setBackground(Color.WHITE);
         contentPane.setBorder(null);
         setContentPane(contentPane);
         contentPane.setLayout(new BorderLayout(0, 0));
 
-        // PANEL DASHBOARD CENTRAL
         JPanel panelDashboardCentral = new JPanel();
         panelDashboardCentral.setBackground(Color.WHITE);
         panelDashboardCentral.setLayout(new GridLayout(1, 1, 20, 0));
         contentPane.add(panelDashboardCentral, BorderLayout.CENTER);
 
-        // INYECCION DE GRÁFICOS (Mantenemos la lógica pero dentro del constructor)
         panelDashboardCentral.add(crearPanelEstadistico());
 
-        // PANEL INFERIOR (RELOJ Y LOGOUT)
         panel_1 = new JPanel();
         panel_1.setBackground(new Color(60, 70, 123));
         panel_1.setLayout(new BorderLayout());
@@ -283,7 +298,6 @@ public class Principal extends JFrame {
 
         JButton btnLogout = new JButton("Cerrar Sesión");
         btnLogout.setFont(new Font("Bahnschrift", Font.BOLD, 16));
-        // Aseg�rate de que Estilos exista, si no, borra esta l�nea
         try {
             Estilos.estilarBoton(btnLogout, new Color(231, 76, 60), Color.WHITE);
         } catch (Exception e) {
@@ -306,14 +320,9 @@ public class Principal extends JFrame {
         panelBoton.add(btnLogout);
         panel_1.add(panelBoton, BorderLayout.EAST);
 
-        // INICIAR RELOJ E HILOS
         iniciarReloj();
         configurarAccesosPorRol();
     }
-
-    // --------------------------------------------------------------------------------
-    // MÉTODOS AUXILIARES (LÓGICA)
-    // --------------------------------------------------------------------------------
 
     private void configurarAccesosPorRol() {
         if (menuCitas == null)
@@ -366,7 +375,6 @@ public class Principal extends JFrame {
         timer.setRepeats(true);
         timer.start();
     }
-
 
     private JPanel crearPanelEstadistico() {
         JPanel panelDashboard = new JPanel(new BorderLayout());
@@ -454,8 +462,8 @@ public class Principal extends JFrame {
                     plot.setLabelFont(new Font("Bahnschrift", Font.PLAIN, 12));
                     plot.setShadowPaint(null);
 
-                    plot.setSectionPaint("Pendientes (" + pendientes + ")", new Color(231, 76, 60)); // Rojo suave
-                    plot.setSectionPaint("Completadas (" + completadas + ")", new Color(60, 70, 123)); // AZUL INSTITUCIONAL
+                    plot.setSectionPaint("Pendientes (" + pendientes + ")", new Color(231, 76, 60));
+                    plot.setSectionPaint("Completadas (" + completadas + ")", new Color(60, 70, 123));
 
                     ChartPanel chartPanel = new ChartPanel(chart);
                     chartPanel.setBorder(null);
@@ -534,40 +542,10 @@ public class Principal extends JFrame {
         if (tipo.equals("ENFERMEDADES")) {
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-            // =============================================================
-            // BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
-            // =============================================================
-            String[] enfermedadesPrueba = {"Gripe A", "Covid-19", "Diabetes T2", "Hipertensi�n", "Gastritis", "Asma"};
+            String[] enfermedadesPrueba = {"Gripe A", "Covid-19", "Diabetes T2", "Hipertensión", "Gastritis", "Asma"};
             for (String enf : enfermedadesPrueba) {
                 dataset.addValue(random.nextInt(45) + 5, "Casos", enf);
             }
-
-            // =============================================================
-            // BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
-            // =============================================================
-			/*
-            ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
-            java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
-            if (clientes != null) {
-                for (Cliente cli : clientes) {
-                    if (cli.getHistorial() != null && cli.getHistorial().getConsultas() != null) {
-                        for (Consulta con : cli.getHistorial().getConsultas()) {
-                            if (con.getEnfermedadesDiag() != null) {
-                                for (Enfermedad enf : con.getEnfermedadesDiag()) {
-                                    conteo.put(enf.getNombre(), conteo.getOrDefault(enf.getNombre(), 0) + 1);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (conteo.isEmpty()) dataset.addValue(0, "Sin Datos", "N/A");
-
-            for (String key : conteo.keySet()) {
-                dataset.addValue(conteo.get(key), "Casos", key);
-            }
-			 */
-            // =============================================================
 
             chart = ChartFactory.createBarChart("Enfermedades Diagnosticada", "Enfermedad", "Casos", dataset,
                     PlotOrientation.VERTICAL, false, true, false);
@@ -583,39 +561,10 @@ public class Principal extends JFrame {
         } else if (tipo.equals("VACUNAS")) {
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-            // =============================================================
-            // BLOQUE 1: DATOS DE PRUEBA (RANDOM) - ACTIVO
-            // =============================================================
             String[] vacunasPrueba = {"Pfizer", "Sinovac", "AstraZeneca", "Moderna", "Influenza"};
             for (String vac : vacunasPrueba) {
                 dataset.addValue(random.nextInt(70) + 10, "Dosis", vac);
             }
-
-            // =============================================================
-            // BLOQUE 2: DATOS REALES (SERVIDOR) - COMENTADO
-            // =============================================================
-			/*
-            ArrayList<Cliente> clientes = (ArrayList<Cliente>) ClienteSocket.enviar("LISTAR_CLIENTES", null);
-            java.util.HashMap<String, Integer> conteo = new java.util.HashMap<>();
-            if (clientes != null) {
-                for (Cliente cli : clientes) {
-                    if (cli.getRegVacunas() != null) {
-                        for (RegistroVacunacion reg : cli.getRegVacunas()) {
-                            if (reg.getVacuna() != null) {
-                                String nombre = reg.getVacuna().getNombre();
-                                conteo.put(nombre, conteo.getOrDefault(nombre, 0) + 1);
-                            }
-                        }
-                    }
-                }
-            }
-            if (conteo.isEmpty()) dataset.addValue(0, "Sin Datos", "N/A");
-
-            for (String key : conteo.keySet()) {
-                dataset.addValue(conteo.get(key), "Dosis", key);
-            }
-			 */
-            // =============================================================
 
             chart = ChartFactory.createBarChart("Vacunas Aplicadas (Demo)", "Vacuna", "Total Dosis", dataset,
                     PlotOrientation.HORIZONTAL, false, true, false);
@@ -623,7 +572,6 @@ public class Principal extends JFrame {
             CategoryPlot plot = chart.getCategoryPlot();
             BarRenderer renderer = (BarRenderer) plot.getRenderer();
 
-            // COLOR VERDE QUIRÚRGICO
             renderer.setSeriesPaint(0, new Color(0, 150, 136));
 
             configurarPlotYRenderer(chart, plot, renderer, fontTitulo, fontEjes, fontEtiquetas, fontValores);

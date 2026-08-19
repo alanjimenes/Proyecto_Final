@@ -15,7 +15,6 @@ public class Flujo extends Thread {
     ObjectOutputStream FlujoEscritura = null;
     private UserService userService = new UserService();
 
-
     public Flujo(Socket sfd) {
         nsfd = sfd;
         try {
@@ -68,6 +67,8 @@ public class Flujo extends Thread {
                 String comando = paquete.getComando();
 
                 switch (comando.toUpperCase()) {
+
+                    // USUARIOS
                     case "LOGIN":
                         User login = (User) paquete.getObjeto();
                         User respuesta = userService.login(login.getNombreUsuario(), login.getPassword());
@@ -75,21 +76,29 @@ public class Flujo extends Thread {
                         break;
 
                     case "REG_USER":
-
                         User nuevo = (User) paquete.getObjeto();
-
                         if (userService.existeUsuario(nuevo.getNombreUsuario())) {
-
                             paquete.setRespuesta(false);
-
                         } else {
-
                             paquete.setRespuesta(userService.registrarUsuario(nuevo));
-
                         }
                         break;
 
-                    //ENFERMEDADES
+                    case "LISTAR_USUARIOS":
+                        paquete.setRespuesta(userService.listarUsuarios());
+                        break;
+
+                    case "ELIMINAR_USUARIO":
+                        String usuario = (String) paquete.getObjeto();
+                        paquete.setRespuesta(userService.eliminarUsuario(usuario));
+                        break;
+
+                    case "ACTUALIZAR_USUARIO":
+                        User editar = (User) paquete.getObjeto();
+                        paquete.setRespuesta(userService.actualizarUsuario(editar));
+                        break;
+
+                    // ENFERMEDADES
                     case "REG_ENFERMEDAD":
                         Enfermedad enf = (Enfermedad) paquete.getObjeto();
                         boolean exitoEnf = enfermedadService.agregarEnfermedad(enf);
@@ -122,7 +131,7 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(enfermedadService.getClientesPorEnfermedad(nomEnf));
                         break;
 
-                    //MEDICO
+                    // MEDICOS
                     case "REG_MEDICO":
                         Medico m = (Medico) paquete.getObjeto();
                         int idEspecialidad = m.getEspecialidad().getCodigoEspecialidad();
@@ -151,7 +160,7 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(exitoDelMed);
                         break;
 
-                    //CLIENTES
+                    // CLIENTES
                     case "REG_CLIENTE":
                         Cliente cli = (Cliente) paquete.getObjeto();
                         Cliente existente = clienteService.buscarClientePorCodigo(cli.getNumExpediente());
@@ -190,7 +199,7 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(desactivado);
                         break;
 
-                    //ESPECIALIDADES
+                    // ESPECIALIDADES
                     case "REG_ESPECIALIDAD":
                         Especialidad esp = (Especialidad) paquete.getObjeto();
                         boolean exitoEsp = especialidadService.registrarEspecialidad(esp);
@@ -218,7 +227,7 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(exitoDelEsp);
                         break;
 
-                    //CITAS
+                    // CITAS
                     case "REG_CITA":
                         Cita c = (Cita) paquete.getObjeto();
                         LocalDateTime inicioCita = c.getFechaCita();
@@ -260,13 +269,14 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(exitoCancelCita);
                         break;
 
-                    //CONSULTA
+                    // CONSULTA
                     case "REG_CONSULTA":
                         Consulta cons = (Consulta) paquete.getObjeto();
                         boolean exitoCons = consultaService.registrarConsultaCompleta(cons, cons.getMedico().getCedula(), cons.getCliente().getCedula());
                         paquete.setRespuesta(exitoCons);
                         break;
 
+                    // VACUNAS
                     case "REG_VACUNA":
                         Vacuna v = (Vacuna) paquete.getObjeto();
                         boolean exitoVac = vacunaService.agregarVacuna(v);
@@ -285,26 +295,38 @@ public class Flujo extends Thread {
                         break;
 
                     case "UPDATE_VACUNA":
-                        paquete.setRespuesta(false);
+                        Vacuna vacUpd = (Vacuna) paquete.getObjeto();
+                        paquete.setRespuesta(vacunaService.actualizarVacuna(vacUpd));
                         break;
 
-                    case "LISTAR_USUARIOS":
-
-                        paquete.setRespuesta(userService.listarUsuarios());
+                    case "DELETE_VACUNA":
+                        int idVac = (int) paquete.getObjeto();
+                        paquete.setRespuesta(vacunaService.eliminarVacuna(idVac));
                         break;
 
-                    case "ELIMINAR_USUARIO":
-
-                        String usuario = (String) paquete.getObjeto();
-                        paquete.setRespuesta(userService.eliminarUsuario(usuario));
-
+                    // LOTEVACUNA
+                    case "REG_LOTE_VACUNA":
+                        LoteVacuna lote = (LoteVacuna) paquete.getObjeto();
+                        paquete.setRespuesta(loteVacunaService.registrarLote(lote));
                         break;
 
-                    case "ACTUALIZAR_USUARIO":
+                    case "LISTAR_LOTES_VACUNAS":
+                        paquete.setRespuesta(loteVacunaService.listarLotes());
+                        break;
 
-                        User editar = (User) paquete.getObjeto();
-                        paquete.setRespuesta(userService.actualizarUsuario(editar));
+                    case "LISTAR_LOTES_POR_VACUNA":
+                        int codVac = (int) paquete.getObjeto();
+                        paquete.setRespuesta(loteVacunaService.listarLotesPorVacuna(codVac));
+                        break;
 
+                    case "UPDATE_LOTE_VACUNA":
+                        LoteVacuna loteUpd = (LoteVacuna) paquete.getObjeto();
+                        paquete.setRespuesta(loteVacunaService.editLoteVacuna(loteUpd));
+                        break;
+
+                    case "DELETE_LOTE_VACUNA":
+                        int codLoteDel = (int) paquete.getObjeto();
+                        paquete.setRespuesta(loteVacunaService.eliminarLoteVacuna(codLoteDel));
                         break;
 
                     // ENFERMERA
@@ -327,17 +349,7 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(enfermeraService.desactivarEnfermera(enfDel.getCedula()));
                         break;
 
-                    // LOTEVACUNA
-                    case "REG_LOTE_VACUNA":
-                        LoteVacuna lote = (LoteVacuna) paquete.getObjeto();
-                        paquete.setRespuesta(loteVacunaService.registrarLote(lote));
-                        break;
-
-                    case "LISTAR_LOTES_VACUNAS":
-                        paquete.setRespuesta(loteVacunaService.listarLotes());
-                        break;
-
-                    // EVALUACIONFISICA
+                    // EVALUACION_FISICA
                     case "REG_EVALUACION_FISICA":
                         EvaluacionFisica eval = (EvaluacionFisica) paquete.getObjeto();
                         paquete.setRespuesta(evaluacionFisicaService.registrarEvaluacion(eval));
@@ -353,13 +365,13 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(medicamentoService.listarMedicamentos());
                         break;
 
-                    // RECETAMEDICA
+                    // RECETA_MEDICA
                     case "REG_RECETA_MEDICA":
                         RecetaMedica receta = (RecetaMedica) paquete.getObjeto();
                         paquete.setRespuesta(recetaMedicaService.crearRecetaMedica(receta));
                         break;
 
-                    // TIPOANALISIS
+                    // TIPO_ANALISIS
                     case "REG_TIPO_ANALISIS":
                         TipoAnalisis tAnalisis = (TipoAnalisis) paquete.getObjeto();
                         paquete.setRespuesta(tipoAnalisisService.crearTipoAnalisis(tAnalisis));

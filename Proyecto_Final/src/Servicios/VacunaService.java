@@ -53,6 +53,38 @@ public class VacunaService {
         return lista;
     }
 
+    public boolean actualizarVacuna(Vacuna vac) {
+        String sql = "update vacuna set vacuna.nombre = ?, vacuna.descripcion = ? where vacuna.codigo_vacuna = ?";
+        try (Connection conn = ConexionDB.getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, vac.getNombre());
+            stmt.setString(2, vac.getDescripcion());
+            stmt.setInt(3, vac.getCodigoVacuna());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean eliminarVacuna(int codigoVacuna) {
+        String sql = "delete from vacuna where vacuna.codigo_vacuna = ?";
+        try (Connection conn = ConexionDB.getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, codigoVacuna);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean aplicarVacunaCliente(String cedulaCliente, int codigoVacuna, Timestamp fecha) {
         String sql = "insert into regvacuna (codigo_cliente, codigo_vacuna, fecha, aplicada) values ((select persona.codigo_persona from persona where persona.cedula = ?), ?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
