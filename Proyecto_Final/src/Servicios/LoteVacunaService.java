@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class LoteVacunaService {
 
     public boolean registrarLote(LoteVacuna lote) {
-        String sql = "INSERT INTO lote_vacuna (codigo_vacuna, no_lote, fecha_vencimiento, cantidad) VALUES (?, ?, ?, ?)";
+        String sql = "insert into lote_vacuna (codigo_vacuna, no_lote, fecha_vencimiento, cantidad) values (?, ?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -28,7 +28,7 @@ public class LoteVacunaService {
     }
 
     public boolean editLoteVacuna(LoteVacuna lote) {
-        String sql = "UPDATE lote_vacuna SET codigo_vacuna = ?, no_lote = ?, fecha_vencimiento = ?, cantidad = ? WHERE codigo_lote = ?";
+        String sql = "update lote_vacuna set codigo_vacuna = ?, no_lote = ?, fecha_vencimiento = ?, cantidad = ? where codigo_lote = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -46,7 +46,7 @@ public class LoteVacunaService {
     }
 
     public boolean eliminarLoteVacuna(int codigoLote) {
-        String sql = "DELETE FROM lote_vacuna WHERE codigo_lote = ?";
+        String sql = "delete from lote_vacuna where codigo_lote = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -60,8 +60,8 @@ public class LoteVacunaService {
 
     public LoteVacuna buscarLoteVacuna(int codigoLote) {
         LoteVacuna lote = null;
-        String sql = "SELECT l.codigo_lote, l.no_lote, l.fecha_vencimiento, l.cantidad, v.codigo_vacuna, v.nombre " +
-                "FROM lote_vacuna l LEFT JOIN vacuna v ON l.codigo_vacuna = v.codigo_vacuna WHERE l.codigo_lote = ?";
+        String sql = "select l.codigo_lote, l.no_lote, l.fecha_vencimiento, l.cantidad, v.codigo_vacuna, v.nombre " +
+                "from lote_vacuna l left join vacuna v on l.codigo_vacuna = v.codigo_vacuna where l.codigo_lote = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -91,8 +91,8 @@ public class LoteVacunaService {
 
     public ArrayList<LoteVacuna> listarLotes() {
         ArrayList<LoteVacuna> lista = new ArrayList<>();
-        String sql = "SELECT l.codigo_lote, l.no_lote, l.fecha_vencimiento, l.cantidad, v.codigo_vacuna, v.nombre " +
-                "FROM lote_vacuna l LEFT JOIN vacuna v ON l.codigo_vacuna = v.codigo_vacuna";
+        String sql = "select l.codigo_lote, l.no_lote, l.fecha_vencimiento, l.cantidad, v.codigo_vacuna, v.nombre " +
+                "from lote_vacuna l left join vacuna v on l.codigo_vacuna = v.codigo_vacuna";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);

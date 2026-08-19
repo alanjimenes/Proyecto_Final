@@ -98,7 +98,7 @@ public class EnfermeraService {
     }
 
     public boolean desactivarEnfermera(String cedula) {
-        String sql = "UPDATE persona SET estado = false WHERE cedula = ?";
+        String sql = "update persona set estado = false where cedula = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

@@ -346,7 +346,7 @@ public class Flujo extends Thread {
                     // MEDICAMENTO
                     case "REG_MEDICAMENTO":
                         Medicamento medicamento = (Medicamento) paquete.getObjeto();
-                        paquete.setRespuesta(medicamentoService.registrarMedicamento(medicamento));
+                        paquete.setRespuesta(medicamentoService.crearMedicamento(medicamento));
                         break;
 
                     case "LISTAR_MEDICAMENTOS":
@@ -356,13 +356,13 @@ public class Flujo extends Thread {
                     // RECETAMEDICA
                     case "REG_RECETA_MEDICA":
                         RecetaMedica receta = (RecetaMedica) paquete.getObjeto();
-                        paquete.setRespuesta(recetaMedicaService.registrarReceta(receta));
+                        paquete.setRespuesta(recetaMedicaService.crearRecetaMedica(receta));
                         break;
 
                     // TIPOANALISIS
                     case "REG_TIPO_ANALISIS":
                         TipoAnalisis tAnalisis = (TipoAnalisis) paquete.getObjeto();
-                        paquete.setRespuesta(tipoAnalisisService.registrarTipoAnalisis(tAnalisis));
+                        paquete.setRespuesta(tipoAnalisisService.crearTipoAnalisis(tAnalisis));
                         break;
 
                     case "LISTAR_TIPOS_ANALISIS":
@@ -372,7 +372,7 @@ public class Flujo extends Thread {
                     // ANALISIS
                     case "REG_ANALISIS":
                         Analisis analisis = (Analisis) paquete.getObjeto();
-                        paquete.setRespuesta(analisisService.registrarAnalisis(analisis));
+                        paquete.setRespuesta(analisisService.crearAnalisis(analisis));
                         break;
 
                     default:

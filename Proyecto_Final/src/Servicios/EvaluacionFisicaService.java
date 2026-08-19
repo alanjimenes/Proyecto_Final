@@ -1,12 +1,28 @@
 package Servicios;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import logico.EvaluacionFisica;
+import Utils.ConexionDB;
+import logico.*;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 
 public class EvaluacionFisicaService {
 
+    // Método para llamadas independientes (Servidor / Socket / Switch-Case)
+    public boolean registrarEvaluacion(EvaluacionFisica evaluacion) {
+        try (Connection conn = ConexionDB.getConexion()) {
+            int idConsulta = (evaluacion.getConsulta() != null) ? evaluacion.getConsulta().getCodigoConsulta() : 0;
+            return registrarEvaluacion(conn, evaluacion, idConsulta);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    //Método para llamadas transaccionales (Usado por ConsultaService)
     public boolean registrarEvaluacion(Connection conn, EvaluacionFisica evaluacion, int idConsulta) throws SQLException {
         String sql = "insert into evaluacionfisica (codigo_consulta, temperatura, frecuenciacardiaca, presionarterial, peso, talla) " +
                 "values (?, ?, ?, ?, ?, ?)";

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class RecetaMedicaService {
 
     public boolean crearRecetaMedica(RecetaMedica receta) {
-        String sql = "INSERT INTO receta_medica (codigo_consulta, codigo_medicamento, frecuencia, duracion, dosis, descripcion) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "insert into receta_medica (codigo_consulta, codigo_medicamento, frecuencia, duracion, dosis, descripcion) values (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -31,7 +31,7 @@ public class RecetaMedicaService {
     }
 
     public boolean editRecetaMedica(RecetaMedica receta) {
-        String sql = "UPDATE receta_medica SET codigo_consulta = ?, codigo_medicamento = ?, frecuencia = ?, duracion = ?, dosis = ?, descripcion = ? WHERE codigo_rec = ?";
+        String sql = "update receta_medica set codigo_consulta = ?, codigo_medicamento = ?, frecuencia = ?, duracion = ?, dosis = ?, descripcion = ? where codigo_rec = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -51,7 +51,7 @@ public class RecetaMedicaService {
     }
 
     public boolean eliminarRecetaMedica(int codigoRec) {
-        String sql = "DELETE FROM receta_medica WHERE codigo_rec = ?";
+        String sql = "delete from receta_medica where codigo_rec = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -65,11 +65,11 @@ public class RecetaMedicaService {
 
     public RecetaMedica buscarRecetaMedica(int codigoRec) {
         RecetaMedica receta = null;
-        String sql = "SELECT r.codigo_rec, r.codigo_consulta, r.frecuencia, r.duracion, r.dosis, r.descripcion, " +
+        String sql = "select r.codigo_rec, r.codigo_consulta, r.frecuencia, r.duracion, r.dosis, r.descripcion, " +
                 "m.codigo_medicamento, m.nombre, m.concentracion " +
-                "FROM receta_medica r " +
-                "LEFT JOIN medicamento m ON r.codigo_medicamento = m.codigo_medicamento " +
-                "WHERE r.codigo_rec = ?";
+                "from receta_medica r " +
+                "left join m on r.codigo_medicamento = m.codigo_medicamento " +
+                "where r.codigo_rec = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -103,10 +103,10 @@ public class RecetaMedicaService {
 
     public ArrayList<RecetaMedica> getTodasLasRecetas() {
         ArrayList<RecetaMedica> lista = new ArrayList<>();
-        String sql = "SELECT r.codigo_rec, r.codigo_consulta, r.frecuencia, r.duracion, r.dosis, r.descripcion, " +
+        String sql = "select r.codigo_rec, r.codigo_consulta, r.frecuencia, r.duracion, r.dosis, r.descripcion, " +
                 "m.codigo_medicamento, m.nombre, m.concentracion " +
-                "FROM receta_medica r " +
-                "LEFT JOIN medicamento m ON r.codigo_medicamento = m.codigo_medicamento";
+                "from receta_medica r " +
+                "left join medicamento m on r.codigo_medicamento = m.codigo_medicamento";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);

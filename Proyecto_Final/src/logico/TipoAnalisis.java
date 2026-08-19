@@ -15,12 +15,27 @@ public class TipoAnalisis implements java.io.Serializable {
         this.descripcion = descripcion;
     }
 
-    public int getCodigoTipo() { return codigoTipo; }
-    public void setCodigoTipo(int codigoTipo) { this.codigoTipo = codigoTipo; }
+    public int getCodigoTipo() {
+        return codigoTipo;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setCodigoTipo(int codigoTipo) {
+        this.codigoTipo = codigoTipo;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 }

@@ -25,24 +25,59 @@ public class Analisis implements java.io.Serializable {
         this.resultado = resultado;
     }
 
-    public int getCodigoAnalisis() { return codigoAnalisis; }
-    public void setCodigoAnalisis(int codigoAnalisis) { this.codigoAnalisis = codigoAnalisis; }
+    public int getCodigoAnalisis() {
+        return codigoAnalisis;
+    }
 
-    public Consulta getConsulta() { return consulta; }
-    public void setConsulta(Consulta consulta) { this.consulta = consulta; }
+    public void setCodigoAnalisis(int codigoAnalisis) {
+        this.codigoAnalisis = codigoAnalisis;
+    }
 
-    public TipoAnalisis getTipo() { return tipo; }
-    public void setTipo(TipoAnalisis tipo) { this.tipo = tipo; }
+    public Consulta getConsulta() {
+        return consulta;
+    }
 
-    public LocalDateTime getFechaOrden() { return fechaOrden; }
-    public void setFechaOrden(LocalDateTime fechaOrden) { this.fechaOrden = fechaOrden; }
+    public void setConsulta(Consulta consulta) {
+        this.consulta = consulta;
+    }
 
-    public LocalDateTime getFechaResultado() { return fechaResultado; }
-    public void setFechaResultado(LocalDateTime fechaResultado) { this.fechaResultado = fechaResultado; }
+    public TipoAnalisis getTipo() {
+        return tipo;
+    }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public void setTipo(TipoAnalisis tipo) {
+        this.tipo = tipo;
+    }
 
-    public String getResultado() { return resultado; }
-    public void setResultado(String resultado) { this.resultado = resultado; }
+    public LocalDateTime getFechaOrden() {
+        return fechaOrden;
+    }
+
+    public void setFechaOrden(LocalDateTime fechaOrden) {
+        this.fechaOrden = fechaOrden;
+    }
+
+    public LocalDateTime getFechaResultado() {
+        return fechaResultado;
+    }
+
+    public void setFechaResultado(LocalDateTime fechaResultado) {
+        this.fechaResultado = fechaResultado;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getResultado() {
+        return resultado;
+    }
+
+    public void setResultado(String resultado) {
+        this.resultado = resultado;
+    }
 }
