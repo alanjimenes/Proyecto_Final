@@ -310,7 +310,7 @@ public class Flujo extends Thread {
                     // ENFERMERA
                     case "REG_ENFERMERA":
                         Enfermera enfReg = (Enfermera) paquete.getObjeto();
-                        paquete.setRespuesta(enfermeraService.agregarEnfermera(enfReg));
+                        paquete.setRespuesta(enfermeraService.crearEnfermera(enfReg));
                         break;
 
                     case "LISTAR_ENFERMERAS":
@@ -319,7 +319,7 @@ public class Flujo extends Thread {
 
                     case "UPDATE_ENFERMERA":
                         Enfermera enfUpd = (Enfermera) paquete.getObjeto();
-                        paquete.setRespuesta(enfermeraService.actualizarEnfermera(enfUpd));
+                        paquete.setRespuesta(enfermeraService.editEnfermera(enfUpd));
                         break;
 
                     case "DELETE_ENFERMERA":

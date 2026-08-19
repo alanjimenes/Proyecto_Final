@@ -16,8 +16,19 @@ public class Enfermera extends Persona implements java.io.Serializable {
         this.turno = turno;
     }
 
-    public User getUsuario() { return usuario; }
-    public void setUsuario(User usuario) { this.usuario = usuario; }
-    public String getTurno() { return turno; }
-    public void setTurno(String turno) { this.turno = turno; }
+    public User getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(User usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getTurno() {
+        return turno;
+    }
+
+    public void setTurno(String turno) {
+        this.turno = turno;
+    }
 }
