@@ -13,13 +13,7 @@ import java.util.ArrayList;
 public class CitaService {
 
     public boolean crearCita(Cita cita, String cedulaMedico, String cedulaCliente) {
-        String sql = "insert into cita (codigo_medico, codigo_cliente, fechacita, estado, motivo) " +
-                "values ((select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?), " +
-                "(select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?), ?, ?, ?)";
+        String sql = "insert into cita (codigo_medico, codigo_cliente, fechacita, estado, motivo) values ((select persona.codigo_persona from persona where persona.cedula = ?), (select persona.codigo_persona from persona where persona.cedula = ?), ?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -38,12 +32,7 @@ public class CitaService {
     }
 
     public boolean editCita(int codigoCita, LocalDateTime nuevaFechaHora, String cedulaMedico) {
-        String sql = "update cita set fechacita = ?, " +
-                "codigo_medico = (" +
-                "select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?) " +
-                "where codigo_cita = ?";
+        String sql = "update cita set cita.fechacita = ?, cita.codigo_medico = (select persona.codigo_persona from persona where persona.cedula = ?) where cita.codigo_cita = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -60,8 +49,7 @@ public class CitaService {
     }
 
     public boolean cancelCita(int codigoCita) {
-        String sql = "update cita set estado = 'Cancelada' " +
-                "where codigo_cita = ?";
+        String sql = "update cita set cita.estado = 'Cancelada' where cita.codigo_cita = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -116,7 +104,7 @@ public class CitaService {
 
     public Cita buscarCita(int codigoCita) {
         Cita cita = null;
-        String sql = "select cita.codigo_cita, cita.fechacita, cita.estado, cita.motivo, pcli.cedula AS cli_ced, pcli.nombre AS cli_nom, pcli.apellido AS cli_ape, cliente.numexpediente, pmed.cedula AS med_ced, pmed.nombre AS med_nom, pmed.apellido AS med_ape from cita inner join cliente on cita.codigo_cliente = cliente.codigo_persona inner join persona pcli on cliente.codigo_persona = pcli.codigo_persona inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona pmed on medico.codigo_persona = pmed.codigo_persona where cita.codigo_cita = ?";
+        String sql = "select cita.codigo_cita, cita.fechacita, cita.estado, cita.motivo, persona_cli.cedula AS cli_ced, persona_cli.nombre AS cli_nom, persona_cli.apellido AS cli_ape, cliente.numexpediente, persona_med.cedula AS med_ced, persona_med.nombre AS med_nom, persona_med.apellido AS med_ape from cita inner join cliente on cita.codigo_cliente = cliente.codigo_persona inner join persona persona_cli on cliente.codigo_persona = persona_cli.codigo_persona inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona persona_med on medico.codigo_persona = persona_med.codigo_persona where cita.codigo_cita = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -152,7 +140,7 @@ public class CitaService {
 
     public ArrayList<Cita> getTodasLasCitas() {
         ArrayList<Cita> lista = new ArrayList<>();
-        String sql = "select cita.codigo_cita, cita.fechacita, cita.estado, cita.motivo, pcli.cedula AS cli_ced, pcli.nombre AS cli_nom, pcli.apellido AS cli_ape, cliente.numexpediente, pmed.cedula AS med_ced, pmed.nombre AS med_nom, pmed.apellido AS med_ape from cita inner join cliente on cita.codigo_cliente = cliente.codigo_persona inner join persona pcli on cliente.codigo_persona = pcli.codigo_persona inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona pmed on medico.codigo_persona = pmed.codigo_persona";
+        String sql = "select cita.codigo_cita, cita.fechacita, cita.estado, cita.motivo, persona_cli.cedula AS cli_ced, persona_cli.nombre AS cli_nom, persona_cli.apellido AS cli_ape, cliente.numexpediente, persona_med.cedula AS med_ced, persona_med.nombre AS med_nom, persona_med.apellido AS med_ape from cita inner join cliente on cita.codigo_cliente = cliente.codigo_persona inner join persona persona_cli on cliente.codigo_persona = persona_cli.codigo_persona inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona persona_med on medico.codigo_persona = persona_med.codigo_persona";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -188,7 +176,7 @@ public class CitaService {
 
     public ArrayList<Cita> getCitasPorMedico(String cedulaMedico) {
         ArrayList<Cita> lista = new ArrayList<>();
-        String sql = "select cita.codigo_cita, cita.fechacita, cita.estado, cita.motivo, pcli.cedula AS cli_ced, pcli.nombre AS cli_nom, pcli.apellido AS cli_ape, cliente.numexpediente, pmed.cedula AS med_ced, pmed.nombre AS med_nom, pmed.apellido AS med_ape from cita inner join cliente on cita.codigo_cliente = cliente.codigo_persona inner join persona pcli on cliente.codigo_persona = pcli.codigo_persona inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona pmed on medico.codigo_persona = pmed.codigo_persona where pmed.cedula = ?";
+        String sql = "select cita.codigo_cita, cita.fechacita, cita.estado, cita.motivo, persona_cli.cedula AS cli_ced, persona_cli.nombre AS cli_nom, persona_cli.apellido AS cli_ape, cliente.numexpediente, persona_med.cedula AS med_ced, persona_med.nombre AS med_nom, persona_med.apellido AS med_ape from cita inner join cliente on cita.codigo_cliente = cliente.codigo_persona inner join persona persona_cli on cliente.codigo_persona = persona_cli.codigo_persona inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona persona_med on medico.codigo_persona = persona_med.codigo_persona where persona_med.cedula = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -226,7 +214,7 @@ public class CitaService {
 
     public ArrayList<Cita> getCitasDeCliente(String numExpediente) {
         ArrayList<Cita> lista = new ArrayList<>();
-        String sql = "select cita.codigo_cita, cita.codigo_medico, cita.codigo_cliente, cita.fechacita, cita.estado, cita.motivo from cita inner join cliente on cita.codigo_cliente = cliente.codigo_persona where cliente.numexpediente = ?";
+        String sql = "select cita.codigo_cita, cita.fechacita, cita.estado, cita.motivo, persona_cli.cedula AS cli_ced, persona_cli.nombre AS cli_nom, persona_cli.apellido AS cli_ape, cliente.numexpediente, persona_med.cedula AS med_ced, persona_med.nombre AS med_nom, persona_med.apellido AS med_ape from cita inner join cliente on cita.codigo_cliente = cliente.codigo_persona inner join persona persona_cli on cliente.codigo_persona = persona_cli.codigo_persona inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona persona_med on medico.codigo_persona = persona_med.codigo_persona where cliente.numexpediente = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -235,9 +223,22 @@ public class CitaService {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
+                Cliente cli = new Cliente();
+                cli.setCedula(rs.getString("cli_ced"));
+                cli.setNombre(rs.getString("cli_nom"));
+                cli.setApellido(rs.getString("cli_ape"));
+                cli.setNumExpediente(rs.getString("numexpediente"));
+
+                Medico med = new Medico();
+                med.setCedula(rs.getString("med_ced"));
+                med.setNombre(rs.getString("med_nom"));
+                med.setApellido(rs.getString("med_ape"));
+
                 Cita cita = new Cita();
                 cita.setCodigoCita(rs.getInt("codigo_cita"));
                 cita.setFechaCita(rs.getTimestamp("fechacita").toLocalDateTime());
+                cita.setCliente(cli);
+                cita.setMedico(med);
                 cita.setEstado(rs.getString("estado"));
                 cita.setMotivo(rs.getString("motivo"));
                 lista.add(cita);
@@ -250,7 +251,7 @@ public class CitaService {
 
     public ArrayList<Cita> getCitasPorRango(LocalDateTime desde, LocalDateTime hasta) {
         ArrayList<Cita> lista = new ArrayList<>();
-        String sql = "select cita.codigo_cita, cita.codigo_medico, cita.codigo_cliente, cita.fechacita, cita.estado, cita.motivo from cita where cita.fechacita >= ? and cita.fechacita <= ?";
+        String sql = "select cita.codigo_cita, cita.fechacita, cita.estado, cita.motivo, persona_cli.cedula AS cli_ced, persona_cli.nombre AS cli_nom, persona_cli.apellido AS cli_ape, cliente.numexpediente, persona_med.cedula AS med_ced, persona_med.nombre AS med_nom, persona_med.apellido AS med_ape from cita inner join cliente on cita.codigo_cliente = cliente.codigo_persona inner join persona persona_cli on cliente.codigo_persona = persona_cli.codigo_persona inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona persona_med on medico.codigo_persona = persona_med.codigo_persona where cita.fechacita >= ? and cita.fechacita <= ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -260,9 +261,22 @@ public class CitaService {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
+                Cliente cli = new Cliente();
+                cli.setCedula(rs.getString("cli_ced"));
+                cli.setNombre(rs.getString("cli_nom"));
+                cli.setApellido(rs.getString("cli_ape"));
+                cli.setNumExpediente(rs.getString("numexpediente"));
+
+                Medico med = new Medico();
+                med.setCedula(rs.getString("med_ced"));
+                med.setNombre(rs.getString("med_nom"));
+                med.setApellido(rs.getString("med_ape"));
+
                 Cita cita = new Cita();
                 cita.setCodigoCita(rs.getInt("codigo_cita"));
                 cita.setFechaCita(rs.getTimestamp("fechacita").toLocalDateTime());
+                cita.setCliente(cli);
+                cita.setMedico(med);
                 cita.setEstado(rs.getString("estado"));
                 cita.setMotivo(rs.getString("motivo"));
                 lista.add(cita);

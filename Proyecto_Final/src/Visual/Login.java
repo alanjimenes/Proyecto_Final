@@ -126,10 +126,13 @@ public class Login extends JFrame {
 			return;
 		}
 
-		User userTemp = new User(0, usuario, clave, "");
+		User userTemp = new User();
+		userTemp.setNombreUsuario(usuario);
+		userTemp.setPassword(clave);
+
 		Object respuesta = ClienteSocket.enviar("LOGIN", userTemp);
 
-		if (respuesta instanceof User) {
+		if (respuesta != null && respuesta instanceof User) {
 			User usuarioLogueado = (User) respuesta;
 			Principal frame = new Principal(usuarioLogueado);
 			dispose();

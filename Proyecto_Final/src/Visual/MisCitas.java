@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class MisCitas extends JDialog {
 
@@ -32,34 +33,51 @@ public class MisCitas extends JDialog {
     public MisCitas(User usuario) {
         this.usuarioMedico = usuario;
 
-        // Icono y Título
         setTitle("Mis Citas de Hoy");
-        setIconImage(Toolkit.getDefaultToolkit().getImage(MisCitas.class.getResource("/img/dato-de-registro.png"))); // Aseg�rate de tener la imagen o quitar esta l�nea si da error
+        try {
+            setIconImage(Toolkit.getDefaultToolkit().getImage(MisCitas.class.getResource("/img/dato-de-registro.png")));
+        } catch (Exception e) {}
         setBounds(100, 100, 900, 500);
         setLocationRelativeTo(null);
         getContentPane().setLayout(new BorderLayout());
 
-        // Fondo General
         contentPanel.setBackground(new Color(255, 255, 255));
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
 
-        // --- PANEL NORTE (TÍTULO) ---
         JPanel panelNorte = new JPanel();
         panelNorte.setBackground(new Color(60, 70, 123));
-        panelNorte.setPreferredSize(new Dimension(10, 50)); // Altura fija para que se vea bien
-        panelNorte.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 12)); // Centrar verticalmente
+        panelNorte.setPreferredSize(new Dimension(10, 50));
+        panelNorte.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 12));
         contentPanel.add(panelNorte, BorderLayout.NORTH);
 
-        // Lógica para obtener nombre del médico
         String nombreMedico = "Desconocido";
-        if (usuario.getCodigoUsuario() != 0) {
-            Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuario.getCodigoUsuario());
+
+        if (usuario.getCedula() != null && !usuario.getCedula().isEmpty()) {
+            Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuario.getCedula());
             if (resp instanceof Medico) {
                 medicoActual = (Medico) resp;
-                nombreMedico = medicoActual.getNombre() + " " + medicoActual.getApellido();
             }
+        }
+
+        if (medicoActual == null) {
+            String cedulaManual = JOptionPane.showInputDialog(this,
+                    "Tu usuario no esta conectado a ningun medico.\nIngresa tu CEDULA DE MEDICO para cargar tus citas:",
+                    "Identificacion Requerida", JOptionPane.WARNING_MESSAGE);
+
+            if (cedulaManual != null && !cedulaManual.trim().isEmpty()) {
+                Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", cedulaManual.trim());
+                if (resp instanceof Medico) {
+                    medicoActual = (Medico) resp;
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se encontro un medico con esa cedula.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+
+        if (medicoActual != null) {
+            nombreMedico = medicoActual.getNombre() + " " + medicoActual.getApellido();
         }
 
         JLabel lblTitulo = new JLabel("Pacientes de Hoy para Dr/a: " + nombreMedico);
@@ -67,21 +85,19 @@ public class MisCitas extends JDialog {
         lblTitulo.setFont(new Font("Bahnschrift", Font.BOLD, 18));
         panelNorte.add(lblTitulo);
 
-        // --- PANEL CENTRAL (TABLA) ---
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.getViewport().setBackground(Color.WHITE); // Fondo blanco para el scroll
-        scrollPane.setBorder(null); // Quitar borde feo del scroll
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setBorder(null);
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
         table = new JTable();
-        table.setRowHeight(30); // Filas más altas para mejor lectura
-        table.setSelectionBackground(new Color(232, 246, 255)); // Azul muy claro al seleccionar
+        table.setRowHeight(30);
+        table.setSelectionBackground(new Color(232, 246, 255));
         table.setSelectionForeground(Color.BLACK);
-        table.setGridColor(new Color(230, 230, 230)); // Líneas de cuadrícula sutiles
+        table.setGridColor(new Color(230, 230, 230));
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        table.setShowVerticalLines(false); // Solo líneas horizontales (diseño moderno)
+        table.setShowVerticalLines(false);
 
-        // Evento Click
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -104,7 +120,6 @@ public class MisCitas extends JDialog {
         model.setColumnIdentifiers(new String[]{"Código", "Hora", "Paciente", "Cédula Paciente", "Estado"});
         table.setModel(model);
 
-        // --- ESTILIZADO DEL HEADER (ENCABEZADO AZUL) ---
         JTableHeader header = table.getTableHeader();
         header.setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
@@ -119,7 +134,6 @@ public class MisCitas extends JDialog {
             }
         });
 
-
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < table.getColumnCount(); i++) {
@@ -128,29 +142,26 @@ public class MisCitas extends JDialog {
 
         scrollPane.setViewportView(table);
 
-        // --- PANEL SUR (BOTONES) ---
         JPanel buttonPane = new JPanel();
         buttonPane.setBackground(Color.WHITE);
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
         btnAtender = new JButton("Realizar Consulta");
-        Estilos.estilarBoton(btnAtender, new Color(41, 128, 185), Color.WHITE); // Azul brillante
+        Estilos.estilarBoton(btnAtender, new Color(41, 128, 185), Color.WHITE);
         btnAtender.setEnabled(false);
         btnAtender.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (citaSeleccionada != null) {
-                    // Verificamos si la ventana RealizarConsulta existe
                     try {
                         RealizarConsulta consulta = new RealizarConsulta(citaSeleccionada);
                         consulta.setModal(true);
                         consulta.setVisible(true);
-                        cargarCitasHoy(); // Recargar al volver
+                        cargarCitasHoy();
                         btnAtender.setEnabled(false);
                         citaSeleccionada = null;
                     } catch (Exception ex) {
-                        // Si RealizarConsulta no existe o da error, mostramos mensaje
-                        javax.swing.JOptionPane.showMessageDialog(null, "Abriendo consulta... (Aseg�rese de tener la clase RealizarConsulta)");
+                        JOptionPane.showMessageDialog(null, "Asegúrese de tener la clase RealizarConsulta");
                     }
                 }
             }
@@ -158,35 +169,39 @@ public class MisCitas extends JDialog {
         buttonPane.add(btnAtender);
 
         JButton btnCerrar = new JButton("Cerrar");
-        Estilos.estilarBoton(btnCerrar, new Color(231, 76, 60), Color.WHITE); // Rojo
+        Estilos.estilarBoton(btnCerrar, new Color(231, 76, 60), Color.WHITE);
         btnCerrar.addActionListener(e -> dispose());
         buttonPane.add(btnCerrar);
 
         cargarCitasHoy();
     }
 
+    @SuppressWarnings("unchecked")
     private void cargarCitasHoy() {
         model.setRowCount(0);
         row = new Object[5];
 
-        if (medicoActual == null)
+        if (medicoActual == null) {
             return;
+        }
 
+        Object respuesta = ClienteSocket.enviar("LISTAR_CITAS", null);
 
-        medicoActual = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", medicoActual.getCedula());
+        if (respuesta != null && respuesta instanceof ArrayList) {
+            ArrayList<Cita> todasLasCitas = (ArrayList<Cita>) respuesta;
+            for (Cita cita : todasLasCitas) {
+                if (cita.getMedico() != null && cita.getMedico().getCedula().equals(medicoActual.getCedula())) {
+                    boolean esHoy = cita.getFechaCita().toLocalDate().equals(LocalDate.now());
+                    boolean esPendiente = cita.getEstado().equalsIgnoreCase("Pendiente");
 
-        if (medicoActual != null && medicoActual.getCitasAsignadas() != null) {
-            for (Cita cita : medicoActual.getCitasAsignadas()) {
-                boolean esHoy = cita.getFechaCita().toLocalDate().equals(LocalDate.now());
-                boolean esPendiente = cita.getEstado().equalsIgnoreCase("Pendiente");
-
-                if (esHoy && esPendiente) {
-                    row[0] = cita.getCodigoCita();
-                    row[1] = cita.getFechaCita().toLocalTime().toString();
-                    row[2] = cita.getCliente().getNombre() + " " + cita.getCliente().getApellido();
-                    row[3] = cita.getCliente().getCedula();
-                    row[4] = cita.getEstado();
-                    model.addRow(row);
+                    if (esHoy && esPendiente) {
+                        row[0] = cita.getCodigoCita();
+                        row[1] = cita.getFechaCita().toLocalTime().toString();
+                        row[2] = cita.getCliente().getNombre() + " " + cita.getCliente().getApellido();
+                        row[3] = cita.getCliente().getCedula();
+                        row[4] = cita.getEstado();
+                        model.addRow(row);
+                    }
                 }
             }
         }

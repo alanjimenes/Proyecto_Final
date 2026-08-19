@@ -50,7 +50,7 @@ public class GestionCitas extends JPanel {
         panelFormulario.setLayout(null);
         add(panelFormulario);
 
-        JLabel lblCodCliente = new JLabel("C�d. Cliente:");
+        JLabel lblCodCliente = new JLabel("Céd. Cliente:");
         lblCodCliente.setForeground(Color.WHITE);
         lblCodCliente.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         lblCodCliente.setBounds(10, 45, 100, 14);
@@ -70,7 +70,7 @@ public class GestionCitas extends JPanel {
         lblNombreCliente.setBounds(386, 45, 300, 14);
         panelFormulario.add(lblNombreCliente);
 
-        JLabel lblCedMedico = new JLabel("C�dula M�dico:");
+        JLabel lblCedMedico = new JLabel("Cédula Médico:");
         lblCedMedico.setForeground(Color.WHITE);
         lblCedMedico.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
         lblCedMedico.setBounds(10, 85, 100, 14);
@@ -85,7 +85,7 @@ public class GestionCitas extends JPanel {
         btnBuscarMedico.setBounds(274, 81, 102, 23);
         panelFormulario.add(btnBuscarMedico);
 
-        lblNombreMedico = new JLabel("M�dico: (Busque un m�dico)");
+        lblNombreMedico = new JLabel("Médico: (Busque un médico)");
         lblNombreMedico.setForeground(Color.WHITE);
         lblNombreMedico.setBounds(386, 85, 300, 14);
         panelFormulario.add(lblNombreMedico);
@@ -181,13 +181,11 @@ public class GestionCitas extends JPanel {
             dialog.setVisible(true);
 
             if (ConsultarMedicos.table.getSelectedRow() >= 0) {
-                String cedula = ConsultarMedicos.table.getValueAt(ConsultarMedicos.table.getSelectedRow(), 0)
-                        .toString();
+                String cedula = ConsultarMedicos.table.getValueAt(ConsultarMedicos.table.getSelectedRow(), 0).toString();
                 medicoSeleccionado = (Medico) ClienteSocket.enviar("BUSCAR_MEDICO", cedula);
                 if (medicoSeleccionado != null) {
                     txtCedulaMedico.setText(medicoSeleccionado.getCedula());
-                    lblNombreMedico.setText("M�dico: " + medicoSeleccionado.getNombre() + " ("
-                            + medicoSeleccionado.getEspecialidad().getNombre() + ")");
+                    lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre() + " (" + medicoSeleccionado.getEspecialidad().getNombre() + ")");
                 }
             }
         });
@@ -215,7 +213,7 @@ public class GestionCitas extends JPanel {
             }
         };
 
-        model.setColumnIdentifiers(new String[]{"C�digo", "Paciente", "M�dico", "Fecha y Hora", "Estado"});
+        model.setColumnIdentifiers(new String[]{"Código", "Paciente", "Médico", "Fecha y Hora", "Estado"});
         tablaCitas.setModel(model);
         scrollPane.setViewportView(tablaCitas);
 
@@ -238,7 +236,7 @@ public class GestionCitas extends JPanel {
 
     private void crearCita() {
         if (clienteSeleccionado == null || medicoSeleccionado == null || dateChooser.getDate() == null) {
-            JOptionPane.showMessageDialog(null, "Debe buscar un cliente, un m�dico y seleccionar una fecha.");
+            JOptionPane.showMessageDialog(null, "Debe buscar un cliente, un médico y seleccionar una fecha.");
             return;
         }
         if (txtMotivo.getText().trim().isEmpty()) {
@@ -246,8 +244,7 @@ public class GestionCitas extends JPanel {
             return;
         }
 
-        LocalDateTime fechaParaValidar = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                .atStartOfDay();
+        LocalDateTime fechaParaValidar = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay();
         if (fechaParaValidar.getDayOfWeek() == DayOfWeek.SUNDAY) {
             JOptionPane.showMessageDialog(null, "No se permiten citas los domingos.");
             return;
@@ -262,16 +259,23 @@ public class GestionCitas extends JPanel {
             return;
         }
 
-        Cita tempCita = new Cita(0, fechaHora, clienteSeleccionado, medicoSeleccionado, "Pendiente", txtMotivo.getText());
+        Cita tempCita = new Cita();
+        tempCita.setCodigoCita(0);
+        tempCita.setFechaCita(fechaHora);
+        tempCita.setCliente(clienteSeleccionado);
+        tempCita.setMedico(medicoSeleccionado);
+        tempCita.setEstado("Pendiente");
+        tempCita.setMotivo(txtMotivo.getText().trim());
+
         Object respuesta = ClienteSocket.enviar("REG_CITA", tempCita);
         boolean exito = (respuesta instanceof Boolean) ? (Boolean) respuesta : false;
 
         if (exito) {
-            JOptionPane.showMessageDialog(null, "�Cita agendada exitosamente!");
+            JOptionPane.showMessageDialog(null, "¡Cita agendada exitosamente!");
             cargarTablaCitas();
             limpiarCampos();
         } else {
-            JOptionPane.showMessageDialog(null, "Error: M�dico no disponible en ese horario.");
+            JOptionPane.showMessageDialog(null, "Error: Médico no disponible en ese horario.");
         }
     }
 
@@ -281,8 +285,7 @@ public class GestionCitas extends JPanel {
             return;
         }
 
-        LocalDateTime fechaParaValidar = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                .atStartOfDay();
+        LocalDateTime fechaParaValidar = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay();
         if (fechaParaValidar.getDayOfWeek() == DayOfWeek.SUNDAY) {
             JOptionPane.showMessageDialog(null, "No se permiten citas los domingos.");
             return;
@@ -293,7 +296,7 @@ public class GestionCitas extends JPanel {
             return;
 
         if (nuevaFecha.isBefore(LocalDateTime.now())) {
-            JOptionPane.showMessageDialog(null, "Fecha inv�lida. No se puede ingresar una fecha ya pasada");
+            JOptionPane.showMessageDialog(null, "Fecha inválida. No se puede ingresar una fecha ya pasada");
             return;
         }
 
@@ -309,7 +312,7 @@ public class GestionCitas extends JPanel {
             cargarTablaCitas();
             limpiarCampos();
         } else {
-            JOptionPane.showMessageDialog(null, "No se pudo modificar (El m�dico est� ocupado o hay conflicto).");
+            JOptionPane.showMessageDialog(null, "No se pudo modificar (El médico está ocupado o hay conflicto).");
         }
     }
 
@@ -317,8 +320,7 @@ public class GestionCitas extends JPanel {
         if (citaSeleccionada == null)
             return;
 
-        int confirm = JOptionPane.showConfirmDialog(null,
-                "�Cancelar la cita " + citaSeleccionada.getCodigoCita() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(null, "¿Cancelar la cita " + citaSeleccionada.getCodigoCita() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             Object respuesta = ClienteSocket.enviar("CANCEL_CITA", citaSeleccionada);
             boolean exito = (respuesta instanceof Boolean) ? (Boolean) respuesta : false;
@@ -328,7 +330,7 @@ public class GestionCitas extends JPanel {
                 cargarTablaCitas();
                 limpiarCampos();
             } else {
-                JOptionPane.showMessageDialog(null, "Error al cancelar (Quiz�s ya pas� la fecha).");
+                JOptionPane.showMessageDialog(null, "Error al cancelar (Quizás ya pasó la fecha).");
             }
         }
     }
@@ -341,12 +343,11 @@ public class GestionCitas extends JPanel {
             LocalDate fecha = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
             if (cbxHora.getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(null, "Debe seleccionar una hora v�lida.");
+                JOptionPane.showMessageDialog(null, "Debe seleccionar una hora válida.");
                 return null;
             }
 
             String seleccion = cbxHora.getSelectedItem().toString();
-
             String[] parts = seleccion.split(" ");
             String[] timeParts = parts[0].split(":");
 
@@ -369,7 +370,6 @@ public class GestionCitas extends JPanel {
     private void seleccionarDeTabla() {
         int fila = tablaCitas.getSelectedRow();
         if (fila >= 0) {
-
             Object valorCodigo = model.getValueAt(fila, 0);
             if (valorCodigo == null)
                 return;
@@ -383,8 +383,7 @@ public class GestionCitas extends JPanel {
 
                 if (clienteSeleccionado != null) {
                     txtCodCliente.setText(clienteSeleccionado.getNumExpediente());
-                    lblNombreCliente.setText(
-                            "Paciente: " + clienteSeleccionado.getNombre() + " " + clienteSeleccionado.getApellido());
+                    lblNombreCliente.setText("Paciente: " + clienteSeleccionado.getNombre() + " " + clienteSeleccionado.getApellido());
                 } else {
                     txtCodCliente.setText("N/A");
                     lblNombreCliente.setText("Paciente: [No encontrado]");
@@ -392,20 +391,17 @@ public class GestionCitas extends JPanel {
 
                 if (medicoSeleccionado != null) {
                     txtCedulaMedico.setText(medicoSeleccionado.getCedula());
-                    lblNombreMedico.setText("M�dico: " + medicoSeleccionado.getNombre());
+                    lblNombreMedico.setText("Médico: " + medicoSeleccionado.getNombre());
                 } else {
                     txtCedulaMedico.setText("N/A");
-                    lblNombreMedico.setText("M�dico: [No encontrado]");
+                    lblNombreMedico.setText("Médico: [No encontrado]");
                 }
 
                 txtMotivo.setText(citaSeleccionada.getMotivo());
-
                 dateChooser.removePropertyChangeListener("date", dateChangeListener);
 
                 if (citaSeleccionada.getFechaCita() != null) {
-                    dateChooser.setDate(
-                            Date.from(citaSeleccionada.getFechaCita().atZone(ZoneId.systemDefault()).toInstant()));
-
+                    dateChooser.setDate(Date.from(citaSeleccionada.getFechaCita().atZone(ZoneId.systemDefault()).toInstant()));
                     actualizarHorasDisponibles();
 
                     if (cbxHora.getItemCount() > 0) {
@@ -420,8 +416,7 @@ public class GestionCitas extends JPanel {
 
                 dateChooser.addPropertyChangeListener("date", dateChangeListener);
 
-                boolean activa = !citaSeleccionada.getEstado().equalsIgnoreCase("Completada")
-                        && !citaSeleccionada.getEstado().equalsIgnoreCase("Cancelada");
+                boolean activa = !citaSeleccionada.getEstado().equalsIgnoreCase("Completada") && !citaSeleccionada.getEstado().equalsIgnoreCase("Cancelada");
 
                 if (clienteSeleccionado == null || medicoSeleccionado == null)
                     activa = false;
@@ -455,7 +450,7 @@ public class GestionCitas extends JPanel {
         txtCodCliente.setText("");
         txtCedulaMedico.setText("");
         lblNombreCliente.setText("Paciente: (Busque un cliente)");
-        lblNombreMedico.setText("M�dico: (Busque un m�dico)");
+        lblNombreMedico.setText("Médico: (Busque un médico)");
         dateChooser.setDate(null);
 
         actualizarHorasDisponibles();
