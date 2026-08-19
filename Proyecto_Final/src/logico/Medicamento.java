@@ -17,15 +17,35 @@ public class Medicamento implements java.io.Serializable {
         this.descripcion = descripcion;
     }
 
-    public int getCodigoMedicamento() { return codigoMedicamento; }
-    public void setCodigoMedicamento(int codigoMedicamento) { this.codigoMedicamento = codigoMedicamento; }
+    public int getCodigoMedicamento() {
+        return codigoMedicamento;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setCodigoMedicamento(int codigoMedicamento) {
+        this.codigoMedicamento = codigoMedicamento;
+    }
 
-    public String getConcentracion() { return concentracion; }
-    public void setConcentracion(String concentracion) { this.concentracion = concentracion; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getConcentracion() {
+        return concentracion;
+    }
+
+    public void setConcentracion(String concentracion) {
+        this.concentracion = concentracion;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 }
