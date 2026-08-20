@@ -4,10 +4,7 @@ import Utils.ConexionDB;
 import logico.*;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 
 public class RecetaMedicaService {
 
@@ -31,7 +28,7 @@ public class RecetaMedicaService {
     }
 
     public boolean editRecetaMedica(RecetaMedica receta) {
-        String sql = "update receta_medica set codigo_consulta = ?, codigo_medicamento = ?, frecuencia = ?, duracion = ?, dosis = ?, descripcion = ? where codigo_rec = ?";
+        String sql = "update receta_medica set receta_medica.codigo_consulta = ?, receta_medica.codigo_medicamento = ?, receta_medica.frecuencia = ?, receta_medica.duracion = ?, receta_medica.dosis = ?, receta_medica.descripcion = ? where receta_medica.codigo_rec = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -51,7 +48,7 @@ public class RecetaMedicaService {
     }
 
     public boolean eliminarRecetaMedica(int codigoRec) {
-        String sql = "delete from receta_medica where codigo_rec = ?";
+        String sql = "delete from receta_medica where receta_medica.codigo_rec = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -65,11 +62,7 @@ public class RecetaMedicaService {
 
     public RecetaMedica buscarRecetaMedica(int codigoRec) {
         RecetaMedica receta = null;
-        String sql = "select r.codigo_rec, r.codigo_consulta, r.frecuencia, r.duracion, r.dosis, r.descripcion, " +
-                "m.codigo_medicamento, m.nombre, m.concentracion " +
-                "from receta_medica r " +
-                "left join m on r.codigo_medicamento = m.codigo_medicamento " +
-                "where r.codigo_rec = ?";
+        String sql = "select receta_medica.codigo_rec, receta_medica.codigo_consulta, receta_medica.frecuencia, receta_medica.duracion, receta_medica.dosis, receta_medica.descripcion, medicamento.codigo_medicamento, medicamento.nombre, medicamento.concentracion from receta_medica left join medicamento on receta_medica.codigo_medicamento = medicamento.codigo_medicamento where receta_medica.codigo_rec = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -103,10 +96,7 @@ public class RecetaMedicaService {
 
     public ArrayList<RecetaMedica> getTodasLasRecetas() {
         ArrayList<RecetaMedica> lista = new ArrayList<>();
-        String sql = "select r.codigo_rec, r.codigo_consulta, r.frecuencia, r.duracion, r.dosis, r.descripcion, " +
-                "m.codigo_medicamento, m.nombre, m.concentracion " +
-                "from receta_medica r " +
-                "left join medicamento m on r.codigo_medicamento = m.codigo_medicamento";
+        String sql = "select receta_medica.codigo_rec, receta_medica.codigo_consulta, receta_medica.frecuencia, receta_medica.duracion, receta_medica.dosis, receta_medica.descripcion, medicamento.codigo_medicamento, medicamento.nombre, medicamento.concentracion from receta_medica left join medicamento on receta_medica.codigo_medicamento = medicamento.codigo_medicamento";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -131,6 +121,43 @@ public class RecetaMedicaService {
                 receta.setMedicamento(m);
 
                 lista.add(receta);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public ArrayList<RecetaMedica> getRecetasPorConsulta(int codigoConsulta) {
+        ArrayList<RecetaMedica> lista = new ArrayList<>();
+        String sql = "select receta_medica.codigo_rec, receta_medica.codigo_consulta, receta_medica.frecuencia, receta_medica.duracion, receta_medica.dosis, receta_medica.descripcion, medicamento.codigo_medicamento, medicamento.nombre, medicamento.concentracion from receta_medica left join medicamento on receta_medica.codigo_medicamento = medicamento.codigo_medicamento where receta_medica.codigo_consulta = ?";
+
+        try (Connection conn = ConexionDB.getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, codigoConsulta);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    RecetaMedica receta = new RecetaMedica();
+                    receta.setCodigoRec(rs.getInt("codigo_rec"));
+                    receta.setFrecuencia(rs.getString("frecuencia"));
+                    receta.setDuracion(rs.getString("duracion"));
+                    receta.setDosis(rs.getString("dosis"));
+                    receta.setDescripcion(rs.getString("descripcion"));
+
+                    Consulta c = new Consulta();
+                    c.setCodigoConsulta(rs.getInt("codigo_consulta"));
+                    receta.setConsulta(c);
+
+                    Medicamento m = new Medicamento();
+                    m.setCodigoMedicamento(rs.getInt("codigo_medicamento"));
+                    m.setNombre(rs.getString("nombre"));
+                    m.setConcentracion(rs.getString("concentracion"));
+                    receta.setMedicamento(m);
+
+                    lista.add(receta);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

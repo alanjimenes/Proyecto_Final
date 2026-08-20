@@ -374,6 +374,16 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(medicamentoService.listarMedicamentos());
                         break;
 
+                    case "UPDATE_MEDICAMENTO":
+                        Medicamento medUpd = (Medicamento) paquete.getObjeto();
+                        paquete.setRespuesta(medicamentoService.editMedicamento(medUpd));
+                        break;
+
+                    case "DELETE_MEDICAMENTO":
+                        int codMedDel = (int) paquete.getObjeto();
+                        paquete.setRespuesta(medicamentoService.eliminarMedicamento(codMedDel));
+                        break;
+
                     // RECETA_MEDICA
                     case "REG_RECETA_MEDICA":
                         RecetaMedica receta = (RecetaMedica) paquete.getObjeto();
