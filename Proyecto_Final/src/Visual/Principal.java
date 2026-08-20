@@ -33,6 +33,7 @@ public class Principal extends JFrame {
     private JMenu menuPacientes;
     private JMenu menuConsulta;
     private JMenu menuAdministracion;
+    private JMenu menuMedicamentos;
     private JPanel panel_1;
     private JLabel lblUsuario;
     private JLabel lblReloj;
@@ -127,6 +128,26 @@ public class Principal extends JFrame {
             }
         });
         menuConsulta.add(itemVerMisCitas);
+
+        menuMedicamentos = new JMenu("  Medicamentos  ");
+        menuMedicamentos.setForeground(Color.WHITE);
+        try {
+            menuMedicamentos.setIcon(new ImageIcon(Principal.class.getResource("/img/pildoras.png")));
+        } catch (Exception e) {
+        }
+        menuMedicamentos.setFont(new Font("Bahnschrift", Font.BOLD, 20));
+        menuBar.add(menuMedicamentos);
+
+        JMenuItem itemGestionarMed = new JMenuItem("Catálogo de Medicamentos");
+        itemGestionarMed.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemGestionarMed.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ConsultarMedicamentos consulta = new ConsultarMedicamentos(usuarioActual);
+                consulta.setModal(true);
+                consulta.setVisible(true);
+            }
+        });
+        menuMedicamentos.add(itemGestionarMed);
 
         menuAdministracion = new JMenu("  Administración");
         menuAdministracion.setForeground(Color.WHITE);
@@ -333,17 +354,24 @@ public class Principal extends JFrame {
         menuConsulta.setVisible(false);
         menuAdministracion.setVisible(false);
         menuPacientes.setVisible(false);
+        menuMedicamentos.setVisible(false);
 
         if (rol.equalsIgnoreCase("Administrador")) {
             menuCitas.setVisible(true);
             menuConsulta.setVisible(true);
             menuAdministracion.setVisible(true);
             menuPacientes.setVisible(true);
+            menuMedicamentos.setVisible(true);
         } else if (rol.equalsIgnoreCase("Asistente")) {
             menuCitas.setVisible(true);
         } else if (rol.equalsIgnoreCase("Medico")) {
             menuConsulta.setVisible(true);
             menuPacientes.setVisible(true);
+            menuMedicamentos.setVisible(true);
+        } else if (rol.equalsIgnoreCase("Enfermera")) {
+            menuPacientes.setVisible(true);
+            menuMedicamentos.setVisible(true);
+            menuConsulta.setVisible(true);
         }
     }
 
@@ -382,7 +410,7 @@ public class Principal extends JFrame {
 
         String rol = usuarioActual.getRol();
 
-        if (rol.equalsIgnoreCase("Médico")) {
+        if (rol.equalsIgnoreCase("Medico")) {
             JPanel panelMedico = new JPanel(new GridLayout(1, 2, 20, 0));
             panelMedico.setBackground(Color.WHITE);
             panelMedico.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -425,7 +453,7 @@ public class Principal extends JFrame {
             }
 
             if (usuarioActual.getCodigoUsuario() != 0) {
-                Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCodigoUsuario());
+                Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
                 if (resp instanceof Medico) {
                     Medico yo = (Medico) resp;
                     int completadas = 0;
