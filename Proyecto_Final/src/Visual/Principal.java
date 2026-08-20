@@ -128,6 +128,34 @@ public class Principal extends JFrame {
         });
         menuConsulta.add(itemVerMisCitas);
 
+        JMenuItem itemNuevaConsulta = new JMenuItem("Registrar Nueva Consulta");
+        itemNuevaConsulta.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+
+        itemNuevaConsulta.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (usuarioActual.getCodigoUsuario() != 0) {
+                    Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
+
+                    if (resp instanceof Medico) {
+                        Medico medicoLogueado = (Medico) resp;
+
+                        RegConsultaCompleta frame = new RegConsultaCompleta(medicoLogueado);
+                        frame.setLocationRelativeTo(null);
+                        frame.setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(Principal.this,
+                                "No se pudo cargar la información del médico asociado a este usuario.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(Principal.this,
+                            "El usuario actual no tiene un código de médico válido.",
+                            "Advertencia", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        menuConsulta.add(itemNuevaConsulta);
+
         menuAdministracion = new JMenu("  Administración");
         menuAdministracion.setForeground(Color.WHITE);
         try {

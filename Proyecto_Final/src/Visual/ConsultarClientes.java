@@ -55,7 +55,7 @@ public class ConsultarClientes extends JDialog {
 						return false;
 					}
 				};
-				String[] headers = { "Expediente", "C�dula", "Nombre", "Apellido", "Teléfono", "Estado Salud" };
+				String[] headers = { "Expediente", "Cédula", "Nombre", "Apellido", "Teléfono", "Estado Salud" };
 				modelo.setColumnIdentifiers(headers);
 				table.setModel(modelo);
 

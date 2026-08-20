@@ -24,7 +24,7 @@ public class EvaluacionFisicaService {
 
     //Método para llamadas transaccionales (Usado por ConsultaService)
     public boolean registrarEvaluacion(Connection conn, EvaluacionFisica evaluacion, int idConsulta) throws SQLException {
-        String sql = "insert into evaluacionfisica (codigo_consulta, temperatura, frecuenciacardiaca, presionarterial, peso, talla) " +
+        String sql = "insert into evaluacionfisica (codigo_cons, temperatura, frecuenciacardiaca, presionarterial, peso, talla) " +
                 "values (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

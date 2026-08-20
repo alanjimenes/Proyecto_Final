@@ -271,9 +271,18 @@ public class Flujo extends Thread {
 
                     // CONSULTA
                     case "REG_CONSULTA":
-                        Consulta cons = (Consulta) paquete.getObjeto();
-                        boolean exitoCons = consultaService.registrarConsultaCompleta(cons, cons.getMedico().getCedula(), cons.getCliente().getCedula());
-                        paquete.setRespuesta(exitoCons);
+                        try {
+                            Consulta cons = (Consulta) paquete.getObjeto();
+                            String cedMed = (cons.getMedico() != null) ? cons.getMedico().getCedula() : "";
+                            String cedCli = (cons.getCliente() != null) ? cons.getCliente().getCedula() : "";
+
+                            boolean exitoCons = consultaService.registrarConsultaCompleta(cons, cedMed, cedCli);
+                            paquete.setRespuesta(exitoCons);
+                        } catch (Exception e) {
+                            System.out.println("Error detallado al registrar consulta:");
+                            e.printStackTrace(); // <-- Esto imprimirá el error exacto en tu consola de Eclipse/IntelliJ
+                            paquete.setRespuesta(false);
+                        }
                         break;
 
                     // VACUNAS
