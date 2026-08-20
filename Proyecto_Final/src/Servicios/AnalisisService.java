@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class AnalisisService {
 
     public boolean crearAnalisis(Analisis analisis) {
-        String sql = "insert into analisis (codigo_consulta, codigo_tipo, fecha_orden, fecha_resultado, estado, resultado) values (?, ?, ?, ?, ?, ?)";
+        String sql = "insert into analisis (codigo_cons, codigo_tipo, fechaOrden, fechaResultado, estado, resultado) values (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -30,7 +30,7 @@ public class AnalisisService {
     }
 
     public boolean editAnalisis(Analisis analisis) {
-        String sql = "update analisis set codigo_consulta = ?, codigo_tipo = ?, fecha_orden = ?, fecha_resultado = ?, estado = ?, resultado = ? WHERE codigo_analisis = ?";
+        String sql = "update analisis set codigo_cons = ?, codigo_tipo = ?, fechaOrden = ?, fechaResultado = ?, estado = ?, resultado = ? WHERE codigo_analisis = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -64,7 +64,7 @@ public class AnalisisService {
 
     public Analisis buscarAnalisis(int codigoAnalisis) {
         Analisis analisis = null;
-        String sql = "select a.codigo_analisis, a.codigo_consulta, a.fecha_orden, a.fecha_resultado, a.estado, a.resultado, " +
+        String sql = "select a.codigo_analisis, a.codigo_cons, a.fechaOrden, a.fechaResultado, a.estado, a.resultado, " +
                 "t.codigo_tipo, t.nombre as tipo_nombre, t.descripcion as tipo_desc " +
                 "from analisis a " +
                 "left join tipo_analisis t ON a.codigo_tipo = t.codigo_tipo " +
@@ -80,18 +80,18 @@ public class AnalisisService {
                 analisis = new Analisis();
                 analisis.setCodigoAnalisis(rs.getInt("codigo_analisis"));
 
-                if (rs.getTimestamp("fecha_orden") != null) {
-                    analisis.setFechaOrden(rs.getTimestamp("fecha_orden").toLocalDateTime());
+                if (rs.getTimestamp("fechaOrden") != null) {
+                    analisis.setFechaOrden(rs.getTimestamp("fechaOrden").toLocalDateTime());
                 }
-                if (rs.getTimestamp("fecha_resultado") != null) {
-                    analisis.setFechaResultado(rs.getTimestamp("fecha_resultado").toLocalDateTime());
+                if (rs.getTimestamp("fechaResultado") != null) {
+                    analisis.setFechaResultado(rs.getTimestamp("fechaResultado").toLocalDateTime());
                 }
 
                 analisis.setEstado(rs.getString("estado"));
                 analisis.setResultado(rs.getString("resultado"));
 
                 Consulta c = new Consulta();
-                c.setCodigoConsulta(rs.getInt("codigo_consulta"));
+                c.setCodigoConsulta(rs.getInt("codigo_cons"));
                 analisis.setConsulta(c);
 
                 TipoAnalisis t = new TipoAnalisis();
@@ -108,7 +108,7 @@ public class AnalisisService {
 
     public ArrayList<Analisis> listarAnalisis() {
         ArrayList<Analisis> lista = new ArrayList<>();
-        String sql = "select a.codigo_analisis, a.codigo_consulta, a.fecha_orden, a.fecha_resultado, a.estado, a.resultado, " +
+        String sql = "select a.codigo_analisis, a.codigo_cons, a.fechaOrden, a.fechaResultado, a.estado, a.resultado, " +
                 "t.codigo_tipo, t.nombre AS tipo_nombre, t.descripcion AS tipo_desc " +
                 "from analisis a " +
                 "left join tipo_analisis t on a.codigo_tipo = t.codigo_tipo";
@@ -121,18 +121,67 @@ public class AnalisisService {
                 Analisis analisis = new Analisis();
                 analisis.setCodigoAnalisis(rs.getInt("codigo_analisis"));
 
-                if (rs.getTimestamp("fecha_orden") != null) {
-                    analisis.setFechaOrden(rs.getTimestamp("fecha_orden").toLocalDateTime());
+                if (rs.getTimestamp("fechaOrden") != null) {
+                    analisis.setFechaOrden(rs.getTimestamp("fechaOrden").toLocalDateTime());
                 }
-                if (rs.getTimestamp("fecha_resultado") != null) {
-                    analisis.setFechaResultado(rs.getTimestamp("fecha_resultado").toLocalDateTime());
+                if (rs.getTimestamp("fechaResultado") != null) {
+                    analisis.setFechaResultado(rs.getTimestamp("fechaResultado").toLocalDateTime());
                 }
 
                 analisis.setEstado(rs.getString("estado"));
                 analisis.setResultado(rs.getString("resultado"));
 
                 Consulta c = new Consulta();
-                c.setCodigoConsulta(rs.getInt("codigo_consulta"));
+                c.setCodigoConsulta(rs.getInt("codigo_cons"));
+                analisis.setConsulta(c);
+
+                TipoAnalisis t = new TipoAnalisis();
+                t.setCodigoTipo(rs.getInt("codigo_tipo"));
+                t.setNombre(rs.getString("tipo_nombre"));
+                t.setDescripcion(rs.getString("tipo_desc"));
+                analisis.setTipo(t);
+
+                lista.add(analisis);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+
+    public ArrayList<Analisis> getAnalisisPorDoctor(String cedulaMedico) {
+        ArrayList<Analisis> lista = new ArrayList<>();
+        // Unimos las tablas para filtrar por la cédula del médico
+        String sql = "SELECT a.codigo_analisis, a.codigo_cons, a.fechaOrden, a.fechaResultado, a.estado, a.resultado, " +
+                "t.codigo_tipo, t.nombre AS tipo_nombre, t.descripcion AS tipo_desc " +
+                "FROM analisis a " +
+                "LEFT JOIN tipo_analisis t ON a.codigo_tipo = t.codigo_tipo " +
+                "INNER JOIN consulta c ON a.codigo_cons = c.codigo_consulta " +
+                "WHERE c.cedula_medico = ?";
+
+        try (Connection conn = ConexionDB.getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cedulaMedico);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Analisis analisis = new Analisis();
+                analisis.setCodigoAnalisis(rs.getInt("codigo_analisis"));
+
+                if (rs.getTimestamp("fechaOrden") != null) {
+                    analisis.setFechaOrden(rs.getTimestamp("fechaOrden").toLocalDateTime());
+                }
+                if (rs.getTimestamp("fechaResultado") != null) {
+                    analisis.setFechaResultado(rs.getTimestamp("fechaResultado").toLocalDateTime());
+                }
+
+                analisis.setEstado(rs.getString("estado"));
+                analisis.setResultado(rs.getString("resultado"));
+
+                Consulta c = new Consulta();
+                c.setCodigoConsulta(rs.getInt("codigo_cons"));
                 analisis.setConsulta(c);
 
                 TipoAnalisis t = new TipoAnalisis();

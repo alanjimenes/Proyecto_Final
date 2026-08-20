@@ -1,6 +1,7 @@
 package Servicios;
 
 import Utils.ConexionDB;
+import logico.Cliente;
 import logico.Consulta;
 import logico.Enfermedad;
 import logico.RecetaMedica;
@@ -212,7 +213,15 @@ public class ConsultaService {
 
     public ArrayList<Consulta> getConsultasPorDoctor(String cedulaDoctor) {
         ArrayList<Consulta> lista = new ArrayList<>();
-        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico from consulta inner join medico on consulta.codigo_medico = medico.codigo_persona inner join persona on medico.codigo_persona = persona.codigo_persona where persona.cedula = ?";
+
+        String sql = "select c.codigo_cons, p_cli.nombre as nombre_cliente, p_cli.apellido as apellido_cliente, " +
+                "c.fechaconsulta, c.sintomas, c.diagnostico " +
+                "from consulta c " +
+                "inner join medico m on c.codigo_medico = m.codigo_persona " +
+                "inner join persona p_med on m.codigo_persona = p_med.codigo_persona " +
+                "inner join cliente cl on c.codigo_cliente = cl.codigo_persona " + // <--- Ajustado según tu tabla
+                "inner join persona p_cli on cl.codigo_persona = p_cli.codigo_persona " +
+                "where p_med.cedula = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -222,9 +231,19 @@ public class ConsultaService {
                 while (rs.next()) {
                     Consulta consulta = new Consulta();
                     consulta.setCodigoConsulta(rs.getInt("codigo_cons"));
-                    consulta.setFechaConsulta(rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate());
+
+                    Cliente cliente = new Cliente();
+                    cliente.setNombre(rs.getString("nombre_cliente"));
+                    cliente.setApellido(rs.getString("apellido_cliente"));
+                    consulta.setCliente(cliente);
+
+                    if (rs.getTimestamp("fechaconsulta") != null) {
+                        consulta.setFechaConsulta(rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate());
+                    }
+
                     consulta.setSintomas(rs.getString("sintomas"));
                     consulta.setDiagnostico(rs.getString("diagnostico"));
+
                     lista.add(consulta);
                 }
             }

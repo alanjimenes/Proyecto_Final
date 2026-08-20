@@ -280,9 +280,18 @@ public class Flujo extends Thread {
                             paquete.setRespuesta(exitoCons);
                         } catch (Exception e) {
                             System.out.println("Error detallado al registrar consulta:");
-                            e.printStackTrace(); // <-- Esto imprimirá el error exacto en tu consola de Eclipse/IntelliJ
+                            e.printStackTrace();
                             paquete.setRespuesta(false);
                         }
+                        break;
+
+                    case "LISTAR_CONSULTAS_POR_DOCTOR":
+                        String cedulaDocConsulta = (String) paquete.getObjeto();
+                        paquete.setRespuesta(consultaService.getConsultasPorDoctor(cedulaDocConsulta));
+                        break;
+
+                    case "LISTAR_CONSULTAS":
+                        paquete.setRespuesta(consultaService.getTodasLasConsultas());
                         break;
 
                     // VACUNAS
@@ -396,6 +405,21 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(tipoAnalisisService.crearTipoAnalisis(tAnalisis));
                         break;
 
+                    case "UPDATE_TIPO_ANALISIS":
+                        TipoAnalisis tUpd = (TipoAnalisis) paquete.getObjeto();
+                        paquete.setRespuesta(tipoAnalisisService.editTipoAnalisis(tUpd));
+                        break;
+
+                    case "DELETE_TIPO_ANALISIS":
+                        int codigoTipoDel = (int) paquete.getObjeto();
+                        paquete.setRespuesta(tipoAnalisisService.eliminarTipoAnalisis(codigoTipoDel));
+                        break;
+
+                    case "BUSCAR_TIPO_ANALISIS":
+                        int codigoTipoBusq = (int) paquete.getObjeto();
+                        paquete.setRespuesta(tipoAnalisisService.buscarTipoAnalisis(codigoTipoBusq));
+                        break;
+
                     case "LISTAR_TIPOS_ANALISIS":
                         paquete.setRespuesta(tipoAnalisisService.listarTiposAnalisis());
                         break;
@@ -404,6 +428,30 @@ public class Flujo extends Thread {
                     case "REG_ANALISIS":
                         Analisis analisis = (Analisis) paquete.getObjeto();
                         paquete.setRespuesta(analisisService.crearAnalisis(analisis));
+                        break;
+
+                    case "UPDATE_ANALISIS":
+                        Analisis analisisUpd = (Analisis) paquete.getObjeto();
+                        paquete.setRespuesta(analisisService.editAnalisis(analisisUpd));
+                        break;
+
+                    case "DELETE_ANALISIS":
+                        int codigoAnalisisDel = (int) paquete.getObjeto();
+                        paquete.setRespuesta(analisisService.eliminarAnalisis(codigoAnalisisDel));
+                        break;
+
+                    case "BUSCAR_ANALISIS":
+                        int codigoAnalisisBusq = (int) paquete.getObjeto();
+                        paquete.setRespuesta(analisisService.buscarAnalisis(codigoAnalisisBusq));
+                        break;
+
+                    case "LISTAR_ANALISIS":
+                        paquete.setRespuesta(analisisService.listarAnalisis());
+                        break;
+
+                    case "LISTAR_ANALISIS_POR_DOCTOR":
+                        String cedulaDocAnalisis = (String) paquete.getObjeto();
+                        paquete.setRespuesta(analisisService.getAnalisisPorDoctor(cedulaDocAnalisis));
                         break;
 
                     default:

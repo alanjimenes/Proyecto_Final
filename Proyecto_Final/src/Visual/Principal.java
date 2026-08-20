@@ -36,7 +36,7 @@ public class Principal extends JFrame {
     private JPanel panel_1;
     private JLabel lblUsuario;
     private JLabel lblReloj;
-
+    private JMenu menuAnalisis;
     private JPanel panelGrafico;
     private ChartPanel chartPanel;
 
@@ -155,6 +155,72 @@ public class Principal extends JFrame {
             }
         });
         menuConsulta.add(itemNuevaConsulta);
+
+        JMenuItem itemMisConsultas = new JMenuItem("Listar Mis Consultas");
+        itemMisConsultas.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemMisConsultas.addActionListener(e -> {
+            Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
+            if (resp instanceof Medico) {
+                ConsultarConsultas frame = new ConsultarConsultas((Medico) resp);
+                frame.setVisible(true);
+            }
+        });
+        menuConsulta.add(itemMisConsultas);
+
+        menuAnalisis = new JMenu("  Análisis Clínicos  ");
+        menuAnalisis.setForeground(Color.WHITE);
+        try {
+            menuAnalisis.setIcon(new ImageIcon(Principal.class.getResource("/img/dato-de-registro.png")));
+        } catch (Exception e) {
+        }
+        menuAnalisis.setFont(new Font("Bahnschrift", Font.BOLD, 20));
+        menuBar.add(menuAnalisis);
+
+
+        JMenuItem itemRegTipo = new JMenuItem("Registrar Tipo Análisis");
+        itemRegTipo.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemRegTipo.addActionListener(e -> {
+            RegTipoAnalisis reg = new RegTipoAnalisis();
+            reg.setVisible(true);
+        });
+        menuAnalisis.add(itemRegTipo);
+
+        JMenuItem itemRegAnalisis = new JMenuItem("Registrar Análisis");
+        itemRegAnalisis.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemRegAnalisis.addActionListener(e -> {
+            Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
+            if (resp instanceof Medico) {
+                RegAnalisis reg = new RegAnalisis((Medico) resp);
+                reg.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al cargar médico para registrar análisis.");
+            }
+        });
+        menuAnalisis.add(itemRegAnalisis);
+
+        JMenuItem itemConsultarAnalisis = new JMenuItem("Listar y Gestionar Análisis");
+        itemConsultarAnalisis.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemConsultarAnalisis.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object resp = ClienteSocket.enviar("BUSCAR_MEDICO", usuarioActual.getCedula());
+
+                if (resp instanceof Medico) {
+                    Medico medicoLogueado = (Medico) resp;
+                    ConsultarAnalisis listar = new ConsultarAnalisis(medicoLogueado);
+                    listar.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(Principal.this,
+                            "No se pudo cargar la información del médico para listar los análisis.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        menuAnalisis.add(itemConsultarAnalisis);
+
+        JMenuItem itemConsultarTipos = new JMenuItem("Listar y Gestionar Tipos de Análisis");
+        itemConsultarTipos.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemConsultarTipos.addActionListener(e -> new ConsultarTipoAnalisis().setVisible(true));
+        menuAnalisis.add(itemConsultarTipos);
 
         menuAdministracion = new JMenu("  Administración");
         menuAdministracion.setForeground(Color.WHITE);
@@ -372,6 +438,7 @@ public class Principal extends JFrame {
         } else if (rol.equalsIgnoreCase("Medico")) {
             menuConsulta.setVisible(true);
             menuPacientes.setVisible(true);
+            menuAnalisis.setVisible(true);
         }
     }
 
