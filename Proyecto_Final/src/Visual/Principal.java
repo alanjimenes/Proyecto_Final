@@ -33,6 +33,7 @@ public class Principal extends JFrame {
     private JMenu menuPacientes;
     private JMenu menuConsulta;
     private JMenu menuAdministracion;
+    private JMenu menuEnfermedades;
     private JPanel panel_1;
     private JLabel lblUsuario;
     private JLabel lblReloj;
@@ -352,6 +353,39 @@ public class Principal extends JFrame {
         });
         menuAdministracion.add(itemGestionarEnf);
 
+        menuEnfermedades = new JMenu("  Gestión Enfermedades  ");
+        menuEnfermedades.setForeground(Color.WHITE);
+        try {
+            menuEnfermedades.setIcon(new ImageIcon(Principal.class.getResource("/img/enfermedades.png")));
+        } catch (Exception e) {
+        }
+        menuEnfermedades.setFont(new Font("Bahnschrift", Font.BOLD, 18));
+        menuBar.add(menuEnfermedades);
+
+        JMenuItem itemGestionarEnfermedades = new JMenuItem("Crear Enfermedades");
+        itemGestionarEnfermedades.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        itemGestionarEnfermedades.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RegEnfermedades reg = new RegEnfermedades();
+                reg.setModal(true);
+                reg.setVisible(true);
+            }
+        });
+        menuEnfermedades.add(itemGestionarEnfermedades);
+
+
+        JMenuItem itemListadoEnfermedades = new JMenuItem("Listado Enfermedades");
+        itemListadoEnfermedades.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        itemListadoEnfermedades.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ConsultarEnfermedades reg = new ConsultarEnfermedades();
+                reg.setModal(true);
+                reg.setVisible(true);
+            }
+        });
+        menuEnfermedades.add(itemListadoEnfermedades);
+
+
         menuBar.add(javax.swing.Box.createHorizontalGlue());
         lblUsuario = new JLabel("Usuario: " + usuarioActual.getNombreUsuario() + " (" + usuarioActual.getRol() + ")  ");
         lblUsuario.setForeground(Color.WHITE);
@@ -439,6 +473,8 @@ public class Principal extends JFrame {
             menuConsulta.setVisible(true);
             menuPacientes.setVisible(true);
             menuAnalisis.setVisible(true);
+            menuEnfermedades.setVisible(true);
+
         }
     }
 

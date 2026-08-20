@@ -285,6 +285,22 @@ public class Flujo extends Thread {
                         }
                         break;
 
+                    // CONSULTA
+                    case "REGISTRAR_CONSULTA_COMPLETA":
+                        try {
+                            Object[] datos = (Object[]) paquete.getObjeto();
+                            Consulta con = (Consulta) datos[0];
+                            String cedulaMedico = (String) datos[1];
+                            String cedulaCliente = (String) datos[2];
+
+                            boolean resultado = consultaService.registrarConsultaCompleta(con, cedulaMedico, cedulaCliente);
+                            paquete.setRespuesta(resultado);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            paquete.setRespuesta(false);
+                        }
+                        break;
+
                     case "LISTAR_CONSULTAS_POR_DOCTOR":
                         String cedulaDocConsulta = (String) paquete.getObjeto();
                         paquete.setRespuesta(consultaService.getConsultasPorDoctor(cedulaDocConsulta));

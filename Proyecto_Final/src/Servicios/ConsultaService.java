@@ -16,7 +16,7 @@ public class ConsultaService {
         String sqlConsulta = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) values (?, ?, ?, (select persona.codigo_persona from persona where persona.cedula = ?), (select persona.codigo_persona from persona where persona.cedula = ?))";
 
         Connection conn = null;
-        RecetaService recetaService = new RecetaService();
+        RecetaMedicaService recetaMedicaService = new RecetaMedicaService();
         EvaluacionFisicaService evaluacionService = new EvaluacionFisicaService();
         EnfermedadConsultaService enfermedadService = new EnfermedadConsultaService();
 
@@ -51,7 +51,7 @@ public class ConsultaService {
 
             if (con.getRecetas() != null && !con.getRecetas().isEmpty()) {
                 for (RecetaMedica receta : con.getRecetas()) {
-                    recetaService.registrarReceta(conn, receta, generatedId);
+                    recetaMedicaService.registrarReceta(conn, receta, generatedId);
                 }
             }
 

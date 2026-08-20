@@ -8,7 +8,7 @@ import logico.Enfermedad;
 public class EnfermedadConsultaService {
 
     public boolean registrarDiagnostico(Connection conn, Enfermedad enfermedad, int idConsulta) throws SQLException {
-        String sql = "insert into enfermedad_consult (codigo_consulta, codigo_enfermedad) " +
+        String sql = "insert into enfermedad_consulta (codigo_cons, codigo_enfermedad) " +
                 "values (?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
