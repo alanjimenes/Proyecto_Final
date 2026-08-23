@@ -202,6 +202,28 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(desactivado);
                         break;
 
+                    case "DESACTIVAR_PERSONA_SP":
+                        try {
+                            String cedulaPersona = (String) paquete.getObjeto();
+                            boolean exitoDesac = clienteService.desactivarPersonaSp(cedulaPersona);
+                            paquete.setRespuesta(exitoDesac);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            paquete.setRespuesta(false);
+                        }
+                        break;
+
+                    case "ACTIVAR_PERSONA_SP":
+                        try {
+                            String cedulaPersonaActivar = (String) paquete.getObjeto();
+                            boolean exitoAct = clienteService.activarPersonaSp(cedulaPersonaActivar);
+                            paquete.setRespuesta(exitoAct);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            paquete.setRespuesta(false);
+                        }
+                        break;
+
                     // ESPECIALIDADES
                     case "REG_ESPECIALIDAD":
                         Especialidad esp = (Especialidad) paquete.getObjeto();
@@ -298,6 +320,28 @@ public class Flujo extends Thread {
 
                             boolean resultado = consultaService.registrarConsultaCompleta(con, cedulaMedico, cedulaCliente);
                             paquete.setRespuesta(resultado);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            paquete.setRespuesta(false);
+                        }
+                        break;
+
+                    case "REG_CONSULTA_SP":
+                        try {
+                            Object[] datosConsulta = (Object[]) paquete.getObjeto();
+                            int codMed = (int) datosConsulta[0];
+                            int codCli = (int) datosConsulta[1];
+                            LocalDateTime fecha = (LocalDateTime) datosConsulta[2];
+                            String sintomas = (String) datosConsulta[3];
+                            String diagnostico = (String) datosConsulta[4];
+                            double temp = (double) datosConsulta[5];
+                            int freqCard = (int) datosConsulta[6];
+                            String presion = (String) datosConsulta[7];
+                            double peso = (double) datosConsulta[8];
+                            double talla = (double) datosConsulta[9];
+
+                            boolean exitoSpCons = consultaService.registrarConsultaSp(codMed, codCli, fecha, sintomas, diagnostico, temp, freqCard, presion, peso, talla);
+                            paquete.setRespuesta(exitoSpCons);
                         } catch (Exception e) {
                             e.printStackTrace();
                             paquete.setRespuesta(false);

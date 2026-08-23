@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -322,9 +323,7 @@ public class RegConsultaCompleta extends JFrame {
 
         JComboBox<String> cmbEnfermedades = new JComboBox<>(nombresEnf);
 
-        Object[] message = {
-                "Seleccione Enfermedad del Catálogo:", cmbEnfermedades
-        };
+        Object[] message = {"Seleccione Enfermedad del Catálogo:", cmbEnfermedades};
 
         int option = JOptionPane.showConfirmDialog(this, message, "Asignar Enfermedad", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
@@ -334,10 +333,7 @@ public class RegConsultaCompleta extends JFrame {
             if (!listaEnfermedadesTemp.contains(enfElegida)) {
                 listaEnfermedadesTemp.add(enfElegida);
                 // MODIFICADO: Se removió el código, enviando solo Nombre y Vigilancia
-                modeloEnfermedades.addRow(new Object[]{
-                        enfElegida.getNombre(),
-                        enfElegida.isVigilancia() ? "Sí" : "No"
-                });
+                modeloEnfermedades.addRow(new Object[]{enfElegida.getNombre(), enfElegida.isVigilancia() ? "Sí" : "No"});
             } else {
                 JOptionPane.showMessageDialog(this, "Esta enfermedad ya fue agregada a la lista.", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
@@ -363,13 +359,7 @@ public class RegConsultaCompleta extends JFrame {
         JTextField txtDuracion = new JTextField();
         JTextField txtDesc = new JTextField();
 
-        Object[] message = {
-                "Seleccione Medicamento:", cmbMedicamentos,
-                "Dosis (ej. 1 tableta):", txtDosis,
-                "Frecuencia (ej. Cada 8 horas):", txtFrecuencia,
-                "Duración (ej. 7 días):", txtDuracion,
-                "Indicaciones / Desc.:", txtDesc
-        };
+        Object[] message = {"Seleccione Medicamento:", cmbMedicamentos, "Dosis (ej. 1 tableta):", txtDosis, "Frecuencia (ej. Cada 8 horas):", txtFrecuencia, "Duración (ej. 7 días):", txtDuracion, "Indicaciones / Desc.:", txtDesc};
 
         int option = JOptionPane.showConfirmDialog(this, message, "Añadir Receta Médica", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
@@ -384,13 +374,7 @@ public class RegConsultaCompleta extends JFrame {
             receta.setDescripcion(txtDesc.getText());
 
             listaRecetasTemp.add(receta);
-            modeloRecetas.addRow(new Object[]{
-                    medElegido.getNombre(),
-                    receta.getDosis(),
-                    receta.getFrecuencia(),
-                    receta.getDuracion(),
-                    receta.getDescripcion()
-            });
+            modeloRecetas.addRow(new Object[]{medElegido.getNombre(), receta.getDosis(), receta.getFrecuencia(), receta.getDuracion(), receta.getDescripcion()});
         }
     }
 
@@ -401,33 +385,46 @@ public class RegConsultaCompleta extends JFrame {
                 return;
             }
 
-            EvaluacionFisica eval = new EvaluacionFisica();
-            eval.setTemperatura(Float.parseFloat(txtTemperatura.getText()));
-            eval.setFrecuenciaCardiaca(Integer.parseInt(txtFrecuencia.getText()));
-            eval.setPresionArterial(txtPresion.getText());
-            eval.setPeso(Float.parseFloat(txtPeso.getText()));
-            eval.setTalla(Float.parseFloat(txtTalla.getText()));
+            // Validar y obtener los signos vitales y datos antropométricos
+            double temperatura = Double.parseDouble(txtTemperatura.getText());
+            int frecuenciaCardiaca = Integer.parseInt(txtFrecuencia.getText());
+            String presionArterial = txtPresion.getText();
+            double peso = Double.parseDouble(txtPeso.getText());
+            double talla = Double.parseDouble(txtTalla.getText());
 
-            Consulta consulta = new Consulta();
-            consulta.setFechaConsulta(LocalDate.now());
-            consulta.setSintomas(txtSintomas.getText());
-            consulta.setDiagnostico(txtDiagnostico.getText());
-            consulta.setEvaluacion(eval);
-            consulta.setMedico(medicoActual);
-            consulta.setRecetas(listaRecetasTemp);
-            consulta.setEnfermedadesDiag(listaEnfermedadesTemp);
+            // Obtener el código interno (ID) del médico actual
+            int codigoMedico = (medicoActual != null) ? medicoActual.getCodigoPersona() : 0;
+            if (codigoMedico <= 0) {
+                JOptionPane.showMessageDialog(this, "Error: El médico actual no tiene un código válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            String cedulaMedico = (medicoActual != null) ? medicoActual.getCedula() : "";
+            // Obtener el cliente seleccionado por la cédula para extraer su código interno
             String cedulaCliente = txtCedulaPaciente.getText();
+            Object respCliente = ClienteSocket.enviar("BUSCAR_CLIENTE_CEDULA", cedulaCliente);
+            if (respCliente == null || !(respCliente instanceof logico.Cliente)) {
+                JOptionPane.showMessageDialog(this, "No se pudo encontrar el registro completo del paciente en el servidor.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            logico.Cliente clienteSeleccionado = (logico.Cliente) respCliente;
+            int codigoCliente = clienteSeleccionado.getCodigoPersona();
 
-            Object respuesta = ClienteSocket.enviar("REGISTRAR_CONSULTA_COMPLETA", new Object[]{consulta, cedulaMedico, cedulaCliente});
+            // Fecha y hora actual para la consulta (LocalDateTime requerido por el procedimiento)
+            LocalDateTime fechaConsulta = LocalDateTime.now();
+            String sintomas = txtSintomas.getText();
+            String diagnostico = txtDiagnostico.getText();
+
+            // Empaquetar los parámetros en el orden exacto que espera el switch de Flujo.java para REG_CONSULTA_SP:
+            Object[] datosSp = new Object[]{codigoMedico, codigoCliente, fechaConsulta, sintomas, diagnostico, temperatura, frecuenciaCardiaca, presionArterial, peso, talla};
+
+            Object respuesta = ClienteSocket.enviar("REG_CONSULTA_SP", datosSp);
             boolean exito = (respuesta != null && (boolean) respuesta);
 
             if (exito) {
-                JOptionPane.showMessageDialog(this, "Consulta, recetas, signos vitales y enfermedades registradas con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Consulta y signos vitales registrados con éxito mediante Procedimiento Almacenado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Ocurrió un error al registrar la consulta en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Ocurrió un error en la base de datos al ejecutar la transacción.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (NumberFormatException ex) {

@@ -1,10 +1,6 @@
 package Servicios;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Date;
+import java.sql.*;
 import java.util.ArrayList;
 
 import logico.*;
@@ -140,8 +136,7 @@ public class ClienteService {
     public boolean desactivarCliente(String cedula) {
         String sql = "update persona set estado = 0 where cedula = ?";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedula);
             return stmt.executeUpdate() > 0;
@@ -156,8 +151,7 @@ public class ClienteService {
         Cliente cliente = null;
         String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, persona.genero, cliente.antecedentes from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona where cliente.numexpediente = ?";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, codigoExpediente);
 
@@ -169,7 +163,7 @@ public class ClienteService {
                     cliente.setApellido(rs.getString("apellido"));
                     cliente.setCedula(rs.getString("cedula"));
                     cliente.setTelefono(rs.getString("telefono"));
-                    if(rs.getDate("fechanacimiento") != null) {
+                    if (rs.getDate("fechanacimiento") != null) {
                         cliente.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
                     }
                     cliente.setDireccion(rs.getString("direccion"));
@@ -191,8 +185,7 @@ public class ClienteService {
         Cliente cliente = null;
         String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, persona.genero, cliente.antecedentes from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona where persona.cedula = ?";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedula);
 
@@ -204,7 +197,7 @@ public class ClienteService {
                     cliente.setApellido(rs.getString("apellido"));
                     cliente.setCedula(rs.getString("cedula"));
                     cliente.setTelefono(rs.getString("telefono"));
-                    if(rs.getDate("fechanacimiento") != null) {
+                    if (rs.getDate("fechanacimiento") != null) {
                         cliente.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
                     }
                     cliente.setDireccion(rs.getString("direccion"));
@@ -226,9 +219,7 @@ public class ClienteService {
         ArrayList<Cliente> lista = new ArrayList<>();
         String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, cliente.numexpediente, cliente.enfermo, persona.genero, cliente.antecedentes from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Cliente cliente = new Cliente();
@@ -237,7 +228,7 @@ public class ClienteService {
                 cliente.setApellido(rs.getString("apellido"));
                 cliente.setCedula(rs.getString("cedula"));
                 cliente.setTelefono(rs.getString("telefono"));
-                if(rs.getDate("fechanacimiento") != null) {
+                if (rs.getDate("fechanacimiento") != null) {
                     cliente.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
                 }
                 cliente.setDireccion(rs.getString("direccion"));
@@ -260,8 +251,7 @@ public class ClienteService {
 
         String sqlHistorial = "select historial.codigo_historial, persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, cliente.antecedentes from historial inner join cliente on historial.codigo_cliente = cliente.codigo_persona inner join persona on cliente.codigo_persona = persona.codigo_persona where historial.codigo_cliente = ?";
 
-        try (Connection con = ConexionDB.getConexion();
-             PreparedStatement psHist = con.prepareStatement(sqlHistorial)) {
+        try (Connection con = ConexionDB.getConexion(); PreparedStatement psHist = con.prepareStatement(sqlHistorial)) {
 
             psHist.setInt(1, codigoCliente);
             ResultSet rsHist = psHist.executeQuery();
@@ -319,5 +309,32 @@ public class ClienteService {
         }
 
         return lista;
+    }
+
+    public boolean desactivarPersonaSp(String cedula) {
+
+        String sql = "{CALL sp_desactivar_persona(?)}";
+
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
+            stmt.setString(1, cedula);
+            stmt.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean activarPersonaSp(String cedula) {
+        String sql = "{CALL sp_activar_persona(?)}";
+
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
+            stmt.setString(1, cedula);
+            stmt.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

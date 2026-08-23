@@ -79,6 +79,7 @@ public class RegClientes extends JDialog {
         contentPanel.add(txtCedula);
         txtCedula.setColumns(10);
 
+
         txtCedula.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent e) {
                 char c = e.getKeyChar();
