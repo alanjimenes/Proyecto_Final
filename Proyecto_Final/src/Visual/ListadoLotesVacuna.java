@@ -21,7 +21,7 @@ public class ListadoLotesVacuna extends JDialog {
 
     public ListadoLotesVacuna(Vacuna vacuna) {
         this.vacunaActual = vacuna;
-        setTitle("Listado de Lotes - Vacuna: " + vacuna.getNombre());
+        setTitle("Inventario Disponible - Vacuna: " + vacuna.getNombre());
         setResizable(false);
         setBounds(100, 100, 650, 450);
         setLocationRelativeTo(null);
@@ -108,7 +108,8 @@ public class ListadoLotesVacuna extends JDialog {
         model.setRowCount(0);
         if (vacunaActual == null) return;
 
-        Object respuesta = ClienteSocket.enviar("LISTAR_LOTES_POR_VACUNA", vacunaActual.getCodigoVacuna());
+        Object respuesta = ClienteSocket.enviar("LISTAR_LOTES_DISPONIBLES_POR_VACUNA", vacunaActual.getCodigoVacuna());
+
         if (respuesta != null && respuesta instanceof ArrayList) {
             lotes = (ArrayList<LoteVacuna>) respuesta;
             for (LoteVacuna lote : lotes) {

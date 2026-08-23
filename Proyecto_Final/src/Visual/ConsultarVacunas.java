@@ -24,6 +24,7 @@ public class ConsultarVacunas extends JDialog {
     private Vacuna seleccionado = null;
     private JButton btnUpdate;
     private JButton btnDelete;
+    private JButton btnVerLotes;
 
     public ConsultarVacunas() {
         try {
@@ -32,7 +33,7 @@ public class ConsultarVacunas extends JDialog {
         }
 
         setTitle("Gestión de Vacunas");
-        setBounds(100, 100, 800, 500);
+        setBounds(100, 100, 850, 500);
         setResizable(false);
         setLocationRelativeTo(null);
         setModal(true);
@@ -63,6 +64,9 @@ public class ConsultarVacunas extends JDialog {
 
                     btnUpdate.setEnabled(true);
                     btnDelete.setEnabled(true);
+                    if (btnVerLotes != null) {
+                        btnVerLotes.setEnabled(true);
+                    }
                 }
             }
         });
@@ -90,6 +94,24 @@ public class ConsultarVacunas extends JDialog {
         buttonPane.setBackground(new Color(60, 70, 123));
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+        {
+            btnVerLotes = new JButton("Ver Lotes");
+            Estilos.estilarBoton(btnVerLotes, new Color(241, 196, 15), Color.BLACK);
+            btnVerLotes.setFont(new Font("Tahoma", Font.BOLD, 16));
+            btnVerLotes.setEnabled(false);
+            btnVerLotes.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    if (seleccionado != null) {
+                        ListadoLotesVacuna listadoLotes = new ListadoLotesVacuna(seleccionado);
+                        listadoLotes.setModal(true);
+                        listadoLotes.setVisible(true);
+                        resetBotones();
+                    }
+                }
+            });
+            buttonPane.add(btnVerLotes);
+        }
 
         {
             JButton btnNuevo = new JButton("Nueva");
@@ -175,11 +197,7 @@ public class ConsultarVacunas extends JDialog {
 
         if (lista != null) {
             for (Vacuna v : lista) {
-                model.addRow(new Object[]{
-                        v.getCodigoVacuna(),
-                        v.getNombre(),
-                        v.getDescripcion()
-                });
+                model.addRow(new Object[]{v.getCodigoVacuna(), v.getNombre(), v.getDescripcion()});
             }
         }
     }
@@ -202,6 +220,9 @@ public class ConsultarVacunas extends JDialog {
         seleccionado = null;
         btnUpdate.setEnabled(false);
         btnDelete.setEnabled(false);
+        if (btnVerLotes != null) {
+            btnVerLotes.setEnabled(false);
+        }
         table.clearSelection();
     }
 }

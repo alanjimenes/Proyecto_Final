@@ -143,6 +143,10 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(medicoService.listarMedicos());
                         break;
 
+                    case "LISTAR_MEDICOS_ACTIVOS":
+                        paquete.setRespuesta(medicoService.listarMedicosActivos());
+                        break;
+
                     case "BUSCAR_MEDICO":
                         String cedulaMed = (String) paquete.getObjeto();
                         paquete.setRespuesta(medicoService.buscarMedicoCedula(cedulaMed));
@@ -346,6 +350,10 @@ public class Flujo extends Thread {
 
                     case "LISTAR_LOTES_VACUNAS":
                         paquete.setRespuesta(loteVacunaService.listarLotes());
+                        break;
+
+                    case "LISTAR_LOTES_DISPONIBLES_POR_VACUNA":
+                        paquete.setRespuesta(loteVacunaService.listarLotesDisponibles());
                         break;
 
                     case "LISTAR_LOTES_POR_VACUNA":

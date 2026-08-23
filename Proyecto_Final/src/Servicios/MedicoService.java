@@ -14,8 +14,7 @@ public class MedicoService {
         String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) values (?, ?, ?, ?, ?, ?, ?, ?)";
         String sqlMedico = "insert into medico (codigo_persona, codigo_usuario, codigo_especialidad, maxcitaspordia) values (?, ?, ?, ?)";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             conn.setAutoCommit(false);
 
@@ -98,8 +97,7 @@ public class MedicoService {
 
     public boolean desactivarMedico(String cedula) {
         String sql = "update persona set persona.estado = 0 where persona.cedula = ?";
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedula);
             return stmt.executeUpdate() > 0;
@@ -114,8 +112,7 @@ public class MedicoService {
         Medico medico = null;
         String sql = "select persona.codigo_persona, persona.fechanacimiento, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.estado, persona.direccion, persona.genero, medico.maxcitaspordia, especialidad.codigo_especialidad, especialidad.nombre AS nombre_esp from medico inner join persona on medico.codigo_persona = persona.codigo_persona inner join especialidad on medico.codigo_especialidad = especialidad.codigo_especialidad where persona.cedula = ?";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedula);
             ResultSet rs = stmt.executeQuery();
@@ -127,7 +124,7 @@ public class MedicoService {
 
                 medico = new Medico();
                 medico.setCodigoPersona(rs.getInt("codigo_persona"));
-                if(rs.getDate("fechanacimiento") != null) {
+                if (rs.getDate("fechanacimiento") != null) {
                     medico.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
                 }
                 medico.setNombre(rs.getString("nombre"));
@@ -151,9 +148,7 @@ public class MedicoService {
         ArrayList<Medico> lista = new ArrayList<>();
         String sql = "select persona.codigo_persona, persona.fechanacimiento, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.estado, persona.direccion, persona.genero, medico.maxcitaspordia, especialidad.codigo_especialidad, especialidad.nombre AS nombre_esp from medico inner join persona on medico.codigo_persona = persona.codigo_persona inner join especialidad on medico.codigo_especialidad = especialidad.codigo_especialidad";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Especialidad esp = new Especialidad();
@@ -162,7 +157,7 @@ public class MedicoService {
 
                 Medico medico = new Medico();
                 medico.setCodigoPersona(rs.getInt("codigo_persona"));
-                if(rs.getDate("fechanacimiento") != null) {
+                if (rs.getDate("fechanacimiento") != null) {
                     medico.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
                 }
                 medico.setNombre(rs.getString("nombre"));
@@ -188,8 +183,7 @@ public class MedicoService {
         boolean disponible = false;
         String sql = "select count(cita.codigo_cita) AS solapamientos from cita inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona on medico.codigo_persona = persona.codigo_persona where persona.cedula = ? and cita.estado = 'Pendiente' and (cita.fechacita < ? and dateadd(minute, 30, cita.fechacita) > ?)";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedula);
             stmt.setTimestamp(2, Timestamp.valueOf(finHora));
@@ -207,5 +201,40 @@ public class MedicoService {
             e.printStackTrace();
         }
         return disponible;
+    }
+
+    public ArrayList<Medico> listarMedicosActivos() {
+        ArrayList<Medico> lista = new ArrayList<>();
+        String sql = "SELECT * FROM vw_directorio_medico";
+
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Especialidad esp = new Especialidad();
+                esp.setCodigoEspecialidad(rs.getInt("codigo_especialidad"));
+                esp.setNombre(rs.getString("nombre_esp"));
+
+                Medico medico = new Medico();
+                medico.setCodigoPersona(rs.getInt("codigo_persona"));
+                if (rs.getDate("fechanacimiento") != null) {
+                    medico.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
+                }
+                medico.setNombre(rs.getString("nombre"));
+                medico.setApellido(rs.getString("apellido"));
+                medico.setCedula(rs.getString("cedula"));
+                medico.setTelefono(rs.getString("telefono"));
+                medico.setDireccion(rs.getString("direccion"));
+                medico.setEstado(rs.getBoolean("estado"));
+                medico.setGenero(rs.getString("genero"));
+                medico.setMaxCitasPorDia(rs.getInt("maxcitaspordia"));
+                medico.setEspecialidad(esp);
+
+                lista.add(medico);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
     }
 }
