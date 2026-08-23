@@ -109,6 +109,30 @@ public class Principal extends JFrame {
         });
         menuPacientes.add(itemListarPacientes);
 
+        JMenuItem itemHistorialPaciente = new JMenuItem("Historial Clínico Paciente");
+        itemHistorialPaciente.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemHistorialPaciente.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ConsultarHistorial ventHistorial = new ConsultarHistorial();
+                ventHistorial.setModal(true);
+                ventHistorial.setVisible(true);
+            }
+        });
+        menuPacientes.add(itemHistorialPaciente);
+
+        JMenuItem itemReporteHistorial = new JMenuItem("Reporte Completo de Historial Clínico y Vacunación");
+        itemReporteHistorial.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemReporteHistorial.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ConsultarReporteHistorial ventReporteHistorial = new ConsultarReporteHistorial();
+                ventReporteHistorial.setModal(true);
+                ventReporteHistorial.setVisible(true);
+            }
+        });
+        menuPacientes.add(itemReporteHistorial);
+
+        setTitle("Reporte Completo de Historial Clínico y Vacunación");
+
         menuConsulta = new JMenu("  Consultas  ");
         menuConsulta.setForeground(Color.WHITE);
         try {

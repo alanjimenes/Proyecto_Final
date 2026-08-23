@@ -253,7 +253,7 @@ public class ConsultaService {
         return lista;
     }
 
-    public ArrayList<Consulta> getConsultasPorCliente(String cedulaCliente) {
+    public static ArrayList<Consulta> getConsultasPorCliente(String cedulaCliente) {
         ArrayList<Consulta> lista = new ArrayList<>();
         String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico from consulta inner join cliente on consulta.codigo_cliente = cliente.codigo_persona inner join persona on cliente.codigo_persona = persona.codigo_persona where persona.cedula = ?";
 

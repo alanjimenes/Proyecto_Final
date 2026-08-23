@@ -470,6 +470,14 @@ public class Flujo extends Thread {
                         paquete.setRespuesta(analisisService.getAnalisisPorDoctor(cedulaDocAnalisis));
                         break;
 
+                    //Historial
+                    case "OBTENER_HISTORIAL":
+                        String cedula = (String) paquete.getObjeto();
+                        Historial historial = HistorialService.obtenerHistorialPorCedula(cedula);
+                        paquete.setRespuesta(historial);
+                        break;
+
+
                     default:
                         paquete.setRespuesta(null);
                         break;
