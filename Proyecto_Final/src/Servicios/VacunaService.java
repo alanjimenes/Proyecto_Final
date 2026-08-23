@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import logico.Cliente;
 import logico.Historial;
 import logico.Vacuna;
@@ -16,8 +17,7 @@ public class VacunaService {
 
     public boolean agregarVacuna(Vacuna vac) {
         String sql = "insert into vacuna (nombre, descripcion) values (?, ?)";
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, vac.getNombre());
             stmt.setString(2, vac.getDescripcion());
@@ -34,9 +34,7 @@ public class VacunaService {
         ArrayList<Vacuna> lista = new ArrayList<>();
         String sql = "select vacuna.codigo_vacuna, vacuna.nombre, vacuna.descripcion from vacuna";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Vacuna vac = new Vacuna();
@@ -55,8 +53,7 @@ public class VacunaService {
 
     public boolean actualizarVacuna(Vacuna vac) {
         String sql = "update vacuna set vacuna.nombre = ?, vacuna.descripcion = ? where vacuna.codigo_vacuna = ?";
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, vac.getNombre());
             stmt.setString(2, vac.getDescripcion());
@@ -72,8 +69,7 @@ public class VacunaService {
 
     public boolean eliminarVacuna(int codigoVacuna) {
         String sql = "delete from vacuna where vacuna.codigo_vacuna = ?";
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, codigoVacuna);
 
@@ -85,15 +81,16 @@ public class VacunaService {
         }
     }
 
-    public boolean aplicarVacunaCliente(String cedulaCliente, int codigoVacuna, Timestamp fecha) {
-        String sql = "insert into regvacuna (codigo_cliente, codigo_vacuna, fecha, aplicada) values ((select persona.codigo_persona from persona where persona.cedula = ?), ?, ?, ?)";
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+    public boolean aplicarVacunaCliente(String cedulaCliente, int codigoLote, int codigoPersonalLogueado, Timestamp fecha) {
+        String sql = "insert into regvacuna (codigo_cliente, codigo_lote, codigo_enfermera, fecha, aplicada) " + "values ((select persona.codigo_persona from persona where persona.cedula = ?), ?, ?, ?, ?)";
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedulaCliente);
-            stmt.setInt(2, codigoVacuna);
-            stmt.setTimestamp(3, fecha);
-            stmt.setBoolean(4, true);
+            stmt.setInt(2, codigoLote);
+            stmt.setInt(3, codigoPersonalLogueado);
+            stmt.setTimestamp(4, fecha);
+            stmt.setBoolean(5, true);
 
             return stmt.executeUpdate() > 0;
 
@@ -107,9 +104,7 @@ public class VacunaService {
         HashMap<String, Integer> mapa = new HashMap<>();
         String sql = "select vacuna.nombre, count(regvacuna.codigo_reg) AS total from vacuna inner join regvacuna on vacuna.codigo_vacuna = regvacuna.codigo_vacuna group by vacuna.nombre";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 mapa.put(rs.getString("nombre"), rs.getInt("total"));
@@ -125,8 +120,7 @@ public class VacunaService {
         ArrayList<Cliente> lista = new ArrayList<>();
         String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.fechanacimiento, persona.direccion, persona.estado, persona.genero, cliente.numexpediente, cliente.enfermo, cliente.antecedentes from cliente inner join persona on cliente.codigo_persona = persona.codigo_persona inner join regvacuna on cliente.codigo_persona = regvacuna.codigo_cliente inner join vacuna on regvacuna.codigo_vacuna = vacuna.codigo_vacuna where vacuna.nombre = ?";
 
-        try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, nombreVacuna);
             ResultSet rs = stmt.executeQuery();

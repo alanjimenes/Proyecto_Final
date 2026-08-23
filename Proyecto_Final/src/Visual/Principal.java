@@ -3,6 +3,7 @@ package Visual;
 import Utils.ClienteSocket;
 import Utils.Estilos;
 import logico.Cita;
+import logico.Consulta;
 import logico.Medico;
 import logico.User;
 import org.jfree.chart.ChartFactory;
@@ -40,6 +41,7 @@ public class Principal extends JFrame {
     private JMenu menuAnalisis;
     private JPanel panelGrafico;
     private ChartPanel chartPanel;
+    private JMenu menuVacunas;
 
     public Principal(User usuarioLogueado) {
         this.usuarioActual = usuarioLogueado;
@@ -168,14 +170,10 @@ public class Principal extends JFrame {
                         frame.setLocationRelativeTo(null);
                         frame.setVisible(true);
                     } else {
-                        JOptionPane.showMessageDialog(Principal.this,
-                                "No se pudo cargar la información del médico asociado a este usuario.",
-                                "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(Principal.this, "No se pudo cargar la información del médico asociado a este usuario.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(Principal.this,
-                            "El usuario actual no tiene un código de médico válido.",
-                            "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(Principal.this, "El usuario actual no tiene un código de médico válido.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -234,9 +232,7 @@ public class Principal extends JFrame {
                     ConsultarAnalisis listar = new ConsultarAnalisis(medicoLogueado);
                     listar.setVisible(true);
                 } else {
-                    JOptionPane.showMessageDialog(Principal.this,
-                            "No se pudo cargar la información del médico para listar los análisis.",
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(Principal.this, "No se pudo cargar la información del médico para listar los análisis.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -409,6 +405,38 @@ public class Principal extends JFrame {
         });
         menuEnfermedades.add(itemListadoEnfermedades);
 
+        menuVacunas = new JMenu("  Gestión de Vacunas  ");
+        menuVacunas.setForeground(Color.WHITE);
+        try {
+            menuVacunas.setIcon(new ImageIcon(Principal.class.getResource("/img/vacunas.png")));
+        } catch (Exception e) {
+        }
+        menuVacunas.setFont(new Font("Bahnschrift", Font.BOLD, 18));
+        menuBar.add(menuVacunas);
+
+        JMenuItem itemAplicarVacuna = new JMenuItem("Aplicar Vacuna");
+        itemAplicarVacuna.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        itemAplicarVacuna.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AplicarVacuna ap = new AplicarVacuna(usuarioActual);
+                ap.setVisible(true);
+                ap.setModal(true);
+                ap.setVisible(true);
+            }
+        });
+        menuVacunas.add(itemAplicarVacuna);
+
+        JMenuItem itemListarVacunas = new JMenuItem("Listado de Vacunas");
+        itemListarVacunas.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        itemListarVacunas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ConsultarVacunas cVac = new ConsultarVacunas();
+                cVac.setModal(true);
+                cVac.setVisible(true);
+            }
+        });
+        menuVacunas.add(itemListarVacunas);
+
 
         menuBar.add(javax.swing.Box.createHorizontalGlue());
         lblUsuario = new JLabel("Usuario: " + usuarioActual.getNombreUsuario() + " (" + usuarioActual.getRol() + ")  ");
@@ -459,8 +487,7 @@ public class Principal extends JFrame {
 
         btnLogout.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?",
-                        "Cerrar Sesión", JOptionPane.YES_NO_OPTION);
+                int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?", "Cerrar Sesión", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
                     dispose();
                     Login login = new Login();
@@ -477,28 +504,37 @@ public class Principal extends JFrame {
     }
 
     private void configurarAccesosPorRol() {
-        if (menuCitas == null)
-            return;
-        String rol = this.usuarioActual.getRol();
+        if (menuCitas == null || this.usuarioActual.getRol() == null) return;
+
+        String rol = this.usuarioActual.getRol().trim();
 
         menuCitas.setVisible(false);
         menuConsulta.setVisible(false);
         menuAdministracion.setVisible(false);
         menuPacientes.setVisible(false);
+        menuVacunas.setVisible(false);
+        menuEnfermedades.setVisible(false);
+        menuAnalisis.setVisible(false);
 
         if (rol.equalsIgnoreCase("Administrador")) {
             menuCitas.setVisible(true);
             menuConsulta.setVisible(true);
             menuAdministracion.setVisible(true);
             menuPacientes.setVisible(true);
-        } else if (rol.equalsIgnoreCase("Asistente")) {
+            menuVacunas.setVisible(true);
+            menuEnfermedades.setVisible(true);
+            menuAnalisis.setVisible(true);
+        } else if (rol.equalsIgnoreCase("Enfermera") || rol.equalsIgnoreCase("Enfermero")) {
+            menuPacientes.setVisible(true);
+            menuVacunas.setVisible(true);
             menuCitas.setVisible(true);
-        } else if (rol.equalsIgnoreCase("Medico")) {
+            menuEnfermedades.setVisible(true);
+        } else if (rol.equalsIgnoreCase("Medico") || rol.equalsIgnoreCase("Médico")) {
             menuConsulta.setVisible(true);
             menuPacientes.setVisible(true);
             menuAnalisis.setVisible(true);
             menuEnfermedades.setVisible(true);
-
+            menuVacunas.setVisible(true);
         }
     }
 
@@ -510,8 +546,7 @@ public class Principal extends JFrame {
         dialogCitas.setResizable(false);
         dialogCitas.setLocationRelativeTo(Principal.this);
         try {
-            dialogCitas.setIconImage(
-                    Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
+            dialogCitas.setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/img/seguro-de-salud.png")));
         } catch (Exception e) {
         }
         dialogCitas.setVisible(true);
@@ -521,10 +556,8 @@ public class Principal extends JFrame {
         javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String hora = java.time.LocalDateTime.now()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
-                if (lblReloj != null)
-                    lblReloj.setText(hora);
+                String hora = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+                if (lblReloj != null) lblReloj.setText(hora);
             }
         });
         timer.setRepeats(true);
@@ -590,11 +623,7 @@ public class Principal extends JFrame {
                         for (Cita c : yo.getCitasAsignadas()) {
                             if (c.getFechaCita().toLocalDate().equals(LocalDate.now())) {
                                 if (c.getEstado().equalsIgnoreCase("Pendiente")) {
-                                    modelAgenda.addRow(new Object[]{
-                                            c.getFechaCita().toLocalTime().toString(),
-                                            c.getCliente().getNombre() + " " + c.getCliente().getApellido(),
-                                            c.getEstado()
-                                    });
+                                    modelAgenda.addRow(new Object[]{c.getFechaCita().toLocalTime().toString(), c.getCliente().getNombre() + " " + c.getCliente().getApellido(), c.getEstado()});
                                     pendientes++;
                                 } else if (c.getEstado().equalsIgnoreCase("Completada")) {
                                     completadas++;
@@ -680,8 +709,7 @@ public class Principal extends JFrame {
 
     @SuppressWarnings("unchecked")
     private void actualizarGrafico(String tipo) {
-        if (panelGrafico == null)
-            return;
+        if (panelGrafico == null) return;
         panelGrafico.removeAll();
 
         panelGrafico.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -702,8 +730,7 @@ public class Principal extends JFrame {
                 dataset.addValue(random.nextInt(45) + 5, "Casos", enf);
             }
 
-            chart = ChartFactory.createBarChart("Enfermedades Diagnosticada", "Enfermedad", "Casos", dataset,
-                    PlotOrientation.VERTICAL, false, true, false);
+            chart = ChartFactory.createBarChart("Enfermedades Diagnosticada", "Enfermedad", "Casos", dataset, PlotOrientation.VERTICAL, false, true, false);
 
             CategoryPlot plot = chart.getCategoryPlot();
             BarRenderer renderer = (BarRenderer) plot.getRenderer();
@@ -721,8 +748,7 @@ public class Principal extends JFrame {
                 dataset.addValue(random.nextInt(70) + 10, "Dosis", vac);
             }
 
-            chart = ChartFactory.createBarChart("Vacunas Aplicadas (Demo)", "Vacuna", "Total Dosis", dataset,
-                    PlotOrientation.HORIZONTAL, false, true, false);
+            chart = ChartFactory.createBarChart("Vacunas Aplicadas (Demo)", "Vacuna", "Total Dosis", dataset, PlotOrientation.HORIZONTAL, false, true, false);
 
             CategoryPlot plot = chart.getCategoryPlot();
             BarRenderer renderer = (BarRenderer) plot.getRenderer();
@@ -734,8 +760,7 @@ public class Principal extends JFrame {
 
         if (chart != null) {
 
-            chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-                    java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            chart.getRenderingHints().put(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             chartPanel = new ChartPanel(chart);
             chartPanel.setBackground(Color.WHITE);
@@ -746,8 +771,7 @@ public class Principal extends JFrame {
         panelGrafico.repaint();
     }
 
-    private void configurarPlotYRenderer(JFreeChart chart, CategoryPlot plot, BarRenderer renderer, Font fTitulo,
-                                         Font fEjes, Font fEtiquetas, Font fValores) {
+    private void configurarPlotYRenderer(JFreeChart chart, CategoryPlot plot, BarRenderer renderer, Font fTitulo, Font fEjes, Font fEtiquetas, Font fValores) {
         chart.setBackgroundPaint(Color.WHITE);
         chart.getTitle().setFont(fTitulo);
 

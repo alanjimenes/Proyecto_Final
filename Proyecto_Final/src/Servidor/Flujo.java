@@ -61,8 +61,7 @@ public class Flujo extends Thread {
                     break;
                 }
 
-                if (paquete == null)
-                    break;
+                if (paquete == null) break;
 
                 String comando = paquete.getComando();
 
@@ -327,8 +326,17 @@ public class Flujo extends Thread {
 
                     case "APLICAR_VACUNA":
                         RegistroVacunacion reg = (RegistroVacunacion) paquete.getObjeto();
-                        int idVacuna = reg.getLote().getVacuna().getCodigoVacuna();
-                        boolean exitoApliVac = vacunaService.aplicarVacunaCliente(reg.getCliente().getCedula(), idVacuna, Timestamp.valueOf(reg.getFecha()));
+                        int idLote = reg.getLote().getCodigoLote();
+
+                        if (reg.getEnfermera() == null || reg.getEnfermera().getCodigoPersona() <= 0) {
+                            System.out.println("Error: Intentando aplicar vacuna sin una enfermera válida asociada.");
+                            paquete.setRespuesta(false);
+                            break;
+                        }
+
+                        int codigoEnfermera = reg.getEnfermera().getCodigoPersona();
+
+                        boolean exitoApliVac = vacunaService.aplicarVacunaCliente(reg.getCliente().getCedula(), idLote, codigoEnfermera, Timestamp.valueOf(reg.getFecha()));
                         paquete.setRespuesta(exitoApliVac);
                         break;
 
@@ -389,6 +397,11 @@ public class Flujo extends Thread {
                     case "DELETE_ENFERMERA":
                         Enfermera enfDel = (Enfermera) paquete.getObjeto();
                         paquete.setRespuesta(enfermeraService.desactivarEnfermera(enfDel.getCedula()));
+                        break;
+
+                    case "BUSCAR_ENFERMERA":
+                        String cedulaEnf = (String) paquete.getObjeto();
+                        paquete.setRespuesta(enfermeraService.buscarEnfermera(cedulaEnf));
                         break;
 
                     // EVALUACION_FISICA

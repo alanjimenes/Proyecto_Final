@@ -61,5 +61,8 @@ public class LoteVacuna implements java.io.Serializable {
         this.cantidad = cantidad;
     }
 
-
+    @Override
+    public String toString() {
+        return "Lote: " + noLote + " (Stock: " + cantidad + ")";
+    }
 }

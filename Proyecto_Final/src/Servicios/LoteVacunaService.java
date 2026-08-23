@@ -174,4 +174,8 @@ public class LoteVacunaService {
         return lista;
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

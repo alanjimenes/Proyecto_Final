@@ -80,7 +80,7 @@ public class RegUser extends JDialog {
 		comboBox = new JComboBox<String>();
 		comboBox.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
 		comboBox.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "<Seleccione>", "Administrador", "Asistente", "Medico", "Enfermera" }));
+				new String[] { "<Seleccione>", "Administrador", "Medico", "Enfermera" }));
 		comboBox.setBounds(265, 66, 147, 20);
 		contentPanel.add(comboBox);
 
