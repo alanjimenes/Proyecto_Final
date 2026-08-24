@@ -337,4 +337,48 @@ public class ClienteService {
             return false;
         }
     }
+
+    public ArrayList<Cliente> obtenerTodosLosClientes() {
+        ArrayList<Cliente> lista = new ArrayList<>();
+        String sql = "select persona.codigo_persona, persona.fechanacimiento, persona.nombre, persona.apellido, " + "persona.cedula, persona.telefono, persona.estado, persona.direccion, persona.genero, " + "cliente.numexpediente, cliente.enfermo, cliente.antecedentes " + "from cliente " + "inner join persona on cliente.codigo_persona = persona.codigo_persona";
+
+        // 1. Cargamos todos los clientes y cerramos la conexión/ResultSet por completo
+        try (Connection con = ConexionDB.getConexion(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Cliente cli = new Cliente();
+                cli.setCodigoPersona(rs.getInt("codigo_persona"));
+
+                java.sql.Date fechaSql = rs.getDate("fechanacimiento");
+                if (fechaSql != null) {
+                    cli.setFechaNacimiento(fechaSql.toLocalDate());
+                }
+
+                cli.setNombre(rs.getString("nombre"));
+                cli.setApellido(rs.getString("apellido"));
+                cli.setCedula(rs.getString("cedula"));
+                cli.setTelefono(rs.getString("telefono"));
+                cli.setEstado(rs.getBoolean("estado"));
+                cli.setDireccion(rs.getString("direccion"));
+                cli.setGenero(rs.getString("genero"));
+                cli.setNumExpediente(rs.getString("numexpediente"));
+                cli.setEnfermo(rs.getBoolean("enfermo"));
+                cli.setAntecedentes(rs.getString("antecedentes"));
+
+                lista.add(cli);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener la lista de clientes: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        for (Cliente cli : lista) {
+            Historial h = HistorialService.obtenerHistorialPorCedula(cli.getCedula());
+            if (h != null) {
+                cli.setHistorial(h);
+            }
+        }
+
+        return lista;
+    }
 }

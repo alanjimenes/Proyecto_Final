@@ -4,63 +4,97 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import logico.Consulta;
 import logico.RecetaMedica;
+import Servicios.RecetaMedicaService; // Asegúrate de tener este import disponible
 
 import javax.swing.*;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 
 public class GeneradorReportes {
 
-	public static void generarReceta(Consulta consulta) {
-		try {
-			Document documento = new Document();
-			PdfWriter.getInstance(documento, new FileOutputStream("RecetaMedica_" + consulta.getCodigoConsulta() + ".pdf"));
-			documento.open();
+    public static void generarReceta(Consulta consulta) {
+        try {
+            if (consulta == null) {
+                JOptionPane.showMessageDialog(null, "No hay datos de consulta para generar la receta.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-			Font fontTitulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
-			Font fontNegrita = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
-			Font fontNormal = FontFactory.getFont(FontFactory.HELVETICA, 12);
+            // Buscador de recetas adicionales desde la BD usando el servicio
+            RecetaMedicaService recetaService = new RecetaMedicaService();
+            ArrayList<RecetaMedica> recetasBD = recetaService.getRecetasPorConsulta(consulta.getCodigoConsulta());
 
-			Paragraph titulo = new Paragraph("RECETA MEDICA - CLINICA UNPHU", fontTitulo);
-			titulo.setAlignment(Element.ALIGN_CENTER);
-			documento.add(titulo);
-			documento.add(new Paragraph(" "));
+            // Si la consulta traía recetas en memoria pero la BD tiene más o son más actualizadas,
+            // podemos asignarlas o combinarlas. Aquí usamos las obtenidas de la BD si están disponibles.
+            if (recetasBD != null && !recetasBD.isEmpty()) {
+                consulta.setRecetas(recetasBD);
+            }
 
-			String nombreMedico = (consulta.getMedico() != null) ? consulta.getMedico().getNombre() + " " + consulta.getMedico().getApellido() : "N/A";
-			String espMedico = (consulta.getMedico() != null && consulta.getMedico().getEspecialidad() != null) ? consulta.getMedico().getEspecialidad().getNombre() : "N/A";
+            Document documento = new Document();
+            String nombreArchivo = "RecetaMedica_Consulta_" + consulta.getCodigoConsulta() + ".pdf";
+            PdfWriter.getInstance(documento, new FileOutputStream(nombreArchivo));
+            documento.open();
 
-			documento.add(new Paragraph("Dr./Dra.: " + nombreMedico, fontNormal));
-			documento.add(new Paragraph("Especialidad: " + espMedico, fontNormal));
-			documento.add(new Paragraph("--------------------------------------------------------------------------------"));
+            Font fontTitulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.DARK_GRAY);
+            Font fontNegrita = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+            Font fontNormal = FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.DARK_GRAY);
 
-			String nombreCliente = (consulta.getCliente() != null) ? consulta.getCliente().getNombre() + " " + consulta.getCliente().getApellido() : "N/A";
-			String cedulaCliente = (consulta.getCliente() != null) ? consulta.getCliente().getCedula() : "N/A";
-			String fechaConsulta = (consulta.getFechaConsulta() != null) ? consulta.getFechaConsulta().toString() : "N/A";
+            // Título Principal
+            Paragraph titulo = new Paragraph("RECETA MÉDICA - CLÍNICA", fontTitulo);
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            documento.add(titulo);
+            documento.add(new Paragraph(" "));
 
-			documento.add(new Paragraph("Paciente: " + nombreCliente, fontNormal));
-			documento.add(new Paragraph("Cedula: " + cedulaCliente, fontNormal));
-			documento.add(new Paragraph("Fecha: " + fechaConsulta, fontNormal));
-			documento.add(new Paragraph(" "));
+            // Datos del Médico
+            String nombreMedico = "N/A";
+            String espMedico = "N/A";
+            if (consulta.getMedico() != null) {
+                nombreMedico = consulta.getMedico().getNombre() + " " + consulta.getMedico().getApellido();
+                if (consulta.getMedico().getEspecialidad() != null) {
+                    espMedico = consulta.getMedico().getEspecialidad().getNombre();
+                }
+            }
 
-			documento.add(new Paragraph("DIAGNOSTICO:", fontNegrita));
-			documento.add(new Paragraph(consulta.getDiagnostico(), fontNormal));
-			documento.add(new Paragraph(" "));
+            documento.add(new Paragraph("Dr./Dra.: " + nombreMedico, fontNormal));
+            documento.add(new Paragraph("Especialidad: " + espMedico, fontNormal));
+            documento.add(new Paragraph("--------------------------------------------------------------------------------"));
 
-			documento.add(new Paragraph("TRATAMIENTO / INDICACIONES:", fontNegrita));
-			if (consulta.getRecetas() != null && !consulta.getRecetas().isEmpty()) {
-				for (RecetaMedica receta : consulta.getRecetas()) {
-					documento.add(new Paragraph("- " + receta.toString(), fontNormal));
-				}
-			} else {
-				documento.add(new Paragraph("No hay recetas registradas.", fontNormal));
-			}
+            // Datos del Cliente / Paciente
+            String nombreCliente = "N/A";
+            String cedulaCliente = "N/A";
+            if (consulta.getCliente() != null) {
+                nombreCliente = consulta.getCliente().getNombre() + " " + consulta.getCliente().getApellido();
+                cedulaCliente = consulta.getCliente().getCedula();
+            }
 
-			documento.close();
+            String fechaConsulta = (consulta.getFechaConsulta() != null) ? consulta.getFechaConsulta().toString() : "N/A";
 
-			JOptionPane.showMessageDialog(null, "Receta PDF generada correctamente!");
+            documento.add(new Paragraph("Paciente: " + nombreCliente, fontNormal));
+            documento.add(new Paragraph("Cédula: " + cedulaCliente, fontNormal));
+            documento.add(new Paragraph("Fecha de Consulta: " + fechaConsulta, fontNormal));
+            documento.add(new Paragraph(" "));
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Error al generar PDF: " + e.getMessage());
-		}
-	}
+            // Diagnóstico
+            documento.add(new Paragraph("DIAGNÓSTICO:", fontNegrita));
+            documento.add(new Paragraph(consulta.getDiagnostico() != null ? consulta.getDiagnostico() : "Sin diagnóstico registrado.", fontNormal));
+            documento.add(new Paragraph(" "));
+
+            // Recetas / Tratamiento médico asociado (ya sincronizadas desde la BD)
+            documento.add(new Paragraph("TRATAMIENTO / INDICACIONES:", fontNegrita));
+            if (consulta.getRecetas() != null && !consulta.getRecetas().isEmpty()) {
+                for (RecetaMedica receta : consulta.getRecetas()) {
+                    documento.add(new Paragraph("- " + receta.toString(), fontNormal));
+                }
+            } else {
+                documento.add(new Paragraph("No hay recetas registradas para esta consulta.", fontNormal));
+            }
+
+            documento.close();
+
+            JOptionPane.showMessageDialog(null, "¡Receta PDF generada correctamente!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al generar PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }
