@@ -9,7 +9,8 @@ import java.util.ArrayList;
 public class MedicamentoService {
 
     public boolean crearMedicamento(Medicamento medicamento) {
-        String sql = "insert into medicamento (nombre, concentracion, descripcion) values (?, ?, ?)";
+        String sql = "insert into medicamento (nombre, concentracion, descripcion) " +
+                "values (?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -25,7 +26,8 @@ public class MedicamentoService {
     }
 
     public boolean editMedicamento(Medicamento medicamento) {
-        String sql = "update medicamento set medicamento.nombre = ?, medicamento.concentracion = ?, medicamento.descripcion = ? where medicamento.codigo_medicamento = ?";
+        String sql = "update medicamento set medicamento.nombre = ?, medicamento.concentracion = ?, medicamento.descripcion = ? " +
+                "where medicamento.codigo_medicamento = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -42,7 +44,8 @@ public class MedicamentoService {
     }
 
     public boolean eliminarMedicamento(int codigoMedicamento) {
-        String sql = "delete from medicamento where medicamento.codigo_medicamento = ?";
+        String sql = "delete from medicamento " +
+                "where medicamento.codigo_medicamento = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -56,7 +59,10 @@ public class MedicamentoService {
 
     public Medicamento buscarMedicamento(int codigoMedicamento) {
         Medicamento med = null;
-        String sql = "select medicamento.codigo_medicamento, medicamento.nombre, medicamento.concentracion, medicamento.descripcion from medicamento where medicamento.codigo_medicamento = ?";
+        String sql = "select medicamento.codigo_medicamento, medicamento.nombre, medicamento.concentracion, " +
+                "medicamento.descripcion " +
+                "from medicamento " +
+                "where medicamento.codigo_medicamento = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -79,7 +85,9 @@ public class MedicamentoService {
 
     public ArrayList<Medicamento> listarMedicamentos() {
         ArrayList<Medicamento> lista = new ArrayList<>();
-        String sql = "select medicamento.codigo_medicamento, medicamento.nombre, medicamento.concentracion, medicamento.descripcion from medicamento";
+        String sql = "select medicamento.codigo_medicamento, medicamento.nombre, medicamento.concentracion, " +
+                "medicamento.descripcion " +
+                "from medicamento";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);

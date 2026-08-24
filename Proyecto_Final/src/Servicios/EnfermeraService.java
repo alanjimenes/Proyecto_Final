@@ -13,8 +13,11 @@ import Utils.ConexionDB;
 public class EnfermeraService {
 
     public boolean crearEnfermera(Enfermera enfermera) {
-        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) values (?, ?, ?, ?, ?, ?, ?, ?)";
-        String sqlEnf = "insert into enfermera (codigo_persona, turno) values (?, ?)";
+        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        String sqlEnf = "insert into enfermera (codigo_persona, turno) " +
+                "values (?, ?)";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -54,8 +57,14 @@ public class EnfermeraService {
     }
 
     public boolean editEnfermera(Enfermera enfermera) {
-        String sqlPersona = "update persona set persona.fechanacimiento = ?, persona.nombre = ?, persona.apellido = ?, persona.telefono = ?, persona.direccion = ?, persona.estado = ?, persona.genero = ? where persona.cedula = ?";
-        String sqlEnf = "update enfermera set enfermera.turno = ? where enfermera.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = ?)";
+        String sqlPersona = "update persona set persona.fechanacimiento = ?, persona.nombre = ?, persona.apellido = ?, " +
+                "persona.telefono = ?, persona.direccion = ?, persona.estado = ?, persona.genero = ? where persona.cedula = ?";
+
+        String sqlEnf = "update enfermera set enfermera.turno = ? " +
+                "where enfermera.codigo_persona = (" +
+                "select persona.codigo_persona " +
+                "from persona " +
+                "where persona.cedula = ?)";
 
         try (Connection conn = ConexionDB.getConexion()) {
             conn.setAutoCommit(false);
@@ -90,7 +99,12 @@ public class EnfermeraService {
 
     public Enfermera buscarEnfermera(String cedula) {
         Enfermera enfermera = null;
-        String sql = "select persona.codigo_persona, persona.cedula, persona.nombre, persona.apellido, persona.fechanacimiento, persona.telefono, persona.direccion, persona.estado, persona.genero, enfermera.turno from enfermera inner join persona on enfermera.codigo_persona = persona.codigo_persona where persona.cedula = ?";
+        String sql = "select persona.codigo_persona, persona.cedula, persona.nombre, persona.apellido, " +
+                "persona.fechanacimiento, persona.telefono, persona.direccion, persona.estado, " +
+                "persona.genero, enfermera.turno " +
+                "from enfermera " +
+                "inner join persona on enfermera.codigo_persona = persona.codigo_persona " +
+                "where persona.cedula = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -121,7 +135,10 @@ public class EnfermeraService {
 
     public ArrayList<Enfermera> listarEnfermeras() {
         ArrayList<Enfermera> lista = new ArrayList<>();
-        String sql = "select persona.codigo_persona, persona.cedula, persona.nombre, persona.apellido, persona.telefono, persona.direccion, persona.genero, persona.estado, persona.fechanacimiento, enfermera.turno from enfermera inner join persona on enfermera.codigo_persona = persona.codigo_persona";
+        String sql = "select persona.codigo_persona, persona.cedula, persona.nombre, persona.apellido, persona.telefono, " +
+                "persona.direccion, persona.genero, persona.estado, persona.fechanacimiento, enfermera.turno " +
+                "from enfermera " +
+                "inner join persona on enfermera.codigo_persona = persona.codigo_persona";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -151,7 +168,8 @@ public class EnfermeraService {
     }
 
     public boolean desactivarEnfermera(String cedula) {
-        String sql = "update persona set persona.estado = 0 where persona.cedula = ?";
+        String sql = "update persona set persona.estado = 0 " +
+                "where persona.cedula = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

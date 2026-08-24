@@ -11,7 +11,8 @@ import java.util.ArrayList;
 public class AnalisisService {
 
     public boolean crearAnalisis(Analisis analisis) {
-        String sql = "insert into analisis (codigo_cons, codigo_tipo, fechaOrden, fechaResultado, estado, resultado) values (?, ?, ?, ?, ?, ?)";
+        String sql = "insert into analisis (codigo_cons, codigo_tipo, fechaOrden, fechaResultado, estado, resultado) " +
+                "values (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -30,7 +31,9 @@ public class AnalisisService {
     }
 
     public boolean editAnalisis(Analisis analisis) {
-        String sql = "update analisis set codigo_cons = ?, codigo_tipo = ?, fechaOrden = ?, fechaResultado = ?, estado = ?, resultado = ? WHERE codigo_analisis = ?";
+        String sql = "update analisis set codigo_cons = ?, codigo_tipo = ?, fechaOrden = ?, fechaResultado = ?, " +
+                "estado = ?, resultado = ? " +
+                "WHERE codigo_analisis = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -50,7 +53,8 @@ public class AnalisisService {
     }
 
     public boolean eliminarAnalisis(int codigoAnalisis) {
-        String sql = "delete from analisis where codigo_analisis = ?";
+        String sql = "delete from analisis " +
+                "where codigo_analisis = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -64,11 +68,12 @@ public class AnalisisService {
 
     public Analisis buscarAnalisis(int codigoAnalisis) {
         Analisis analisis = null;
-        String sql = "select a.codigo_analisis, a.codigo_cons, a.fechaOrden, a.fechaResultado, a.estado, a.resultado, " +
-                "t.codigo_tipo, t.nombre as tipo_nombre, t.descripcion as tipo_desc " +
-                "from analisis a " +
-                "left join tipo_analisis t ON a.codigo_tipo = t.codigo_tipo " +
-                "where a.codigo_analisis = ?";
+        String sql = "select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaOrden, analisis.fechaResultado, " +
+                "analisis.estado, analisis.resultado, " +
+                "tipo_analisis.codigo_tipo, tipo_analisis.nombre as tipo_nombre, tipo_analisis.descripcion as tipo_desc " +
+                "from analisis  " +
+                "left join tipo_analisis ON analisis.codigo_tipo = tipo_analisis.codigo_tipo " +
+                "where analisis.codigo_analisis = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -108,10 +113,11 @@ public class AnalisisService {
 
     public ArrayList<Analisis> listarAnalisis() {
         ArrayList<Analisis> lista = new ArrayList<>();
-        String sql = "select a.codigo_analisis, a.codigo_cons, a.fechaOrden, a.fechaResultado, a.estado, a.resultado, " +
-                "t.codigo_tipo, t.nombre AS tipo_nombre, t.descripcion AS tipo_desc " +
-                "from analisis a " +
-                "left join tipo_analisis t on a.codigo_tipo = t.codigo_tipo";
+        String sql = "select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaOrden, analisis.fechaResultado, " +
+                "analisis.estado, analisis.resultado, " +
+                "tipo_analisis.codigo_tipo, tipo_analisis.nombre AS tipo_nombre, tipo_analisis.descripcion AS tipo_desc " +
+                "from analisis " +
+                "left join tipo_analisis on analisis.codigo_tipo = tipo_analisis.codigo_tipo";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -152,13 +158,13 @@ public class AnalisisService {
 
     public ArrayList<Analisis> getAnalisisPorDoctor(String cedulaMedico) {
         ArrayList<Analisis> lista = new ArrayList<>();
-        // Unimos las tablas para filtrar por la cédula del médico
-        String sql = "SELECT a.codigo_analisis, a.codigo_cons, a.fechaOrden, a.fechaResultado, a.estado, a.resultado, " +
-                "t.codigo_tipo, t.nombre AS tipo_nombre, t.descripcion AS tipo_desc " +
-                "FROM analisis a " +
-                "LEFT JOIN tipo_analisis t ON a.codigo_tipo = t.codigo_tipo " +
-                "INNER JOIN consulta c ON a.codigo_cons = c.codigo_consulta " +
-                "WHERE c.cedula_medico = ?";
+        String sql = "SELECT analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaOrden, analisis.fechaResultado, " +
+                "analisis.estado, analisis.resultado, " +
+                "tipo_analisis.codigo_tipo, tipo_analisis.nombre AS tipo_nombre, tipo_analisis.descripcion AS tipo_desc " +
+                "FROM analisis " +
+                "LEFT JOIN tipo_analisis ON analisis.codigo_tipo = tipo_analisis.codigo_tipo " +
+                "INNER JOIN consulta ON analisis.codigo_cons = consulta.codigo_consulta " +
+                "WHERE consulta.cedula_medico = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

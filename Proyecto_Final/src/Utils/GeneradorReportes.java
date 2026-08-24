@@ -4,7 +4,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import logico.Consulta;
 import logico.RecetaMedica;
-import Servicios.RecetaMedicaService; // Asegúrate de tener este import disponible
+import Servicios.RecetaMedicaService;
 
 import javax.swing.*;
 import java.io.FileOutputStream;
@@ -19,12 +19,9 @@ public class GeneradorReportes {
                 return;
             }
 
-            // Buscador de recetas adicionales desde la BD usando el servicio
             RecetaMedicaService recetaService = new RecetaMedicaService();
             ArrayList<RecetaMedica> recetasBD = recetaService.getRecetasPorConsulta(consulta.getCodigoConsulta());
 
-            // Si la consulta traía recetas en memoria pero la BD tiene más o son más actualizadas,
-            // podemos asignarlas o combinarlas. Aquí usamos las obtenidas de la BD si están disponibles.
             if (recetasBD != null && !recetasBD.isEmpty()) {
                 consulta.setRecetas(recetasBD);
             }

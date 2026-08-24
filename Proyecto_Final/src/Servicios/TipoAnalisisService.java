@@ -11,7 +11,8 @@ import java.util.ArrayList;
 public class TipoAnalisisService {
 
     public boolean crearTipoAnalisis(TipoAnalisis tipo) {
-        String sql = "insert into tipo_analisis (nombre, descripcion) values (?, ?)";
+        String sql = "insert into tipo_analisis (nombre, descripcion) " +
+                "values (?, ?)";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -26,7 +27,8 @@ public class TipoAnalisisService {
     }
 
     public boolean editTipoAnalisis(TipoAnalisis tipo) {
-        String sql = "update tipo_analisis set nombre = ?, descripcion = ? where codigo_tipo = ?";
+        String sql = "update tipo_analisis set nombre = ?, descripcion = ? " +
+                "where codigo_tipo = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -42,7 +44,8 @@ public class TipoAnalisisService {
     }
 
     public boolean eliminarTipoAnalisis(int codigoTipo) {
-        String sql = "delete from tipo_analisis where codigo_tipo = ?";
+        String sql = "delete from tipo_analisis " +
+                "where codigo_tipo = ?";
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -56,7 +59,9 @@ public class TipoAnalisisService {
 
     public TipoAnalisis buscarTipoAnalisis(int codigoTipo) {
         TipoAnalisis tipo = null;
-        String sql = "select codigo_tipo, nombre, descripcion from tipo_analisis where codigo_tipo = ?";
+        String sql = "select codigo_tipo, nombre, descripcion " +
+                "from tipo_analisis " +
+                "where codigo_tipo = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -78,7 +83,8 @@ public class TipoAnalisisService {
 
     public ArrayList<TipoAnalisis> listarTiposAnalisis() {
         ArrayList<TipoAnalisis> lista = new ArrayList<>();
-        String sql = "select codigo_tipo, nombre, descripcion from tipo_analisis";
+        String sql = "select codigo_tipo, nombre, descripcion " +
+                "from tipo_analisis";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);

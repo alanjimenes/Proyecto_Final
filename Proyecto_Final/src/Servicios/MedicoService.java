@@ -11,8 +11,11 @@ import java.util.ArrayList;
 public class MedicoService {
 
     public boolean agregarMedico(Medico med, int codigoUsuario, int codigoEspecialidad) {
-        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) values (?, ?, ?, ?, ?, ?, ?, ?)";
-        String sqlMedico = "insert into medico (codigo_persona, codigo_usuario, codigo_especialidad, maxcitaspordia) values (?, ?, ?, ?)";
+        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        String sqlMedico = "insert into medico (codigo_persona, codigo_usuario, codigo_especialidad, maxcitaspordia) " +
+                "values (?, ?, ?, ?)";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
@@ -59,9 +62,15 @@ public class MedicoService {
     }
 
     public boolean actualizarMedico(Medico med) {
-        String sqlPersona = "update persona set persona.fechanacimiento = ?, persona.nombre = ?, persona.apellido = ?, persona.telefono = ?, persona.direccion = ?, persona.estado = ?, persona.genero = ? where persona.cedula = ?";
+        String sqlPersona = "update persona set persona.fechanacimiento = ?, persona.nombre = ?, persona.apellido = ?, " +
+                "persona.telefono = ?, persona.direccion = ?, persona.estado = ?, persona.genero = ? " +
+                "where persona.cedula = ?";
 
-        String sqlMedico = "update medico set medico.codigo_especialidad = ?, medico.maxcitaspordia = ? where medico.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = ?)";
+        String sqlMedico = "update medico set medico.codigo_especialidad = ?, medico.maxcitaspordia = ? " +
+                "where medico.codigo_persona = (" +
+                "select persona.codigo_persona " +
+                "from persona " +
+                "where persona.cedula = ?)";
 
         try (Connection conn = ConexionDB.getConexion()) {
             conn.setAutoCommit(false);
@@ -96,7 +105,8 @@ public class MedicoService {
     }
 
     public boolean desactivarMedico(String cedula) {
-        String sql = "update persona set persona.estado = 0 where persona.cedula = ?";
+        String sql = "update persona set persona.estado = 0 " +
+                "where persona.cedula = ?";
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedula);
@@ -110,7 +120,13 @@ public class MedicoService {
 
     public Medico buscarMedicoCedula(String cedula) {
         Medico medico = null;
-        String sql = "select persona.codigo_persona, persona.fechanacimiento, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.estado, persona.direccion, persona.genero, medico.maxcitaspordia, especialidad.codigo_especialidad, especialidad.nombre AS nombre_esp from medico inner join persona on medico.codigo_persona = persona.codigo_persona inner join especialidad on medico.codigo_especialidad = especialidad.codigo_especialidad where persona.cedula = ?";
+        String sql = "select persona.codigo_persona, persona.fechanacimiento, persona.nombre, persona.apellido, " +
+                "persona.cedula, persona.telefono, persona.estado, persona.direccion, persona.genero, medico.maxcitaspordia, " +
+                "especialidad.codigo_especialidad, especialidad.nombre AS nombre_esp " +
+                "from medico " +
+                "inner join persona on medico.codigo_persona = persona.codigo_persona " +
+                "inner join especialidad on medico.codigo_especialidad = especialidad.codigo_especialidad " +
+                "where persona.cedula = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -146,7 +162,12 @@ public class MedicoService {
 
     public ArrayList<Medico> listarMedicos() {
         ArrayList<Medico> lista = new ArrayList<>();
-        String sql = "select persona.codigo_persona, persona.fechanacimiento, persona.nombre, persona.apellido, persona.cedula, persona.telefono, persona.estado, persona.direccion, persona.genero, medico.maxcitaspordia, especialidad.codigo_especialidad, especialidad.nombre AS nombre_esp from medico inner join persona on medico.codigo_persona = persona.codigo_persona inner join especialidad on medico.codigo_especialidad = especialidad.codigo_especialidad";
+        String sql = "select persona.codigo_persona, persona.fechanacimiento, persona.nombre, persona.apellido, " +
+                "persona.cedula, persona.telefono, persona.estado, persona.direccion, persona.genero, medico.maxcitaspordia, " +
+                "especialidad.codigo_especialidad, especialidad.nombre AS nombre_esp " +
+                "from medico " +
+                "inner join persona on medico.codigo_persona = persona.codigo_persona " +
+                "inner join especialidad on medico.codigo_especialidad = especialidad.codigo_especialidad";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
@@ -181,7 +202,11 @@ public class MedicoService {
 
     public boolean verificarDisponibilidad(String cedula, LocalDateTime fechaHora, LocalDateTime finHora) {
         boolean disponible = false;
-        String sql = "select count(cita.codigo_cita) AS solapamientos from cita inner join medico on cita.codigo_medico = medico.codigo_persona inner join persona on medico.codigo_persona = persona.codigo_persona where persona.cedula = ? and cita.estado = 'Pendiente' and (cita.fechacita < ? and dateadd(minute, 30, cita.fechacita) > ?)";
+        String sql = "select count(cita.codigo_cita) AS solapamientos " +
+                "from cita " +
+                "inner join medico on cita.codigo_medico = medico.codigo_persona " +
+                "inner join persona on medico.codigo_persona = persona.codigo_persona " +
+                "where persona.cedula = ? and cita.estado = 'Pendiente' and (cita.fechacita < ? and dateadd(minute, 30, cita.fechacita) > ?)";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 

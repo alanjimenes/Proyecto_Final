@@ -34,7 +34,9 @@ public class HistorialService {
                 con = ConexionDB.getConexion();
             }
 
-            String sqlSelect = "select codigo_historial from historial where codigo_cliente = ?";
+            String sqlSelect = "select codigo_historial " +
+                    "from historial " +
+                    "where codigo_cliente = ?";
             try (PreparedStatement psSelect = con.prepareStatement(sqlSelect)) {
                 psSelect.setInt(1, cliente.getCodigoPersona());
 
@@ -46,7 +48,8 @@ public class HistorialService {
             }
 
             if (codigoHistorial == 0) {
-                String sqlInsert = "insert into historial (codigo_cliente) values (?)";
+                String sqlInsert = "insert into historial (codigo_cliente) " +
+                        "values (?)";
                 try (PreparedStatement psInsert = con.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
                     psInsert.setInt(1, cliente.getCodigoPersona());
                     psInsert.executeUpdate();

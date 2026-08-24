@@ -14,7 +14,14 @@ public class UserService {
 
     public User login(String usuario, String password) {
         User user = null;
-        String sql = "select usuario.codigo_usuario, usuario.nombreusuario, usuario.password, usuario.rol, coalesce(p_med.cedula, p_enf.cedula) as cedula from usuario left join medico on usuario.codigo_usuario = medico.codigo_usuario left join persona p_med on medico.codigo_persona = p_med.codigo_persona left join enfermera on usuario.codigo_usuario = enfermera.codigo_usuario left join persona p_enf on enfermera.codigo_persona = p_enf.codigo_persona where usuario.nombreusuario = ? and usuario.password = ?";
+        String sql = "select usuario.codigo_usuario, usuario.nombreusuario, usuario.password, usuario.rol, " +
+                "coalesce(p_med.cedula, p_enf.cedula) as cedula " +
+                "from usuario " +
+                "left join medico on usuario.codigo_usuario = medico.codigo_usuario " +
+                "left join persona p_med on medico.codigo_persona = p_med.codigo_persona " +
+                "left join enfermera on usuario.codigo_usuario = enfermera.codigo_usuario " +
+                "left join persona p_enf on enfermera.codigo_persona = p_enf.codigo_persona " +
+                "where usuario.nombreusuario = ? and usuario.password = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, usuario);
@@ -37,7 +44,9 @@ public class UserService {
     }
 
     public boolean existeUsuario(String usuario) {
-        String sql = "select usuario.codigo_usuario from usuario where usuario.nombreusuario = ?";
+        String sql = "select usuario.codigo_usuario " +
+                "from usuario " +
+                "where usuario.nombreusuario = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, usuario);
@@ -52,9 +61,18 @@ public class UserService {
     }
 
     public boolean registrarUsuario(User user) {
-        String sqlUser = "insert into usuario (nombreusuario, password, rol) values (?, ?, ?)";
-        String sqlUpdateMedico = "update medico set medico.codigo_usuario = ? where medico.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = ?)";
-        String sqlUpdateEnfermera = "update enfermera set enfermera.codigo_usuario = ? where enfermera.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = ?)";
+        String sqlUser = "insert into usuario (nombreusuario, password, rol) " +
+                "values (?, ?, ?)";
+        String sqlUpdateMedico = "update medico set medico.codigo_usuario = ? " +
+                "where medico.codigo_persona = (" +
+                "select persona.codigo_persona " +
+                "from persona " +
+                "where persona.cedula = ?)";
+        String sqlUpdateEnfermera = "update enfermera set enfermera.codigo_usuario = ? " +
+                "where enfermera.codigo_persona = (" +
+                "select persona.codigo_persona " +
+                "from persona " +
+                "where persona.cedula = ?)";
 
         Connection conn = null;
 
@@ -120,7 +138,14 @@ public class UserService {
 
     public ArrayList<User> listarUsuarios() {
         ArrayList<User> lista = new ArrayList<>();
-        String sql = "select usuario.codigo_usuario, usuario.nombreusuario, usuario.password, usuario.rol, coalesce(p_med.cedula, p_enf.cedula) as cedula from usuario left join medico on usuario.codigo_usuario = medico.codigo_usuario left join persona p_med on medico.codigo_persona = p_med.codigo_persona left join enfermera on usuario.codigo_usuario = enfermera.codigo_usuario left join persona p_enf on enfermera.codigo_persona = p_enf.codigo_persona order by usuario.nombreusuario";
+        String sql = "select usuario.codigo_usuario, usuario.nombreusuario, usuario.password, usuario.rol, " +
+                "coalesce(p_med.cedula, p_enf.cedula) as cedula " +
+                "from usuario " +
+                "left join medico on usuario.codigo_usuario = medico.codigo_usuario " +
+                "left join persona p_med on medico.codigo_persona = p_med.codigo_persona " +
+                "left join enfermera on usuario.codigo_usuario = enfermera.codigo_usuario " +
+                "left join persona p_enf on enfermera.codigo_persona = p_enf.codigo_persona " +
+                "order by usuario.nombreusuario";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
@@ -139,7 +164,8 @@ public class UserService {
     }
 
     public boolean eliminarUsuario(String usuario) {
-        String sql = "delete from usuario where usuario.nombreusuario = ?";
+        String sql = "delete from usuario w" +
+                "here usuario.nombreusuario = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, usuario);
@@ -151,7 +177,8 @@ public class UserService {
     }
 
     public boolean actualizarUsuario(User user) {
-        String sql = "update usuario set usuario.password = ?, usuario.rol = ? where usuario.nombreusuario = ?";
+        String sql = "update usuario set usuario.password = ?, usuario.rol = ? " +
+                "where usuario.nombreusuario = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getPassword());
