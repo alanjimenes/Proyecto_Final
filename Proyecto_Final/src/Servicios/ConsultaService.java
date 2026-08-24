@@ -425,23 +425,44 @@ public class ConsultaService {
 
     public static ArrayList<Consulta> getConsultasPorCliente(String cedulaCliente) {
         ArrayList<Consulta> lista = new ArrayList<>();
-        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico " +
+        String sql = "select consulta.codigo_cons, consulta.fechaconsulta, consulta.sintomas, consulta.diagnostico, " +
+                "persona_medico.nombre as nombre_medico, persona_medico.apellido as apellido_medico " +
                 "from consulta " +
                 "inner join cliente on consulta.codigo_cliente = cliente.codigo_persona " +
                 "inner join persona on cliente.codigo_persona = persona.codigo_persona " +
+                "inner join medico on consulta.codigo_medico = medico.codigo_persona " +
+                "inner join persona persona_medico on medico.codigo_persona = persona_medico.codigo_persona " +
                 "where persona.cedula = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedulaCliente);
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Consulta consulta = new Consulta();
-                    consulta.setCodigoConsulta(rs.getInt("codigo_cons"));
-                    consulta.setFechaConsulta(rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate());
-                    consulta.setSintomas(rs.getString("sintomas"));
-                    consulta.setDiagnostico(rs.getString("diagnostico"));
-                    lista.add(consulta);
+                Connection connEnfermedad = ConexionDB.getConexion();
+                try {
+                    while (rs.next()) {
+                        Consulta consulta = new Consulta();
+                        consulta.setCodigoConsulta(rs.getInt("codigo_cons"));
+
+                        if (rs.getTimestamp("fechaconsulta") != null) {
+                            consulta.setFechaConsulta(rs.getTimestamp("fechaconsulta").toLocalDateTime().toLocalDate());
+                        }
+
+                        consulta.setSintomas(rs.getString("sintomas"));
+                        consulta.setDiagnostico(rs.getString("diagnostico"));
+
+                        Medico medico = new Medico();
+                        medico.setNombre(rs.getString("nombre_medico"));
+                        medico.setApellido(rs.getString("apellido_medico"));
+                        consulta.setMedico(medico);
+
+                        ArrayList<Enfermedad> enfermedades = new ConsultaService().obtenerEnfermedadesDeConsulta(connEnfermedad, consulta.getCodigoConsulta());
+                        consulta.setEnfermedadesDiag(enfermedades);
+
+                        lista.add(consulta);
+                    }
+                } finally {
+                    if (connEnfermedad != null) connEnfermedad.close();
                 }
             }
         } catch (SQLException e) {
