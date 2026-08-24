@@ -1,5 +1,6 @@
 package Servicios;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,42 +14,22 @@ import Utils.ConexionDB;
 public class EnfermeraService {
 
     public boolean crearEnfermera(Enfermera enfermera) {
-        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        String sqlEnf = "insert into enfermera (codigo_persona, turno) " +
-                "values (?, ?)";
+        String sql = "{call sp_crear_enfermera(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-            conn.setAutoCommit(false);
+            stmt.setDate(1, Date.valueOf(enfermera.getFechaNacimiento()));
+            stmt.setString(2, enfermera.getNombre());
+            stmt.setString(3, enfermera.getApellido());
+            stmt.setString(4, enfermera.getCedula());
+            stmt.setString(5, enfermera.getTelefono());
+            stmt.setBoolean(6, enfermera.getEstado());
+            stmt.setString(7, enfermera.getDireccion());
+            stmt.setString(8, enfermera.getGenero());
+            stmt.setString(9, enfermera.getTurno());
 
-            stmtPersona.setDate(1, Date.valueOf(enfermera.getFechaNacimiento()));
-            stmtPersona.setString(2, enfermera.getNombre());
-            stmtPersona.setString(3, enfermera.getApellido());
-            stmtPersona.setString(4, enfermera.getCedula());
-            stmtPersona.setString(5, enfermera.getTelefono());
-            stmtPersona.setBoolean(6, enfermera.getEstado());
-            stmtPersona.setString(7, enfermera.getDireccion());
-            stmtPersona.setString(8, enfermera.getGenero());
-
-            stmtPersona.executeUpdate();
-            ResultSet rs = stmtPersona.getGeneratedKeys();
-            int idPersona = 0;
-            if (rs.next()) {
-                idPersona = rs.getInt(1);
-            }
-
-            try (PreparedStatement stmtEnf = conn.prepareStatement(sqlEnf)) {
-                stmtEnf.setInt(1, idPersona);
-                stmtEnf.setString(2, enfermera.getTurno());
-                stmtEnf.executeUpdate();
-            }
-
-            conn.commit();
-            conn.setAutoCommit(true);
-            return true;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -57,39 +38,22 @@ public class EnfermeraService {
     }
 
     public boolean editEnfermera(Enfermera enfermera) {
-        String sqlPersona = "update persona set persona.fechanacimiento = ?, persona.nombre = ?, persona.apellido = ?, " +
-                "persona.telefono = ?, persona.direccion = ?, persona.estado = ?, persona.genero = ? where persona.cedula = ?";
+        String sql = "{call sp_editar_enfermera(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
-        String sqlEnf = "update enfermera set enfermera.turno = ? " +
-                "where enfermera.codigo_persona = (" +
-                "select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?)";
+        try (Connection conn = ConexionDB.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-        try (Connection conn = ConexionDB.getConexion()) {
-            conn.setAutoCommit(false);
+            stmt.setDate(1, Date.valueOf(enfermera.getFechaNacimiento()));
+            stmt.setString(2, enfermera.getNombre());
+            stmt.setString(3, enfermera.getApellido());
+            stmt.setString(4, enfermera.getTelefono());
+            stmt.setString(5, enfermera.getDireccion());
+            stmt.setBoolean(6, enfermera.getEstado());
+            stmt.setString(7, enfermera.getGenero());
+            stmt.setString(8, enfermera.getCedula());
+            stmt.setString(9, enfermera.getTurno());
 
-            try (PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona)) {
-                stmtPersona.setDate(1, Date.valueOf(enfermera.getFechaNacimiento()));
-                stmtPersona.setString(2, enfermera.getNombre());
-                stmtPersona.setString(3, enfermera.getApellido());
-                stmtPersona.setString(4, enfermera.getTelefono());
-                stmtPersona.setString(5, enfermera.getDireccion());
-                stmtPersona.setBoolean(6, enfermera.getEstado());
-                stmtPersona.setString(7, enfermera.getGenero());
-                stmtPersona.setString(8, enfermera.getCedula());
-                stmtPersona.executeUpdate();
-            }
-
-            try (PreparedStatement stmtEnf = conn.prepareStatement(sqlEnf)) {
-                stmtEnf.setString(1, enfermera.getTurno());
-                stmtEnf.setString(2, enfermera.getCedula());
-                stmtEnf.executeUpdate();
-            }
-
-            conn.commit();
-            conn.setAutoCommit(true);
-            return true;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -168,10 +132,10 @@ public class EnfermeraService {
     }
 
     public boolean desactivarEnfermera(String cedula) {
-        String sql = "update persona set persona.estado = 0 " +
-                "where persona.cedula = ?";
+        String sql = "{call sp_desactivar_enfermera(?)}";
+
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, cedula);
             return stmt.executeUpdate() > 0;

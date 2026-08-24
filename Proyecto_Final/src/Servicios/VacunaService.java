@@ -1,5 +1,6 @@
 package Servicios;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,10 +17,8 @@ import Utils.ConexionDB;
 public class VacunaService {
 
     public boolean agregarVacuna(Vacuna vac) {
-        String sql = "insert into vacuna (nombre, descripcion) " +
-                "values (?, ?)";
-
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "{call sp_crear_vacuna(?, ?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, vac.getNombre());
             stmt.setString(2, vac.getDescripcion());
@@ -55,13 +54,12 @@ public class VacunaService {
     }
 
     public boolean actualizarVacuna(Vacuna vac) {
-        String sql = "update vacuna set vacuna.nombre = ?, vacuna.descripcion = ? " +
-                "where vacuna.codigo_vacuna = ?";
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "{call sp_editar_vacuna(?, ?, ?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setString(1, vac.getNombre());
-            stmt.setString(2, vac.getDescripcion());
-            stmt.setInt(3, vac.getCodigoVacuna());
+            stmt.setInt(1, vac.getCodigoVacuna());
+            stmt.setString(2, vac.getNombre());
+            stmt.setString(3, vac.getDescripcion());
 
             return stmt.executeUpdate() > 0;
 
@@ -72,9 +70,8 @@ public class VacunaService {
     }
 
     public boolean eliminarVacuna(int codigoVacuna) {
-        String sql = "delete from vacuna " +
-                "where vacuna.codigo_vacuna = ?";
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "{call sp_eliminar_vacuna(?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, codigoVacuna);
 
@@ -86,15 +83,9 @@ public class VacunaService {
         }
     }
 
-
     public boolean aplicarVacunaCliente(String cedulaCliente, int codigoLote, int codigoPersonalLogueado, Timestamp fecha) {
-        String sql = "insert into regvacuna (codigo_cliente, codigo_lote, codigo_enfermera, fecha, aplicada) " +
-                "values ((" +
-                "select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?), " +
-                "?, ?, ?, ?)";
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "{call sp_aplicar_vacuna(?, ?, ?, ?, ?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, cedulaCliente);
             stmt.setInt(2, codigoLote);

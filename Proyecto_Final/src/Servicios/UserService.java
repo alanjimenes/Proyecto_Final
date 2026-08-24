@@ -1,10 +1,10 @@
 package Servicios;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import Utils.ConexionDB;
@@ -61,78 +61,16 @@ public class UserService {
     }
 
     public boolean registrarUsuario(User user) {
-        String sqlUser = "insert into usuario (nombreusuario, password, rol) " +
-                "values (?, ?, ?)";
-        String sqlUpdateMedico = "update medico set medico.codigo_usuario = ? " +
-                "where medico.codigo_persona = (" +
-                "select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?)";
-        String sqlUpdateEnfermera = "update enfermera set enfermera.codigo_usuario = ? " +
-                "where enfermera.codigo_persona = (" +
-                "select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?)";
-
-        Connection conn = null;
-
-        try {
-            conn = ConexionDB.getConexion();
-            conn.setAutoCommit(false);
-            int idGenerado = -1;
-
-            try (PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
-                stmtUser.setString(1, user.getNombreUsuario());
-                stmtUser.setString(2, user.getPassword());
-                stmtUser.setString(3, user.getRol());
-                stmtUser.executeUpdate();
-
-                try (ResultSet rs = stmtUser.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        idGenerado = rs.getInt(1);
-                    }
-                }
-            }
-
-            if (idGenerado != -1 && user.getCedula() != null && !user.getCedula().isEmpty()) {
-                String sqlUpdate = null;
-                if (user.getRol().equalsIgnoreCase("Medico")) {
-                    sqlUpdate = sqlUpdateMedico;
-                } else if (user.getRol().equalsIgnoreCase("Enfermera")) {
-                    sqlUpdate = sqlUpdateEnfermera;
-                }
-
-                if (sqlUpdate != null) {
-                    try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
-                        stmtUpdate.setInt(1, idGenerado);
-                        stmtUpdate.setString(2, user.getCedula());
-                        stmtUpdate.executeUpdate();
-                    }
-                }
-            }
-
-            conn.commit();
-            return true;
-
+        String sql = "{call sp_crear_usuario(?, ?, ?, ?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
+            stmt.setString(1, user.getNombreUsuario());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getRol());
+            stmt.setString(4, user.getCedula());
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
             e.printStackTrace();
             return false;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
@@ -164,10 +102,8 @@ public class UserService {
     }
 
     public boolean eliminarUsuario(String usuario) {
-        String sql = "delete from usuario w" +
-                "here usuario.nombreusuario = ?";
-
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "{call sp_eliminar_usuario(?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
             stmt.setString(1, usuario);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -177,14 +113,11 @@ public class UserService {
     }
 
     public boolean actualizarUsuario(User user) {
-        String sql = "update usuario set usuario.password = ?, usuario.rol = ? " +
-                "where usuario.nombreusuario = ?";
-
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getPassword());
-            stmt.setString(2, user.getRol());
-            stmt.setString(3, user.getNombreUsuario());
-
+        String sql = "{call sp_editar_usuario(?, ?, ?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
+            stmt.setString(1, user.getNombreUsuario());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getRol());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

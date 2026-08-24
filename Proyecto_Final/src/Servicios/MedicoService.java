@@ -11,49 +11,24 @@ import java.util.ArrayList;
 public class MedicoService {
 
     public boolean agregarMedico(Medico med, int codigoUsuario, int codigoEspecialidad) {
-        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "{call sp_crear_medico(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
-        String sqlMedico = "insert into medico (codigo_persona, codigo_usuario, codigo_especialidad, maxcitaspordia) " +
-                "values (?, ?, ?, ?)";
+        try (Connection conn = ConexionDB.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setDate(1, Date.valueOf(med.getFechaNacimiento()));
+            stmt.setString(2, med.getNombre());
+            stmt.setString(3, med.getApellido());
+            stmt.setString(4, med.getCedula());
+            stmt.setString(5, med.getTelefono());
+            stmt.setBoolean(6, med.getEstado());
+            stmt.setString(7, med.getDireccion());
+            stmt.setString(8, med.getGenero());
+            stmt.setInt(9, codigoUsuario);
+            stmt.setInt(10, codigoEspecialidad);
+            stmt.setInt(11, med.getMaxCitasPorDia());
 
-            conn.setAutoCommit(false);
-
-            stmtPersona.setDate(1, Date.valueOf(med.getFechaNacimiento()));
-            stmtPersona.setString(2, med.getNombre());
-            stmtPersona.setString(3, med.getApellido());
-            stmtPersona.setString(4, med.getCedula());
-            stmtPersona.setString(5, med.getTelefono());
-            stmtPersona.setBoolean(6, med.getEstado());
-            stmtPersona.setString(7, med.getDireccion());
-            stmtPersona.setString(8, med.getGenero());
-
-            stmtPersona.executeUpdate();
-            ResultSet rs = stmtPersona.getGeneratedKeys();
-            int idPersona = 0;
-            if (rs.next()) {
-                idPersona = rs.getInt(1);
-            }
-
-            try (PreparedStatement stmtMedico = conn.prepareStatement(sqlMedico)) {
-                stmtMedico.setInt(1, idPersona);
-
-                if (codigoUsuario == 0) {
-                    stmtMedico.setNull(2, java.sql.Types.INTEGER);
-                } else {
-                    stmtMedico.setInt(2, codigoUsuario);
-                }
-
-                stmtMedico.setInt(3, codigoEspecialidad);
-                stmtMedico.setInt(4, med.getMaxCitasPorDia());
-                stmtMedico.executeUpdate();
-            }
-
-            conn.commit();
-            conn.setAutoCommit(true);
-            return true;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -62,41 +37,23 @@ public class MedicoService {
     }
 
     public boolean actualizarMedico(Medico med) {
-        String sqlPersona = "update persona set persona.fechanacimiento = ?, persona.nombre = ?, persona.apellido = ?, " +
-                "persona.telefono = ?, persona.direccion = ?, persona.estado = ?, persona.genero = ? " +
-                "where persona.cedula = ?";
+        String sql = "{call sp_editar_medico(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
-        String sqlMedico = "update medico set medico.codigo_especialidad = ?, medico.maxcitaspordia = ? " +
-                "where medico.codigo_persona = (" +
-                "select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?)";
+        try (Connection conn = ConexionDB.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-        try (Connection conn = ConexionDB.getConexion()) {
-            conn.setAutoCommit(false);
+            stmt.setDate(1, Date.valueOf(med.getFechaNacimiento()));
+            stmt.setString(2, med.getNombre());
+            stmt.setString(3, med.getApellido());
+            stmt.setString(4, med.getTelefono());
+            stmt.setString(5, med.getDireccion());
+            stmt.setBoolean(6, med.getEstado());
+            stmt.setString(7, med.getGenero());
+            stmt.setString(8, med.getCedula());
+            stmt.setInt(9, med.getEspecialidad().getCodigoEspecialidad());
+            stmt.setInt(10, med.getMaxCitasPorDia());
 
-            try (PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona)) {
-                stmtPersona.setDate(1, Date.valueOf(med.getFechaNacimiento()));
-                stmtPersona.setString(2, med.getNombre());
-                stmtPersona.setString(3, med.getApellido());
-                stmtPersona.setString(4, med.getTelefono());
-                stmtPersona.setString(5, med.getDireccion());
-                stmtPersona.setBoolean(6, med.getEstado());
-                stmtPersona.setString(7, med.getGenero());
-                stmtPersona.setString(8, med.getCedula());
-                stmtPersona.executeUpdate();
-            }
-
-            try (PreparedStatement stmtMedico = conn.prepareStatement(sqlMedico)) {
-                stmtMedico.setInt(1, med.getEspecialidad().getCodigoEspecialidad());
-                stmtMedico.setInt(2, med.getMaxCitasPorDia());
-                stmtMedico.setString(3, med.getCedula());
-                stmtMedico.executeUpdate();
-            }
-
-            conn.commit();
-            conn.setAutoCommit(true);
-            return true;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -105,9 +62,10 @@ public class MedicoService {
     }
 
     public boolean desactivarMedico(String cedula) {
-        String sql = "update persona set persona.estado = 0 " +
-                "where persona.cedula = ?";
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "{call sp_desactivar_medico(?)}";
+
+        try (Connection conn = ConexionDB.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, cedula);
             return stmt.executeUpdate() > 0;
@@ -230,7 +188,7 @@ public class MedicoService {
 
     public ArrayList<Medico> listarMedicosActivos() {
         ArrayList<Medico> lista = new ArrayList<>();
-        String sql = "SELECT * FROM vw_directorio_medico";
+        String sql = "select vw_directorio_medico.* from vw_directorio_medico";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 

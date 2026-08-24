@@ -24,7 +24,7 @@ public class AplicarVacuna extends JDialog {
     private JComboBox<Vacuna> cmbVacunas;
     private JComboBox<LoteVacuna> cmbLotes;
     private Cliente clienteEncontrado = null;
-    private User usuarioActual; // Almacenamos el usuario logueado
+    private User usuarioActual;
 
     public AplicarVacuna(User usuarioLogueado) {
         this.usuarioActual = usuarioLogueado;
@@ -40,7 +40,6 @@ public class AplicarVacuna extends JDialog {
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
 
-        // --- PANEL DE BÚSQUEDA DE PACIENTE ---
         JPanel panelBusqueda = new JPanel();
         panelBusqueda.setBounds(15, 15, 638, 95);
         panelBusqueda.setBackground(Color.WHITE);
@@ -74,7 +73,6 @@ public class AplicarVacuna extends JDialog {
         lblNombreCliente.setBounds(20, 60, 500, 25);
         panelBusqueda.add(lblNombreCliente);
 
-        // --- PANEL DE SELECCIÓN DE INMUNIZACIÓN ---
         JPanel panelVacuna = new JPanel();
         panelVacuna.setBounds(15, 125, 638, 135);
         panelVacuna.setBackground(Color.WHITE);
@@ -102,7 +100,6 @@ public class AplicarVacuna extends JDialog {
         cmbLotes.setBounds(120, 78, 490, 30);
         panelVacuna.add(cmbLotes);
 
-        // --- PANEL INFERIOR DE BOTONES ---
         JPanel buttonPane = new JPanel();
         buttonPane.setBackground(new Color(60, 70, 123));
         buttonPane.setBounds(0, 275, 674, 70);
@@ -122,9 +119,7 @@ public class AplicarVacuna extends JDialog {
         btnCancelar.addActionListener(e -> dispose());
         buttonPane.add(btnCancelar);
 
-        // --- EVENTOS Y LÓGICA ---
 
-        // 1. Buscar Cliente por Cédula tipeada
         btnBuscar.addActionListener(e -> {
             String cedula = txtCedula.getText().trim();
             if (cedula.isEmpty()) {
@@ -134,7 +129,6 @@ public class AplicarVacuna extends JDialog {
             buscarClientePorCedula(cedula);
         });
 
-        // 2. Selector visual de clientes
         btnBuscarSelector.addActionListener(e -> {
             ConsultarClientes selector = new ConsultarClientes();
             selector.setLocationRelativeTo(this);
@@ -147,10 +141,8 @@ public class AplicarVacuna extends JDialog {
             }
         });
 
-        // 3. Cargar Combo de Vacunas al iniciar
         cargarVacunas();
 
-        // 4. Cuando cambia la vacuna seleccionada, cargar sus lotes disponibles
         cmbVacunas.addActionListener(e -> {
             Vacuna seleccionada = (Vacuna) cmbVacunas.getSelectedItem();
             if (seleccionada != null) {
@@ -158,7 +150,6 @@ public class AplicarVacuna extends JDialog {
             }
         });
 
-        // 5. Acción del botón Aplicar
         btnAplicar.addActionListener(e -> {
             if (clienteEncontrado == null) {
                 JOptionPane.showMessageDialog(this, "Debe buscar y seleccionar un cliente válido.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -174,7 +165,6 @@ public class AplicarVacuna extends JDialog {
             int confirm = JOptionPane.showConfirmDialog(this, "¿Confirma la aplicación de la vacuna al paciente " + clienteEncontrado.getNombre() + "?\nSe descontará 1 unidad del lote: " + loteSeleccionado.getNoLote(), "Confirmar Aplicación", JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
-                // Buscamos el objeto Enfermera asociado a la usuaria logueada mediante su cédula
                 Object respEnfermera = ClienteSocket.enviar("BUSCAR_ENFERMERA", usuarioActual.getCedula());
 
                 if (!(respEnfermera instanceof Enfermera)) {
@@ -184,11 +174,10 @@ public class AplicarVacuna extends JDialog {
 
                 Enfermera enfermeraLogueada = (Enfermera) respEnfermera;
 
-                // Creamos el registro y le inyectamos la enfermera encontrada
                 RegistroVacunacion reg = new RegistroVacunacion();
                 reg.setCliente(clienteEncontrado);
                 reg.setLote(loteSeleccionado);
-                reg.setEnfermera(enfermeraLogueada); // <-- Esto evita el conflicto de llave foránea
+                reg.setEnfermera(enfermeraLogueada);
                 reg.setFecha(LocalDateTime.now());
 
                 Object respuesta = ClienteSocket.enviar("APLICAR_VACUNA", reg);
@@ -233,7 +222,7 @@ public class AplicarVacuna extends JDialog {
     @SuppressWarnings("unchecked")
     private void cargarLotesDisponiblesPorVacuna(int codigoVacuna) {
         cmbLotes.removeAllItems();
-        Object respuesta = ClienteSocket.enviar("LISTAR_LOTES_DISPONIBLES_POR_VACUNA", codigoVacuna);
+        Object respuesta = ClienteSocket.enviar("LISTAR_LOTES_POR_VACUNA", codigoVacuna);
         if (respuesta instanceof ArrayList) {
             ArrayList<LoteVacuna> lista = (ArrayList<LoteVacuna>) respuesta;
             for (LoteVacuna l : lista) {

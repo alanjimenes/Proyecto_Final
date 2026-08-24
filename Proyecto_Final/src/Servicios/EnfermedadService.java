@@ -5,6 +5,7 @@ import logico.Enfermedad;
 import logico.Historial;
 import Utils.ConexionDB;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,14 +16,46 @@ import java.util.HashMap;
 public class EnfermedadService {
 
     public boolean agregarEnfermedad(Enfermedad enf) {
-        String sql = "insert into enfermedad (nombre, descripcion, vigilancia) values (?, ?, ?)";
+        String sql = "{call sp_crear_enfermedad(?, ?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, enf.getNombre());
             stmt.setString(2, enf.getDescripcion());
             stmt.setBoolean(3, enf.isVigilancia());
 
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean editEnfermedad(Enfermedad enf) {
+        String sql = "{call sp_editar_enfermedad(?, ?, ?, ?)}";
+        try (Connection conn = ConexionDB.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, enf.getCodigoEnfermedad());
+            stmt.setString(2, enf.getNombre());
+            stmt.setString(3, enf.getDescripcion());
+            stmt.setBoolean(4, enf.isVigilancia());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean eliminarEnfermedad(int codigoEnfermedad) {
+        String sql = "{call sp_eliminar_enfermedad(?)}";
+        try (Connection conn = ConexionDB.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, codigoEnfermedad);
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {

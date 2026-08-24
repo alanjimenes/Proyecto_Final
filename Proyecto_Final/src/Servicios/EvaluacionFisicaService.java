@@ -4,10 +4,6 @@ import Utils.ConexionDB;
 import logico.*;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
 
 public class EvaluacionFisicaService {
 
@@ -22,10 +18,9 @@ public class EvaluacionFisicaService {
     }
 
     public boolean registrarEvaluacion(Connection conn, EvaluacionFisica evaluacion, int idConsulta) throws SQLException {
-        String sql = "insert into evaluacionfisica (codigo_cons, temperatura, frecuenciacardiaca, presionarterial, peso, talla) " +
-                "values (?, ?, ?, ?, ?, ?)";
+        String sql = "{call sp_crear_evaluacion_fisica(?, ?, ?, ?, ?, ?)}";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (CallableStatement stmt = conn.prepareCall(sql)) {
             stmt.setInt(1, idConsulta);
             stmt.setFloat(2, evaluacion.getTemperatura());
             stmt.setInt(3, evaluacion.getFrecuenciaCardiaca());
@@ -36,4 +31,5 @@ public class EvaluacionFisicaService {
             return stmt.executeUpdate() > 0;
         }
     }
+
 }

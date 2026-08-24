@@ -9,10 +9,9 @@ import java.util.ArrayList;
 public class MedicamentoService {
 
     public boolean crearMedicamento(Medicamento medicamento) {
-        String sql = "insert into medicamento (nombre, concentracion, descripcion) " +
-                "values (?, ?, ?)";
+        String sql = "{call sp_crear_medicamento(?, ?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, medicamento.getNombre());
             stmt.setString(2, medicamento.getConcentracion());
@@ -26,15 +25,14 @@ public class MedicamentoService {
     }
 
     public boolean editMedicamento(Medicamento medicamento) {
-        String sql = "update medicamento set medicamento.nombre = ?, medicamento.concentracion = ?, medicamento.descripcion = ? " +
-                "where medicamento.codigo_medicamento = ?";
+        String sql = "{call sp_editar_medicamento(?, ?, ?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setString(1, medicamento.getNombre());
-            stmt.setString(2, medicamento.getConcentracion());
-            stmt.setString(3, medicamento.getDescripcion());
-            stmt.setInt(4, medicamento.getCodigoMedicamento());
+            stmt.setInt(1, medicamento.getCodigoMedicamento());
+            stmt.setString(2, medicamento.getNombre());
+            stmt.setString(3, medicamento.getConcentracion());
+            stmt.setString(4, medicamento.getDescripcion());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -44,10 +42,9 @@ public class MedicamentoService {
     }
 
     public boolean eliminarMedicamento(int codigoMedicamento) {
-        String sql = "delete from medicamento " +
-                "where medicamento.codigo_medicamento = ?";
+        String sql = "{call sp_eliminar_medicamento(?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, codigoMedicamento);
             return stmt.executeUpdate() > 0;

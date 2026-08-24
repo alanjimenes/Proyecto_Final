@@ -11,9 +11,8 @@ import java.util.ArrayList;
 public class LoteVacunaService {
 
     public boolean registrarLote(LoteVacuna lote) {
-        String sql = "insert into lote_vacuna (codigo_vacuna, no_lote, fechaVencimiento, cantidad) " +
-                "values (?, ?, ?, ?)";
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "{call sp_crear_lote_vacuna(?, ?, ?, ?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, lote.getVacuna() != null ? lote.getVacuna().getCodigoVacuna() : 0);
             stmt.setString(2, lote.getNoLote());
@@ -28,15 +27,14 @@ public class LoteVacunaService {
     }
 
     public boolean editLoteVacuna(LoteVacuna lote) {
-        String sql = "update lote_vacuna set codigo_vacuna = ?, no_lote = ?, fechaVencimiento = ?, cantidad = ? " +
-                "where codigo_lote = ?";
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "{call sp_editar_lote_vacuna(?, ?, ?, ?, ?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setInt(1, lote.getVacuna() != null ? lote.getVacuna().getCodigoVacuna() : 0);
-            stmt.setString(2, lote.getNoLote());
-            stmt.setDate(3, Date.valueOf(lote.getFechaVencimiento()));
-            stmt.setInt(4, lote.getCantidad());
-            stmt.setInt(5, lote.getCodigoLote());
+            stmt.setInt(1, lote.getCodigoLote());
+            stmt.setInt(2, lote.getVacuna() != null ? lote.getVacuna().getCodigoVacuna() : 0);
+            stmt.setString(3, lote.getNoLote());
+            stmt.setDate(4, Date.valueOf(lote.getFechaVencimiento()));
+            stmt.setInt(5, lote.getCantidad());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -46,9 +44,8 @@ public class LoteVacunaService {
     }
 
     public boolean eliminarLoteVacuna(int codigoLote) {
-        String sql = "delete from lote_vacuna " +
-                "where codigo_lote = ?";
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "{call sp_eliminar_lote_vacuna(?)}";
+        try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, codigoLote);
             return stmt.executeUpdate() > 0;
@@ -60,10 +57,10 @@ public class LoteVacunaService {
 
     public LoteVacuna buscarLoteVacuna(int codigoLote) {
         LoteVacuna lote = null;
-        String sql = "select l.codigo_lote, l.no_lote, l.fechaVencimiento, l.cantidad, v.codigo_vacuna, v.nombre " +
-                "from lote_vacuna l " +
-                "left join vacuna v on l.codigo_vacuna = v.codigo_vacuna " +
-                "where l.codigo_lote = ?";
+        String sql = "select lote_vacuna.codigo_lote, lote_vacuna.no_lote, lote_vacuna.fechavencimiento, lote_vacuna.cantidad, vacuna.codigo_vacuna, vacuna.nombre " +
+                "from lote_vacuna " +
+                "left join vacuna on lote_vacuna.codigo_vacuna = vacuna.codigo_vacuna " +
+                "where lote_vacuna.codigo_lote = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -74,8 +71,8 @@ public class LoteVacunaService {
                 lote = new LoteVacuna();
                 lote.setCodigoLote(rs.getInt("codigo_lote"));
                 lote.setNoLote(rs.getString("no_lote"));
-                if (rs.getDate("fechaVencimiento") != null) {
-                    lote.setFechaVencimiento(rs.getDate("fechaVencimiento").toLocalDate());
+                if (rs.getDate("fechavencimiento") != null) {
+                    lote.setFechaVencimiento(rs.getDate("fechavencimiento").toLocalDate());
                 }
                 lote.setCantidad(rs.getInt("cantidad"));
 
@@ -92,9 +89,9 @@ public class LoteVacunaService {
 
     public ArrayList<LoteVacuna> listarLotes() {
         ArrayList<LoteVacuna> lista = new ArrayList<>();
-        String sql = "select l.codigo_lote, l.no_lote, l.fechaVencimiento, l.cantidad, v.codigo_vacuna, v.nombre " +
-                "from lote_vacuna l " +
-                "left join vacuna v on l.codigo_vacuna = v.codigo_vacuna";
+        String sql = "select lote_vacuna.codigo_lote, lote_vacuna.no_lote, lote_vacuna.fechavencimiento, lote_vacuna.cantidad, vacuna.codigo_vacuna, vacuna.nombre " +
+                "from lote_vacuna " +
+                "left join vacuna on lote_vacuna.codigo_vacuna = vacuna.codigo_vacuna";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
@@ -102,8 +99,8 @@ public class LoteVacunaService {
                 LoteVacuna lote = new LoteVacuna();
                 lote.setCodigoLote(rs.getInt("codigo_lote"));
                 lote.setNoLote(rs.getString("no_lote"));
-                if (rs.getDate("fechaVencimiento") != null) {
-                    lote.setFechaVencimiento(rs.getDate("fechaVencimiento").toLocalDate());
+                if (rs.getDate("fechavencimiento") != null) {
+                    lote.setFechaVencimiento(rs.getDate("fechavencimiento").toLocalDate());
                 }
                 lote.setCantidad(rs.getInt("cantidad"));
 
@@ -122,10 +119,10 @@ public class LoteVacunaService {
 
     public ArrayList<LoteVacuna> listarLotesPorVacuna(int codigoVacuna) {
         ArrayList<LoteVacuna> lista = new ArrayList<>();
-        String sql = "select l.codigo_lote, l.no_lote, l.fechaVencimiento, l.cantidad, v.codigo_vacuna, v.nombre " +
-                "from lote_vacuna l " +
-                "left join vacuna v on l.codigo_vacuna = v.codigo_vacuna " +
-                "where l.codigo_vacuna = ?";
+        String sql = "select lote_vacuna.codigo_lote, lote_vacuna.no_lote, lote_vacuna.fechavencimiento, lote_vacuna.cantidad, vacuna.codigo_vacuna, vacuna.nombre " +
+                "from lote_vacuna " +
+                "left join vacuna on lote_vacuna.codigo_vacuna = vacuna.codigo_vacuna " +
+                "where lote_vacuna.codigo_vacuna = ?";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -136,8 +133,8 @@ public class LoteVacunaService {
                 LoteVacuna lote = new LoteVacuna();
                 lote.setCodigoLote(rs.getInt("codigo_lote"));
                 lote.setNoLote(rs.getString("no_lote"));
-                if (rs.getDate("fechaVencimiento") != null) {
-                    lote.setFechaVencimiento(rs.getDate("fechaVencimiento").toLocalDate());
+                if (rs.getDate("fechavencimiento") != null) {
+                    lote.setFechaVencimiento(rs.getDate("fechavencimiento").toLocalDate());
                 }
                 lote.setCantidad(rs.getInt("cantidad"));
 
@@ -156,7 +153,7 @@ public class LoteVacunaService {
 
     public ArrayList<LoteVacuna> listarLotesDisponibles() {
         ArrayList<LoteVacuna> lista = new ArrayList<>();
-        String sql = "SELECT * FROM vw_inventario_vacunas_disponibles";
+        String sql = "select vw_inventario_vacunas_disponibles.* from vw_inventario_vacunas_disponibles";
 
         try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
@@ -165,8 +162,8 @@ public class LoteVacunaService {
                 lote.setCodigoLote(rs.getInt("codigo_lote"));
                 lote.setNoLote(rs.getString("no_lote"));
 
-                if (rs.getDate("fechaVencimiento") != null) {
-                    lote.setFechaVencimiento(rs.getDate("fechaVencimiento").toLocalDate());
+                if (rs.getDate("fechavencimiento") != null) {
+                    lote.setFechaVencimiento(rs.getDate("fechavencimiento").toLocalDate());
                 }
 
                 lote.setCantidad(rs.getInt("cantidad"));

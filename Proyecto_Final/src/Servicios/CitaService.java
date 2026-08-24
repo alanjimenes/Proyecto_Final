@@ -13,17 +13,9 @@ import java.util.ArrayList;
 public class CitaService {
 
     public boolean crearCita(Cita cita, String cedulaMedico, String cedulaCliente) {
-        String sql = "insert into cita (codigo_medico, codigo_cliente, fechacita, estado, motivo) " +
-                "values ((" +
-                     "select persona.codigo_persona " +
-                     "from persona " +
-                     "where persona.cedula = ?), (" +
-                         "select persona.codigo_persona " +
-                         "from persona " +
-                         "where persona.cedula = ?), " +
-                     "?, ?, ?)";
+        String sql = "{call sp_crear_cita(?, ?, ?, ?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, cedulaMedico);
             stmt.setString(2, cedulaCliente);
@@ -40,17 +32,13 @@ public class CitaService {
     }
 
     public boolean editCita(int codigoCita, LocalDateTime nuevaFechaHora, String cedulaMedico) {
-        String sql = "update cita set cita.fechacita = ?, cita.codigo_medico = (" +
-                "select persona.codigo_persona " +
-                "from persona " +
-                "where persona.cedula = ?) " +
-                "where cita.codigo_cita = ?";
+        String sql = "{call sp_editar_cita(?, ?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setTimestamp(1, Timestamp.valueOf(nuevaFechaHora));
-            stmt.setString(2, cedulaMedico);
-            stmt.setInt(3, codigoCita);
+            stmt.setInt(1, codigoCita);
+            stmt.setTimestamp(2, Timestamp.valueOf(nuevaFechaHora));
+            stmt.setString(3, cedulaMedico);
 
             return stmt.executeUpdate() > 0;
 
@@ -61,10 +49,9 @@ public class CitaService {
     }
 
     public boolean cancelCita(int codigoCita) {
-        String sql = "update cita set cita.estado = 'Cancelada' " +
-                "where cita.codigo_cita = ?";
+        String sql = "{call sp_cancelar_cita(?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, codigoCita);
             return stmt.executeUpdate() > 0;

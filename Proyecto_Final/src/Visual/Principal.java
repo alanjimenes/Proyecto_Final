@@ -351,28 +351,6 @@ public class Principal extends JFrame {
         menuGestionEspecialidades.add(itemListarEspecialidades);
         menuAdministracion.add(menuGestionEspecialidades);
 
-        JMenuItem itemGestionarVacunas = new JMenuItem("Gestionar Vacunas");
-        itemGestionarVacunas.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
-        itemGestionarVacunas.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ConsultarVacunas consulta = new ConsultarVacunas();
-                consulta.setModal(true);
-                consulta.setVisible(true);
-            }
-        });
-        menuAdministracion.add(itemGestionarVacunas);
-
-        JMenuItem itemGestionarEnf = new JMenuItem("Gestionar Enfermedades");
-        itemGestionarEnf.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
-        itemGestionarEnf.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ConsultarEnfermedades consulta = new ConsultarEnfermedades();
-                consulta.setModal(true);
-                consulta.setVisible(true);
-            }
-        });
-        menuAdministracion.add(itemGestionarEnf);
-
         menuEnfermedades = new JMenu("  Gestión Enfermedades  ");
         menuEnfermedades.setForeground(Color.WHITE);
         try {

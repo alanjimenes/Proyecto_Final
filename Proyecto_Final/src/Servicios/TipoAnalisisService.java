@@ -4,17 +4,14 @@ import Utils.ConexionDB;
 import logico.*;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class TipoAnalisisService {
 
     public boolean crearTipoAnalisis(TipoAnalisis tipo) {
-        String sql = "insert into tipo_analisis (nombre, descripcion) " +
-                "values (?, ?)";
+        String sql = "{call sp_crear_tipo_analisis(?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, tipo.getNombre());
             stmt.setString(2, tipo.getDescripcion());
@@ -27,14 +24,13 @@ public class TipoAnalisisService {
     }
 
     public boolean editTipoAnalisis(TipoAnalisis tipo) {
-        String sql = "update tipo_analisis set nombre = ?, descripcion = ? " +
-                "where codigo_tipo = ?";
+        String sql = "{call sp_editar_tipo_analisis(?, ?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setString(1, tipo.getNombre());
-            stmt.setString(2, tipo.getDescripcion());
-            stmt.setInt(3, tipo.getCodigoTipo());
+            stmt.setInt(1, tipo.getCodigoTipo());
+            stmt.setString(2, tipo.getNombre());
+            stmt.setString(3, tipo.getDescripcion());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -44,10 +40,9 @@ public class TipoAnalisisService {
     }
 
     public boolean eliminarTipoAnalisis(int codigoTipo) {
-        String sql = "delete from tipo_analisis " +
-                "where codigo_tipo = ?";
+        String sql = "{call sp_eliminar_tipo_analisis(?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, codigoTipo);
             return stmt.executeUpdate() > 0;
@@ -59,9 +54,9 @@ public class TipoAnalisisService {
 
     public TipoAnalisis buscarTipoAnalisis(int codigoTipo) {
         TipoAnalisis tipo = null;
-        String sql = "select codigo_tipo, nombre, descripcion " +
+        String sql = "select tipo_analisis.codigo_tipo, tipo_analisis.nombre, tipo_analisis.descripcion " +
                 "from tipo_analisis " +
-                "where codigo_tipo = ?";
+                "where tipo_analisis.codigo_tipo = ?";
 
         try (Connection conn = ConexionDB.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -83,7 +78,7 @@ public class TipoAnalisisService {
 
     public ArrayList<TipoAnalisis> listarTiposAnalisis() {
         ArrayList<TipoAnalisis> lista = new ArrayList<>();
-        String sql = "select codigo_tipo, nombre, descripcion " +
+        String sql = "select tipo_analisis.codigo_tipo, tipo_analisis.nombre, tipo_analisis.descripcion " +
                 "from tipo_analisis";
 
         try (Connection conn = ConexionDB.getConexion();

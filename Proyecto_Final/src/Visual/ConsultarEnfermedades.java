@@ -60,7 +60,7 @@ public class ConsultarEnfermedades extends JDialog {
 		txtFiltro.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				filtrarLocal(txtFiltro.getText()); //
+				filtrarLocal(txtFiltro.getText());
 			}
 		});
 		panelNorte.add(txtFiltro);
@@ -150,22 +150,24 @@ public class ConsultarEnfermedades extends JDialog {
 		});
 		buttonPane.add(btnUpdate);
 
-		btnDelete = new JButton("Desactivar");
+		btnDelete = new JButton("Eliminar");
 		Estilos.estilarBoton(btnDelete, new Color(231, 76, 60), Color.WHITE);
 		btnDelete.setEnabled(false);
 		btnDelete.addActionListener(e -> {
 			if (seleccionado != null) {
 				int opt = JOptionPane.showConfirmDialog(null,
-						"¿Seguro desea desactivar la enfermedad " + seleccionado.getNombre() + "?",
+						"¿Seguro desea eliminar físicamente la enfermedad " + seleccionado.getNombre() + "?",
 						"Confirmar", JOptionPane.YES_NO_OPTION);
 				if (opt == JOptionPane.YES_OPTION) {
-					seleccionado.setActivo(false);
-					boolean exito = (boolean) ClienteSocket.enviar("UPDATE_ENFERMEDAD", seleccionado);
+					Object respuesta = ClienteSocket.enviar("DELETE_ENFERMEDAD", seleccionado.getCodigoEnfermedad());
+					boolean exito = (respuesta != null && (boolean) respuesta);
 
 					if (exito) {
-						JOptionPane.showMessageDialog(null, "Enfermedad desactivada.");
+						JOptionPane.showMessageDialog(null, "Enfermedad eliminada correctamente.");
 						cargarEnfermedadesServer();
 						resetBotones();
+					} else {
+						JOptionPane.showMessageDialog(null, "No se pudo eliminar la enfermedad. Es posible que ya esté asignada a pacientes.", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}
@@ -182,9 +184,12 @@ public class ConsultarEnfermedades extends JDialog {
 
 	@SuppressWarnings("unchecked")
 	public void cargarEnfermedadesServer() {
-		listaEnfermedadesGlobal = (ArrayList<Enfermedad>) ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
-		if (listaEnfermedadesGlobal == null)
+		Object respuesta = ClienteSocket.enviar("LISTAR_ENFERMEDADES", null);
+		if (respuesta instanceof ArrayList) {
+			listaEnfermedadesGlobal = (ArrayList<Enfermedad>) respuesta;
+		} else {
 			listaEnfermedadesGlobal = new ArrayList<>();
+		}
 
 		filtrarLocal(txtFiltro.getText());
 	}

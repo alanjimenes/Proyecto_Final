@@ -65,7 +65,11 @@ public class ListadoLotesVacuna extends JDialog {
         btnModificar.addActionListener(e -> {
             int selectedRow = table.getSelectedRow();
             if (selectedRow >= 0 && lotes != null) {
-                JOptionPane.showMessageDialog(this, "Debes programar un constructor en RegLoteVacuna que reciba el objeto Lote para poder editar.");
+                LoteVacuna loteSeleccionado = lotes.get(selectedRow);
+                RegLoteVacuna regLote = new RegLoteVacuna(loteSeleccionado);
+                regLote.setModal(true);
+                regLote.setVisible(true);
+                cargarLotes();
             } else {
                 JOptionPane.showMessageDialog(this, "Seleccione un lote de la tabla, compay.");
             }
@@ -108,7 +112,7 @@ public class ListadoLotesVacuna extends JDialog {
         model.setRowCount(0);
         if (vacunaActual == null) return;
 
-        Object respuesta = ClienteSocket.enviar("LISTAR_LOTES_DISPONIBLES_POR_VACUNA", vacunaActual.getCodigoVacuna());
+        Object respuesta = ClienteSocket.enviar("LISTAR_LOTES_POR_VACUNA", vacunaActual.getCodigoVacuna());
 
         if (respuesta != null && respuesta instanceof ArrayList) {
             lotes = (ArrayList<LoteVacuna>) respuesta;

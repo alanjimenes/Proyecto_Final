@@ -9,138 +9,62 @@ import Utils.ConexionDB;
 public class ClienteService {
 
     public boolean registrarNuevoCliente(Cliente cli) {
-        String sqlPersona = "insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero) values (?, ?, ?, ?, ?, ?, ?, ?)";
-        String sqlCliente = "insert into cliente (codigo_persona, numexpediente, enfermo, antecedentes) values (?, ?, ?, ?)";
+        String sql = "{call sp_crear_cliente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
-        Connection conn = null;
+        try (Connection conn = ConexionDB.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-        try {
-            conn = ConexionDB.getConexion();
-            conn.setAutoCommit(false);
+            stmt.setDate(1, Date.valueOf(cli.getFechaNacimiento()));
+            stmt.setString(2, cli.getNombre());
+            stmt.setString(3, cli.getApellido());
+            stmt.setString(4, cli.getCedula());
+            stmt.setString(5, cli.getTelefono());
+            stmt.setBoolean(6, cli.getEstado());
+            stmt.setString(7, cli.getDireccion());
+            stmt.setString(8, cli.getGenero());
+            stmt.setString(9, cli.getNumExpediente());
+            stmt.setBoolean(10, cli.isEnfermo());
+            stmt.setString(11, cli.getAntecedentes());
 
-            int idPersona = 0;
-
-            try (PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                stmtPersona.setDate(1, Date.valueOf(cli.getFechaNacimiento()));
-                stmtPersona.setString(2, cli.getNombre());
-                stmtPersona.setString(3, cli.getApellido());
-                stmtPersona.setString(4, cli.getCedula());
-                stmtPersona.setString(5, cli.getTelefono());
-                stmtPersona.setBoolean(6, cli.getEstado());
-                stmtPersona.setString(7, cli.getDireccion());
-                stmtPersona.setString(8, cli.getGenero());
-
-                stmtPersona.executeUpdate();
-
-                try (ResultSet rs = stmtPersona.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        idPersona = rs.getInt(1);
-                    }
-                }
-            }
-
-            try (PreparedStatement stmtCliente = conn.prepareStatement(sqlCliente)) {
-                stmtCliente.setInt(1, idPersona);
-
-                String exp = cli.getNumExpediente();
-                if (exp == null || exp.isEmpty() || exp.equals("N/A")) {
-                    exp = "EXP-" + idPersona;
-                }
-
-                stmtCliente.setString(2, exp);
-                stmtCliente.setBoolean(3, cli.isEnfermo());
-                stmtCliente.setString(4, cli.getAntecedentes());
-                stmtCliente.executeUpdate();
-            }
-
-            conn.commit();
-            return true;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
             e.printStackTrace();
             return false;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
     public boolean actualizarCliente(Cliente cli) {
-        String sqlPersona = "update persona set fechanacimiento = ?, nombre = ?, apellido = ?, telefono = ?, direccion = ?, estado = ?, genero = ? where cedula = ?";
-        String sqlCliente = "update cliente set enfermo = ?, numexpediente = ?, antecedentes = ? " +
-                            "where codigo_persona = (" +
-                                  "select codigo_persona " +
-                                  "from persona " +
-                                  "where cedula = ?)";
+        String sql = "{call sp_editar_cliente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
-        Connection conn = null;
+        try (Connection conn = ConexionDB.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-        try {
-            conn = ConexionDB.getConexion();
-            conn.setAutoCommit(false);
+            stmt.setDate(1, Date.valueOf(cli.getFechaNacimiento()));
+            stmt.setString(2, cli.getNombre());
+            stmt.setString(3, cli.getApellido());
+            stmt.setString(4, cli.getTelefono());
+            stmt.setString(5, cli.getDireccion());
+            stmt.setBoolean(6, cli.getEstado());
+            stmt.setString(7, cli.getGenero());
+            stmt.setString(8, cli.getCedula());
+            stmt.setBoolean(9, cli.isEnfermo());
+            stmt.setString(10, cli.getNumExpediente());
+            stmt.setString(11, cli.getAntecedentes());
 
-            try (PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona)) {
-                stmtPersona.setDate(1, Date.valueOf(cli.getFechaNacimiento()));
-                stmtPersona.setString(2, cli.getNombre());
-                stmtPersona.setString(3, cli.getApellido());
-                stmtPersona.setString(4, cli.getTelefono());
-                stmtPersona.setString(5, cli.getDireccion());
-                stmtPersona.setBoolean(6, cli.getEstado());
-                stmtPersona.setString(7, cli.getGenero());
-                stmtPersona.setString(8, cli.getCedula());
-                stmtPersona.executeUpdate();
-            }
-
-            try (PreparedStatement stmtCliente = conn.prepareStatement(sqlCliente)) {
-                stmtCliente.setBoolean(1, cli.isEnfermo());
-                stmtCliente.setString(2, cli.getNumExpediente());
-                stmtCliente.setString(3, cli.getAntecedentes());
-                stmtCliente.setString(4, cli.getCedula());
-                stmtCliente.executeUpdate();
-            }
-
-            conn.commit();
-            return true;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
             e.printStackTrace();
             return false;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
     public boolean desactivarCliente(String cedula) {
-        String sql = "update persona set estado = 0 where cedula = ?";
+        String sql = "{call sp_eliminar_cliente(?)}";
 
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConexionDB.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, cedula);
             return stmt.executeUpdate() > 0;
@@ -343,8 +267,7 @@ public class ClienteService {
     }
 
     public boolean desactivarPersonaSp(String cedula) {
-
-        String sql = "{CALL sp_desactivar_persona(?)}";
+        String sql = "{call sp_desactivar_persona(?)}";
 
         try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
             stmt.setString(1, cedula);
@@ -357,7 +280,7 @@ public class ClienteService {
     }
 
     public boolean activarPersonaSp(String cedula) {
-        String sql = "{CALL sp_activar_persona(?)}";
+        String sql = "{call sp_activar_persona(?)}";
 
         try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
             stmt.setString(1, cedula);

@@ -4,17 +4,14 @@ import Utils.ConexionDB;
 import logico.*;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class AnalisisService {
 
     public boolean crearAnalisis(Analisis analisis) {
-        String sql = "insert into analisis (codigo_cons, codigo_tipo, fechaOrden, fechaResultado, estado, resultado) " +
-                "values (?, ?, ?, ?, ?, ?)";
+        String sql = "{call sp_crear_analisis(?, ?, ?, ?, ?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, analisis.getConsulta() != null ? analisis.getConsulta().getCodigoConsulta() : 0);
             stmt.setInt(2, analisis.getTipo() != null ? analisis.getTipo().getCodigoTipo() : 0);
@@ -31,19 +28,17 @@ public class AnalisisService {
     }
 
     public boolean editAnalisis(Analisis analisis) {
-        String sql = "update analisis set codigo_cons = ?, codigo_tipo = ?, fechaOrden = ?, fechaResultado = ?, " +
-                "estado = ?, resultado = ? " +
-                "WHERE codigo_analisis = ?";
+        String sql = "{call sp_editar_analisis(?, ?, ?, ?, ?, ?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setInt(1, analisis.getConsulta() != null ? analisis.getConsulta().getCodigoConsulta() : 0);
-            stmt.setInt(2, analisis.getTipo() != null ? analisis.getTipo().getCodigoTipo() : 0);
-            stmt.setTimestamp(3, analisis.getFechaOrden() != null ? Timestamp.valueOf(analisis.getFechaOrden()) : null);
-            stmt.setTimestamp(4, analisis.getFechaResultado() != null ? Timestamp.valueOf(analisis.getFechaResultado()) : null);
-            stmt.setString(5, analisis.getEstado());
-            stmt.setString(6, analisis.getResultado());
-            stmt.setInt(7, analisis.getCodigoAnalisis());
+            stmt.setInt(1, analisis.getCodigoAnalisis());
+            stmt.setInt(2, analisis.getConsulta() != null ? analisis.getConsulta().getCodigoConsulta() : 0);
+            stmt.setInt(3, analisis.getTipo() != null ? analisis.getTipo().getCodigoTipo() : 0);
+            stmt.setTimestamp(4, analisis.getFechaOrden() != null ? Timestamp.valueOf(analisis.getFechaOrden()) : null);
+            stmt.setTimestamp(5, analisis.getFechaResultado() != null ? Timestamp.valueOf(analisis.getFechaResultado()) : null);
+            stmt.setString(6, analisis.getEstado());
+            stmt.setString(7, analisis.getResultado());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -53,10 +48,9 @@ public class AnalisisService {
     }
 
     public boolean eliminarAnalisis(int codigoAnalisis) {
-        String sql = "delete from analisis " +
-                "where codigo_analisis = ?";
+        String sql = "{call sp_eliminar_analisis(?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, codigoAnalisis);
             return stmt.executeUpdate() > 0;
@@ -68,15 +62,10 @@ public class AnalisisService {
 
     public Analisis buscarAnalisis(int codigoAnalisis) {
         Analisis analisis = null;
-        String sql = "select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaOrden, analisis.fechaResultado, " +
-                "analisis.estado, analisis.resultado, " +
-                "tipo_analisis.codigo_tipo, tipo_analisis.nombre as tipo_nombre, tipo_analisis.descripcion as tipo_desc " +
-                "from analisis  " +
-                "left join tipo_analisis ON analisis.codigo_tipo = tipo_analisis.codigo_tipo " +
-                "where analisis.codigo_analisis = ?";
+        String sql = "{call sp_buscar_analisis(?)}";
 
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, codigoAnalisis);
             ResultSet rs = stmt.executeQuery();
@@ -113,14 +102,10 @@ public class AnalisisService {
 
     public ArrayList<Analisis> listarAnalisis() {
         ArrayList<Analisis> lista = new ArrayList<>();
-        String sql = "select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaOrden, analisis.fechaResultado, " +
-                "analisis.estado, analisis.resultado, " +
-                "tipo_analisis.codigo_tipo, tipo_analisis.nombre AS tipo_nombre, tipo_analisis.descripcion AS tipo_desc " +
-                "from analisis " +
-                "left join tipo_analisis on analisis.codigo_tipo = tipo_analisis.codigo_tipo";
+        String sql = "{call sp_listar_analisis()}";
 
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+             CallableStatement stmt = conn.prepareCall(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
@@ -155,19 +140,12 @@ public class AnalisisService {
         return lista;
     }
 
-
     public ArrayList<Analisis> getAnalisisPorDoctor(String cedulaMedico) {
         ArrayList<Analisis> lista = new ArrayList<>();
-        String sql = "SELECT analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaOrden, analisis.fechaResultado, " +
-                "analisis.estado, analisis.resultado, " +
-                "tipo_analisis.codigo_tipo, tipo_analisis.nombre AS tipo_nombre, tipo_analisis.descripcion AS tipo_desc " +
-                "FROM analisis " +
-                "LEFT JOIN tipo_analisis ON analisis.codigo_tipo = tipo_analisis.codigo_tipo " +
-                "INNER JOIN consulta ON analisis.codigo_cons = consulta.codigo_consulta " +
-                "WHERE consulta.cedula_medico = ?";
+        String sql = "{call sp_analisis_por_doctor(?)}";
 
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, cedulaMedico);
             ResultSet rs = stmt.executeQuery();

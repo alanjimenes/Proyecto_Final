@@ -3,6 +3,7 @@ package Servicios;
 import Utils.ConexionDB;
 import logico.Especialidad;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,10 +13,9 @@ import java.util.ArrayList;
 public class EspecialidadService {
 
     public boolean registrarEspecialidad(Especialidad esp) {
-        String sql = "insert into especialidad (nombre) " +
-                "values (?)";
+        String sql = "{call sp_crear_especialidad(?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setString(1, esp.getNombre());
             return stmt.executeUpdate() > 0;
@@ -73,13 +73,12 @@ public class EspecialidadService {
     }
 
     public boolean actualizarEspecialidad(Especialidad esp) {
-        String sql = "update especialidad set especialidad.nombre = ? " +
-                "where especialidad.codigo_especialidad = ?";
+        String sql = "{call sp_editar_especialidad(?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setString(1, esp.getNombre());
-            stmt.setInt(2, esp.getCodigoEspecialidad());
+            stmt.setInt(1, esp.getCodigoEspecialidad());
+            stmt.setString(2, esp.getNombre());
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -89,10 +88,9 @@ public class EspecialidadService {
     }
 
     public boolean eliminarEspecialidad(String codigo) {
-        String sql = "delete from especialidad " +
-                "where especialidad.codigo_especialidad = ?";
+        String sql = "{call sp_eliminar_especialidad(?)}";
         try (Connection conn = ConexionDB.getConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, Integer.parseInt(codigo));
             return stmt.executeUpdate() > 0;

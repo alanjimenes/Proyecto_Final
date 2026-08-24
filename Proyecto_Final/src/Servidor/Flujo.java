@@ -105,7 +105,13 @@ public class Flujo extends Thread {
                         break;
 
                     case "UPDATE_ENFERMEDAD":
-                        paquete.setRespuesta(false);
+                        Enfermedad enfeUpd = (Enfermedad) paquete.getObjeto();
+                        paquete.setRespuesta(enfermedadService.editEnfermedad(enfeUpd));
+                        break;
+
+                    case "DELETE_ENFERMEDAD":
+                        int idEnfDel = (int) paquete.getObjeto();
+                        paquete.setRespuesta(enfermedadService.eliminarEnfermedad(idEnfDel));
                         break;
 
                     case "LISTAR_ENFERMEDADES":
