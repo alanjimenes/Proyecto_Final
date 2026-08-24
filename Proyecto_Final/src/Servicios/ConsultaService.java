@@ -456,8 +456,8 @@ public class ConsultaService {
 
         String sql = "select enfermedad.codigo_enfermedad, enfermedad.activo, enfermedad.nombre, enfermedad.vigilancia, enfermedad.descripcion " +
                 "from enfermedad_consulta " +
-                "inner join enfermedad e on enfermedad_consulta.codigo_enfermedad = enfermedad.codigo_enfermedad " +
-                "where enfermedad_consulta.codigo_cons= ? " +
+                "inner join enfermedad on enfermedad_consulta.codigo_enfermedad = enfermedad.codigo_enfermedad " +
+                "where enfermedad_consulta.codigo_cons = ? " +
                 "order by enfermedad.nombre";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -36,7 +36,7 @@ public class ReportesGenerales extends JDialog {
 
     private DefaultTableModel modelCitasFecha, modelConsultasFecha, modelMedicosEsp, modelVacunas;
     private DefaultTableModel modelEnfEsp, modelConsMedFecha, modelEnfFecha, modelDiasPico, modelSexoFecha;
-    private DefaultTableModel modelEdades;
+    private DefaultTableModel modelEdades, modelAuditoria;
 
     private JDateChooser d1Citas, d2Citas, d1Cons, d2Cons, d1ConsMed, d2ConsMed;
     private JDateChooser d1Enf, d2Enf, d1Pico, d2Pico, d1Sexo, d2Sexo;
@@ -78,6 +78,7 @@ public class ReportesGenerales extends JDialog {
         tabbedPane.addTab("8. Días Pico", crearPanelDiasPico());
         tabbedPane.addTab("9. Demografía (Sexo)", crearPanelSexoFecha());
         tabbedPane.addTab("10. Demografía (Edad)", crearPanelEdades());
+        tabbedPane.addTab("11. Auditoría Clínica", crearPanelAuditoria());
 
         getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
@@ -663,5 +664,59 @@ public class ReportesGenerales extends JDialog {
 
     private LocalDate getFecha(JDateChooser d) {
         return d.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    private JPanel crearPanelAuditoria() {
+        modelAuditoria = new DefaultTableModel(new String[]{"Fecha", "Paciente", "Médico", "Especialidad", "Enfermedades Detectadas", "Síntomas Reportados"}, 0);
+
+        JButton btnGenerar = new JButton("Cargar Auditoría Completa");
+        Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
+        btnGenerar.addActionListener(e -> generarAuditoria());
+
+        JPanel panel = armarPanelFiltroTabla(modelAuditoria, "Auditoría Clínica Multi-Relacional", new Object[]{btnGenerar});
+        generarAuditoria();
+        return panel;
+    }
+
+    private void generarAuditoria() {
+        modelAuditoria.setRowCount(0);
+
+        if (listaConsultasGlobal != null) {
+            for (Consulta con : listaConsultasGlobal) {
+                String fecha = con.getFechaConsulta() != null ? con.getFechaConsulta().toString() : "N/A";
+
+                String paciente = "Desconocido";
+                if (con.getCliente() != null) {
+                    paciente = con.getCliente().getNombre() + " " + con.getCliente().getApellido();
+                }
+
+                String medico = "Desconocido";
+                String especialidad = "N/A";
+                if (con.getMedico() != null) {
+                    medico = con.getMedico().getNombre() + " " + con.getMedico().getApellido();
+                    if (con.getMedico().getEspecialidad() != null) {
+                        especialidad = con.getMedico().getEspecialidad().getNombre();
+                    }
+                }
+
+                String enfermedades = "Ninguna";
+                if (con.getEnfermedadesDiag() != null && !con.getEnfermedadesDiag().isEmpty()) {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < con.getEnfermedadesDiag().size(); i++) {
+                        sb.append(con.getEnfermedadesDiag().get(i).getNombre());
+                        if (i < con.getEnfermedadesDiag().size() - 1) {
+                            sb.append(" | ");
+                        }
+                    }
+                    enfermedades = sb.toString();
+                } else if (con.getDiagnostico() != null && !con.getDiagnostico().isEmpty()) {
+                    enfermedades = con.getDiagnostico();
+                }
+
+                String sintomas = con.getSintomas() != null ? con.getSintomas() : "No registrados";
+
+                modelAuditoria.addRow(new Object[]{fecha, paciente, medico, especialidad, enfermedades, sintomas});
+            }
+        }
     }
 }

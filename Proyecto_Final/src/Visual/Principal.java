@@ -503,10 +503,9 @@ public class Principal extends JFrame {
             menuEnfermedades.setVisible(true);
             menuAnalisis.setVisible(true);
         } else if (rol.equalsIgnoreCase("Enfermera") || rol.equalsIgnoreCase("Enfermero")) {
-            menuPacientes.setVisible(true);
             menuVacunas.setVisible(true);
-            menuCitas.setVisible(true);
             menuEnfermedades.setVisible(true);
+            menuCitas.setVisible(true);
         } else if (rol.equalsIgnoreCase("Medico") || rol.equalsIgnoreCase("Médico")) {
             menuConsulta.setVisible(true);
             menuPacientes.setVisible(true);
