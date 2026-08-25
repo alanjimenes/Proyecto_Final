@@ -10,6 +10,25 @@ import java.io.FileOutputStream;
 
 public class GeneradorPDF {
 
+
+	/**
+	 * PROCESO: Exporta las filas y columnas visibles de una JTable Swing hacia un archivo PDF.
+	 * * ENTRADAS:
+	 * - table: Instancia de JTable que contiene la información estructurada a exportar.
+	 * - titulo: Cadena de texto que actuará como encabezado del reporte y nombre base del archivo.
+	 * * SALIDA: Ninguna (método void).
+	 * * FLUJO DE LLAMADAS:
+	 * 1. Inicializa JFileChooser y asigna "titulo.pdf" como nombre por defecto.
+	 * 2. Si la selección del usuario es aprobada (JFileChooser.APPROVE_OPTION):
+	 *    - Instancia Document y PdfWriter vinculados al FileOutputStream del archivo seleccionado.
+	 *    - document.open().
+	 *    - Añade el título formateado y centrado al documento.
+	 *    - Copia las cabeceras del JTable mediante table.getColumnName(i).
+	 *    - Recorre las filas (getRowCount) y celdas (getValueAt) agregando los valores como cadenas.
+	 *    - document.add(pdfTable) y document.close().
+	 * 3. Muestra JOptionPane con el resultado de la operación.
+	 */
+
 	public static void exportarJTablePDF(JTable table, String titulo) {
 		try {
 			JFileChooser fileChooser = new JFileChooser();

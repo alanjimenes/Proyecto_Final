@@ -12,6 +12,20 @@ import java.util.ArrayList;
 
 public class GeneradorReportes {
 
+
+    /**
+     * PROCESO: Construye una receta médica formal en formato PDF a partir de una consulta realizada.
+     * * ENTRADAS:
+     * - consulta: Objeto Consulta que contiene los datos del médico, cliente, diagnóstico e identificador.
+     * * SALIDA: Ninguna (método void).
+     * * FLUJO DE LLAMADAS:
+     * 1. Valida si la consulta recibida es nula; interrumpe la ejecución si es así.
+     * 2. Recupera las recetas registradas en BD mediante recetaService.getRecetasPorConsulta().
+     * 3. Crea el archivo "RecetaMedica_Consulta_[ID].pdf" mediante iText PdfWriter.
+     * 4. Escribe el título formal, datos del médico, del paciente, diagnóstico y el desglose de medicamentos.
+     * 5. Cierra la instancia del documento (documento.close()) y alerta al usuario.
+     */
+
     public static void generarReceta(Consulta consulta) {
         try {
             if (consulta == null) {
