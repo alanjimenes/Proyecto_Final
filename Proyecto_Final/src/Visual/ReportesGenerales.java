@@ -671,7 +671,7 @@ public class ReportesGenerales extends JDialog {
         Estilos.estilarBoton(btnGenerar, colorPrimario, Color.WHITE);
         btnGenerar.addActionListener(e -> generarAuditoria());
 
-        JPanel panel = armarPanelFiltroTabla(modelAuditoria, "Auditoría Clínica Multi-Relacional", new Object[]{btnGenerar});
+        JPanel panel = armarPanelFiltroTabla(modelAuditoria, "Auditoría Clínica", new Object[]{btnGenerar});
         generarAuditoria();
         return panel;
     }
