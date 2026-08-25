@@ -16,12 +16,14 @@ import Servicios.MedicamentoService;
 import Servicios.ConsultaService;
 import Utils.ClienteSocket;
 import Utils.Estilos;
+import logico.Analisis;
 import logico.Consulta;
 import logico.Enfermedad;
 import logico.EvaluacionFisica;
 import logico.Medico;
 import logico.Medicamento;
 import logico.RecetaMedica;
+import logico.TipoAnalisis;
 
 public class RegConsultaCompleta extends JFrame {
 
@@ -37,7 +39,7 @@ public class RegConsultaCompleta extends JFrame {
     private JTextField txtPeso;
     private JTextField txtTalla;
 
-    // Tablas temporales para Recetas y Enfermedades Diagnosticadas
+    // Tablas temporales para Recetas, Enfermedades y Análisis
     private JTable tableRecetas;
     private DefaultTableModel modeloRecetas;
     private ArrayList<RecetaMedica> listaRecetasTemp;
@@ -46,12 +48,17 @@ public class RegConsultaCompleta extends JFrame {
     private DefaultTableModel modeloEnfermedades;
     private ArrayList<Enfermedad> listaEnfermedadesTemp;
 
+    private JTable tableAnalisis;
+    private DefaultTableModel modeloAnalisis;
+    private ArrayList<Analisis> listaAnalisisTemp;
+
     private Medico medicoActual;
 
     public RegConsultaCompleta(Medico medicoActual) {
         this.medicoActual = medicoActual;
         this.listaRecetasTemp = new ArrayList<>();
         this.listaEnfermedadesTemp = new ArrayList<>();
+        this.listaAnalisisTemp = new ArrayList<>();
 
         try {
             setIconImage(Toolkit.getDefaultToolkit().getImage(RegConsultaCompleta.class.getResource("/img/cita.png")));
@@ -62,7 +69,7 @@ public class RegConsultaCompleta extends JFrame {
         setTitle("Registro de Consulta Médica Avanzada");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        setBounds(30, 20, 1100, 880);
+        setBounds(30, 20, 1100, 920);
         setLocationRelativeTo(null);
 
         contentPane = new JPanel();
@@ -213,10 +220,9 @@ public class RegConsultaCompleta extends JFrame {
         contentPane.add(lblSubEnf);
 
         JScrollPane scrollEnf = new JScrollPane();
-        scrollEnf.setBounds(30, 378, 875, 95);
+        scrollEnf.setBounds(30, 378, 875, 80);
         contentPane.add(scrollEnf);
 
-        // MODIFICADO: Solo Nombre y Vigilancia
         modeloEnfermedades = new DefaultTableModel(new Object[][]{}, new String[]{"Nombre", "Vigilancia"}) {
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -227,27 +233,60 @@ public class RegConsultaCompleta extends JFrame {
 
         JButton btnAgregarEnf = new JButton("<html><center>Asignar<br>Enfermedad</center></html>");
         Estilos.estilarBoton(btnAgregarEnf, new Color(40, 167, 69), Color.WHITE);
-        btnAgregarEnf.setBounds(915, 378, 140, 42);
+        btnAgregarEnf.setBounds(915, 378, 140, 38);
         contentPane.add(btnAgregarEnf);
 
         JButton btnQuitarEnf = new JButton("Quitar Enfermedad");
         Estilos.estilarBoton(btnQuitarEnf, new Color(231, 76, 60), Color.WHITE);
-        btnQuitarEnf.setBounds(915, 431, 140, 42);
+        btnQuitarEnf.setBounds(915, 420, 140, 38);
         contentPane.add(btnQuitarEnf);
+
+        // --- SECCIÓN ÓRDENES DE ANÁLISIS CLÍNICOS ---
+        JSeparator separatorAna = new JSeparator();
+        separatorAna.setBounds(30, 470, 1025, 10);
+        contentPane.add(separatorAna);
+
+        JLabel lblSubAnalisis = new JLabel("Órdenes de Análisis Clínicos");
+        lblSubAnalisis.setFont(new Font("Bahnschrift", Font.BOLD, 15));
+        lblSubAnalisis.setForeground(new Color(60, 70, 123));
+        lblSubAnalisis.setBounds(30, 480, 300, 25);
+        contentPane.add(lblSubAnalisis);
+
+        JScrollPane scrollAna = new JScrollPane();
+        scrollAna.setBounds(30, 510, 875, 80);
+        contentPane.add(scrollAna);
+
+        modeloAnalisis = new DefaultTableModel(new Object[][]{}, new String[]{"Tipo de Análisis", "Estado", "Indicaciones / Detalle"}) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tableAnalisis = new JTable(modeloAnalisis);
+        scrollAna.setViewportView(tableAnalisis);
+
+        JButton btnAgregarAnalisis = new JButton("<html><center>Ordenar<br>Análisis</center></html>");
+        Estilos.estilarBoton(btnAgregarAnalisis, new Color(40, 167, 69), Color.WHITE);
+        btnAgregarAnalisis.setBounds(915, 510, 140, 38);
+        contentPane.add(btnAgregarAnalisis);
+
+        JButton btnQuitarAnalisis = new JButton("Quitar Análisis");
+        Estilos.estilarBoton(btnQuitarAnalisis, new Color(231, 76, 60), Color.WHITE);
+        btnQuitarAnalisis.setBounds(915, 552, 140, 38);
+        contentPane.add(btnQuitarAnalisis);
 
         // --- SECCIÓN RECETA MÉDICA ---
         JSeparator separatorRec = new JSeparator();
-        separatorRec.setBounds(30, 485, 1025, 10);
+        separatorRec.setBounds(30, 600, 1025, 10);
         contentPane.add(separatorRec);
 
         JLabel lblSubReceta = new JLabel("Receta Médica / Medicamentos");
         lblSubReceta.setFont(new Font("Bahnschrift", Font.BOLD, 15));
         lblSubReceta.setForeground(new Color(60, 70, 123));
-        lblSubReceta.setBounds(30, 495, 300, 25);
+        lblSubReceta.setBounds(30, 610, 300, 25);
         contentPane.add(lblSubReceta);
 
         JScrollPane scrollRec = new JScrollPane();
-        scrollRec.setBounds(30, 525, 875, 125);
+        scrollRec.setBounds(30, 640, 875, 95);
         contentPane.add(scrollRec);
 
         modeloRecetas = new DefaultTableModel(new Object[][]{}, new String[]{"Medicamento", "Dosis", "Frecuencia", "Duración", "Indicaciones"}) {
@@ -260,15 +299,15 @@ public class RegConsultaCompleta extends JFrame {
 
         JButton btnAgregarReceta = new JButton("<html><center>Agregar<br>Medicamento</center></html>");
         Estilos.estilarBoton(btnAgregarReceta, new Color(40, 167, 69), Color.WHITE);
-        btnAgregarReceta.setBounds(915, 525, 140, 58);
+        btnAgregarReceta.setBounds(915, 640, 140, 44);
         contentPane.add(btnAgregarReceta);
 
         JButton btnQuitarReceta = new JButton("Quitar Receta");
         Estilos.estilarBoton(btnQuitarReceta, new Color(231, 76, 60), Color.WHITE);
-        btnQuitarReceta.setBounds(915, 592, 140, 58);
+        btnQuitarReceta.setBounds(915, 691, 140, 44);
         contentPane.add(btnQuitarReceta);
 
-        // --- EVENTOS ---
+        // --- EVENTOS DE TABLAS ---
         btnAgregarEnf.addActionListener(e -> dialogoAgregarEnfermedadDesdeCatalogo());
 
         btnQuitarEnf.addActionListener(e -> {
@@ -278,6 +317,18 @@ public class RegConsultaCompleta extends JFrame {
                 modeloEnfermedades.removeRow(fila);
             } else {
                 JOptionPane.showMessageDialog(this, "Seleccione una enfermedad de la tabla para quitar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        btnAgregarAnalisis.addActionListener(e -> dialogoAgregarAnalisisConTipo());
+
+        btnQuitarAnalisis.addActionListener(e -> {
+            int fila = tableAnalisis.getSelectedRow();
+            if (fila >= 0) {
+                listaAnalisisTemp.remove(fila);
+                modeloAnalisis.removeRow(fila);
+            } else {
+                JOptionPane.showMessageDialog(this, "Seleccione un análisis de la tabla para quitar.", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
         });
 
@@ -296,12 +347,12 @@ public class RegConsultaCompleta extends JFrame {
         // --- BOTONES INFERIORES ---
         JButton btnGuardar = new JButton("Guardar Consulta");
         Estilos.estilarBoton(btnGuardar, new Color(41, 128, 185), Color.WHITE);
-        btnGuardar.setBounds(775, 775, 160, 45);
+        btnGuardar.setBounds(775, 815, 160, 45);
         contentPane.add(btnGuardar);
 
         JButton btnCerrar = new JButton("Cerrar");
         Estilos.estilarBoton(btnCerrar, new Color(231, 76, 60), Color.WHITE);
-        btnCerrar.setBounds(945, 775, 110, 45);
+        btnCerrar.setBounds(945, 815, 110, 45);
         contentPane.add(btnCerrar);
 
         btnGuardar.addActionListener(e -> guardarDatos());
@@ -332,11 +383,44 @@ public class RegConsultaCompleta extends JFrame {
 
             if (!listaEnfermedadesTemp.contains(enfElegida)) {
                 listaEnfermedadesTemp.add(enfElegida);
-                // MODIFICADO: Se removió el código, enviando solo Nombre y Vigilancia
                 modeloEnfermedades.addRow(new Object[]{enfElegida.getNombre(), enfElegida.isVigilancia() ? "Sí" : "No"});
             } else {
                 JOptionPane.showMessageDialog(this, "Esta enfermedad ya fue agregada a la lista.", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
+        }
+    }
+
+    private void dialogoAgregarAnalisisConTipo() {
+        ArrayList<TipoAnalisis> listaTipos = (ArrayList<TipoAnalisis>) ClienteSocket.enviar("LISTAR_TIPOS_ANALISIS", null);
+        if (listaTipos == null || listaTipos.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay tipos de análisis registrados en el sistema.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String[] nombresTipos = new String[listaTipos.size()];
+        for (int i = 0; i < listaTipos.size(); i++) {
+            TipoAnalisis t = listaTipos.get(i);
+            nombresTipos[i] = t.getNombre() + " (Cod: " + t.getCodigoTipo() + ")";
+        }
+
+        JComboBox<String> cmbTipos = new JComboBox<>(nombresTipos);
+        JTextField txtIndicaciones = new JTextField();
+
+        Object[] message = {"Seleccione Tipo de Análisis a Ordenar:", cmbTipos, "Indicaciones / Observaciones opcionales:", txtIndicaciones};
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Ordenar Análisis Clínico", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            int indexSeleccionado = cmbTipos.getSelectedIndex();
+            TipoAnalisis tipoElegido = listaTipos.get(indexSeleccionado);
+
+            Analisis nuevoAnalisis = new Analisis();
+            nuevoAnalisis.setTipo(tipoElegido);
+            nuevoAnalisis.setEstado("Pendiente");
+            nuevoAnalisis.setFechaOrden(LocalDateTime.now());
+            nuevoAnalisis.setResultado(txtIndicaciones.getText().trim());
+
+            listaAnalisisTemp.add(nuevoAnalisis);
+            modeloAnalisis.addRow(new Object[]{tipoElegido.getNombre(), nuevoAnalisis.getEstado(), nuevoAnalisis.getResultado() != null ? nuevoAnalisis.getResultado() : ""});
         }
     }
 
@@ -418,10 +502,27 @@ public class RegConsultaCompleta extends JFrame {
             Object[] datosSp = new Object[]{codigoMedico, codigoCliente, fechaConsulta, sintomas, diagnostico, temperatura, frecuenciaCardiaca, presionArterial, peso, talla};
 
             Object respuesta = ClienteSocket.enviar("REG_CONSULTA_SP", datosSp);
-            boolean exito = (respuesta != null && (boolean) respuesta);
+
+            // Si el servidor retorna el objeto Consulta o su ID generado, o retorna Boolean true:
+            boolean exito = (respuesta != null && ((respuesta instanceof Boolean && (Boolean) respuesta) || (respuesta instanceof Consulta) || (respuesta instanceof Integer)));
 
             if (exito) {
-                JOptionPane.showMessageDialog(this, "Consulta y signos vitales registrados con éxito mediante Procedimiento Almacenado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                // Registrar análisis ordenados
+                if (!listaAnalisisTemp.isEmpty()) {
+                    Consulta consultaGenerada = null;
+                    if (respuesta instanceof Consulta) {
+                        consultaGenerada = (Consulta) respuesta;
+                    }
+
+                    for (Analisis ana : listaAnalisisTemp) {
+                        if (consultaGenerada != null) {
+                            ana.setConsulta(consultaGenerada);
+                        }
+                        ClienteSocket.enviar("REG_ANALISIS", ana);
+                    }
+                }
+
+                JOptionPane.showMessageDialog(this, "Consulta, signos vitales y análisis registrados con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Ocurrió un error en la base de datos al ejecutar la transacción.", "Error", JOptionPane.ERROR_MESSAGE);

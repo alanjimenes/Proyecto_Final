@@ -133,7 +133,7 @@ public class Principal extends JFrame {
         });
         menuPacientes.add(itemReporteHistorial);
 
-        setTitle("Reporte Completo de Historial Clínico y Vacunación");
+        setTitle("Sistema de Gestión Clínica");
 
         menuConsulta = new JMenu("  Consultas  ");
         menuConsulta.setForeground(Color.WHITE);
@@ -506,10 +506,11 @@ public class Principal extends JFrame {
             menuVacunas.setVisible(true);
             menuEnfermedades.setVisible(true);
             menuCitas.setVisible(true);
+            menuAnalisis.setVisible(true);
         } else if (rol.equalsIgnoreCase("Medico") || rol.equalsIgnoreCase("Médico")) {
             menuConsulta.setVisible(true);
             menuPacientes.setVisible(true);
-            menuAnalisis.setVisible(true);
+            //menuAnalisis.setVisible(true);
             menuEnfermedades.setVisible(true);
             menuVacunas.setVisible(true);
         }
