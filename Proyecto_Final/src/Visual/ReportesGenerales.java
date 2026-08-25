@@ -244,7 +244,7 @@ public class ReportesGenerales extends JDialog {
         btnGenerar.addActionListener(e -> generarVacunas());
 
         JPanel panel = armarPanelFiltroTabla(modelVacunas, "Catálogo de Vacunas", new Object[]{btnGenerar});
-        generarVacunas(); // Intento de carga inicial
+        generarVacunas();
         return panel;
     }
 
@@ -397,12 +397,10 @@ public class ReportesGenerales extends JDialog {
 
             LocalDate fecha = consulta.getFechaConsulta();
 
-            // La consulta debe tener fecha
             if (fecha == null) {
                 continue;
             }
 
-            // Verificar que esté dentro del rango
             if (fecha.isBefore(inicio) || fecha.isAfter(fin)) {
                 continue;
             }
@@ -572,14 +570,14 @@ public class ReportesGenerales extends JDialog {
         btnGenerar.addActionListener(e -> generarEdades());
 
         JPanel panel = armarPanelFiltroTabla(modelEdades, "Distribución Demográfica por Edad", new Object[]{btnGenerar});
-        generarEdades(); // Intento inicial
+        generarEdades();
         return panel;
     }
 
     private void generarEdades() {
         modelEdades.setRowCount(0);
         int[] contadores = new int[5];
-        String[] etiquetas = {"Niños (0-12)", "Adolescentes (13-19)", "Jóvenes (20-39)", "Adultos (40-59)", "Adultos Mayores (60+)"};
+        String[] etiquetas = {"Niños (0-12)", "Adolescentes (13-19)", "Jóvenes (20-35)", "Adultos (36-59)", "Adultos Mayores (60+)"};
         int totalPacientes = 0;
 
         if (listaClientesGlobal != null) {

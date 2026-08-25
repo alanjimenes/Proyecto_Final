@@ -107,7 +107,7 @@ public class HistorialService {
                 "left join medico on consulta.codigo_medico = medico.codigo_persona " +
                 "left join persona persona_medico on medico.codigo_persona = persona_medico.codigo_persona " +
                 "left join especialidad on medico.codigo_especialidad = especialidad.codigo_especialidad " +
-                "where persona.cedula = ? " + //Usamos ? para evitar Inyección SQL
+                "where persona.cedula = ? " +
                 "order by consulta.fechaconsulta desc;";
 
         try {

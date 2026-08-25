@@ -75,7 +75,7 @@ public class GeneradorReportes {
             documento.add(new Paragraph(consulta.getDiagnostico() != null ? consulta.getDiagnostico() : "Sin diagnóstico registrado.", fontNormal));
             documento.add(new Paragraph(" "));
 
-            // Recetas / Tratamiento médico asociado (ya sincronizadas desde la BD)
+            // Recetas / Tratamiento médico
             documento.add(new Paragraph("TRATAMIENTO / INDICACIONES:", fontNegrita));
             if (consulta.getRecetas() != null && !consulta.getRecetas().isEmpty()) {
                 for (RecetaMedica receta : consulta.getRecetas()) {
