@@ -2,106 +2,110 @@ use clinica;
 
 
 -- =========================================================================
--- SECCIÓN: VISTAS
+-- VISTAS
 -- =========================================================================
 
-/* Qué hace: Cruza las tablas medico, persona y especialidad utilizando un INNER JOIN, filtrando únicamente a los médicos que 
+/* Qué hace: Cruza las tablas medico, persona y especialidad utilizando un INNER JOIN, filtrando únicamente a los médicos que
 tienen su estado en activo (estado = 1). Muestra su cédula, nombre completo, especialidad, teléfono y el límite de citas diarias. */
 
 /* Para qué sirve: Nos ahorra escribir un JOIN extenso cada vez que se necesite llenar combobox o una tabla con los médicos disponibles en el sistema.
 Ya que cada vez que necesitemos eso, lo podemos obtener con solo un SELECT * FROM vw_directorio_medico. */
 
 create view vw_directorio_medico as
-select medico.codigo_persona, persona.fechanacimiento, persona.nombre, persona.apellido, persona.cedula, persona.telefono, 
-persona.estado, persona.direccion, persona.genero, medico.maxcitaspordia, especialidad.codigo_especialidad, 
-especialidad.nombre as nombre_esp
-from medico 
-inner join persona on medico.codigo_persona = persona.codigo_persona
-inner join especialidad on medico.codigo_especialidad = especialidad.codigo_especialidad
+select medico.codigo_persona, persona.fechanacimiento, persona.nombre, persona.apellido, persona.cedula, persona.telefono,
+       persona.estado, persona.direccion, persona.genero, medico.maxcitaspordia, especialidad.codigo_especialidad,
+       especialidad.nombre as nombre_esp
+from medico
+         inner join persona on medico.codigo_persona = persona.codigo_persona
+         inner join especialidad on medico.codigo_especialidad = especialidad.codigo_especialidad
 where persona.estado = 1;
 go
 
-/* Qué hace: Conecta la tabla lote_vacuna con la tabla vacuna. Filtra automáticamente para mostrar solo aquellos lotes 
+/* Qué hace: Conecta la tabla lote_vacuna con la tabla vacuna. Filtra automáticamente para mostrar solo aquellos lotes
 que tengan existencia mayor a cero (cantidad > 0) y cuya fecha de vencimiento sea igual o posterior al día actual (>= GETDATE()). */
 
-/* Para qué sirve: Evita que el personal médico seleccione vacunas vencidas o agotadas al momento de registrar una 
+/* Para qué sirve: Evita que el personal médico seleccione vacunas vencidas o agotadas al momento de registrar una
 vacunación a un paciente, garantizando la seguridad clínica desde la base de datos. */
 
 create view vw_inventario_vacunas_disponibles as
-select lote_vacuna.codigo_lote, vacuna.codigo_vacuna, vacuna.nombre as nombre_vacuna, lote_vacuna.no_lote, 
-lote_vacuna.cantidad, lote_vacuna.fechavencimiento
+select lote_vacuna.codigo_lote, vacuna.codigo_vacuna, vacuna.nombre as nombre_vacuna, lote_vacuna.no_lote,
+       lote_vacuna.cantidad, lote_vacuna.fechavencimiento
 from lote_vacuna
-inner join vacuna on lote_vacuna.codigo_vacuna = vacuna.codigo_vacuna
+         inner join vacuna on lote_vacuna.codigo_vacuna = vacuna.codigo_vacuna
 where lote_vacuna.cantidad > 0 and lote_vacuna.fechavencimiento >= getdate();
 go
+
+-- =========================================================================
+-- Procedimientos almacenados
+-- =========================================================================
 
 
 -- =========================================================================
 -- SECCIÓN: ANÁLISIS
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION) para insertar un nuevo registro en la tabla analisis. 
+/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION) para insertar un nuevo registro en la tabla analisis.
 Captura los errores con TRY/CATCH; si todo es exitoso guarda los cambios (COMMIT), si algo falla revierte la operación (ROLLBACK). */
 
-/* Para qué sirve: Garantiza que la orden del análisis se registre de forma íntegra en la base de datos, 
+/* Para qué sirve: Garantiza que la orden del análisis se registre de forma íntegra en la base de datos,
 evitando datos corruptos o a medias si el servidor parpadea en medio del proceso. */
 
 create procedure sp_crear_analisis
-    @codigo_cons int, 
-    @codigo_tipo int, 
-    @fechaorden datetime, 
-    @fecharesultado datetime, 
-    @estado varchar(50), 
+    @codigo_cons int,
+    @codigo_tipo int,
+    @fechaorden datetime,
+    @fecharesultado datetime,
+    @estado varchar(50),
     @resultado text
 as
 begin
-    begin transaction;
-    begin try
-        insert into analisis (codigo_cons, codigo_tipo, fechaorden, fecharesultado, estado, resultado)
+begin transaction;
+begin try
+insert into analisis (codigo_cons, codigo_tipo, fechaorden, fecharesultado, estado, resultado)
         values (@codigo_cons, @codigo_tipo, @fechaorden, @fecharesultado, @estado, @resultado);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
-/* Qué hace: Ejecuta un UPDATE sobre la tabla analisis buscando por su llave primaria (codigo_analisis), 
+/* Qué hace: Ejecuta un UPDATE sobre la tabla analisis buscando por su llave primaria (codigo_analisis),
 envuelto en una transacción para proteger la integridad de los datos de la clínica. */
 
-/* Para qué sirve: Permite al laboratorista o al médico actualizar el estado del análisis y redactar el resultado 
+/* Para qué sirve: Permite al laboratorista o al médico actualizar el estado del análisis y redactar el resultado
 definitivo una vez que las pruebas estén completadas. */
 
 create procedure sp_editar_analisis
     @codigo_analisis int,
-    @codigo_cons int, 
-    @codigo_tipo int, 
-    @fechaorden datetime, 
-    @fecharesultado datetime, 
-    @estado varchar(50), 
+    @codigo_cons int,
+    @codigo_tipo int,
+    @fechaorden datetime,
+    @fecharesultado datetime,
+    @estado varchar(50),
     @resultado text
 as
 begin
-    begin transaction;
-    begin try
-        update analisis 
-        set analisis.codigo_cons = @codigo_cons, 
-            analisis.codigo_tipo = @codigo_tipo, 
-            analisis.fechaorden = @fechaorden, 
-            analisis.fecharesultado = @fecharesultado, 
-            analisis.estado = @estado, 
-            analisis.resultado = @resultado 
-        where analisis.codigo_analisis = @codigo_analisis;
+begin transaction;
+begin try
+update analisis
+set analisis.codigo_cons = @codigo_cons,
+    analisis.codigo_tipo = @codigo_tipo,
+    analisis.fechaorden = @fechaorden,
+    analisis.fecharesultado = @fecharesultado,
+    analisis.estado = @estado,
+    analisis.resultado = @resultado
+where analisis.codigo_analisis = @codigo_analisis;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -113,34 +117,34 @@ create procedure sp_eliminar_analisis
     @codigo_analisis int
 as
 begin
-    begin transaction;
-    begin try
-        delete from analisis 
-        where analisis.codigo_analisis = @codigo_analisis;
+begin transaction;
+begin try
+delete from analisis
+where analisis.codigo_analisis = @codigo_analisis;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
 /* Qué hace: Realiza una consulta SELECT cruzando (LEFT JOIN) la tabla analisis con tipo_analisis para extraer los datos descriptivos,
 filtrando por el ID específico. */
 
-/* Para qué sirve: Extrae todos los detalles exactos de un análisis individual para mostrarlos en los campos de texto de la ventana de 
+/* Para qué sirve: Extrae todos los detalles exactos de un análisis individual para mostrarlos en los campos de texto de la ventana de
 modificación en la interfaz gráfica. */
 
 create procedure sp_buscar_analisis
     @codigo_analisis int
 as
 begin
-    select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaorden, analisis.fecharesultado, analisis.estado, analisis.resultado, tipo_analisis.codigo_tipo, tipo_analisis.nombre as tipo_nombre, tipo_analisis.descripcion as tipo_desc 
-    from analisis 
-    left join tipo_analisis on analisis.codigo_tipo = tipo_analisis.codigo_tipo 
-    where analisis.codigo_analisis = @codigo_analisis;
+select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaorden, analisis.fecharesultado, analisis.estado, analisis.resultado, tipo_analisis.codigo_tipo, tipo_analisis.nombre as tipo_nombre, tipo_analisis.descripcion as tipo_desc
+from analisis
+         left join tipo_analisis on analisis.codigo_tipo = tipo_analisis.codigo_tipo
+where analisis.codigo_analisis = @codigo_analisis;
 end;
 go
 
@@ -150,15 +154,15 @@ go
 todos los análisis mandados a hacer en el hospital. */
 
 create procedure sp_listar_analisis
-as
+    as
 begin
-    select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaorden, analisis.fecharesultado, analisis.estado, analisis.resultado, tipo_analisis.codigo_tipo, tipo_analisis.nombre as tipo_nombre, tipo_analisis.descripcion as tipo_desc 
-    from analisis 
-    left join tipo_analisis on analisis.codigo_tipo = tipo_analisis.codigo_tipo;
+select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaorden, analisis.fecharesultado, analisis.estado, analisis.resultado, tipo_analisis.codigo_tipo, tipo_analisis.nombre as tipo_nombre, tipo_analisis.descripcion as tipo_desc
+from analisis
+         left join tipo_analisis on analisis.codigo_tipo = tipo_analisis.codigo_tipo;
 end;
 go
 
-/* Qué hace: Ejecuta un SELECT múltiple con INNER JOIN cruzando analisis, consulta, medico y persona para encontrar 
+/* Qué hace: Ejecuta un SELECT múltiple con INNER JOIN cruzando analisis, consulta, medico y persona para encontrar
 los análisis asociados exclusivamente a la cédula de un médico. */
 
 /* Para qué sirve: Es el filtro de seguridad que garantiza que en el panel del médico solo aparezcan los análisis correspondientes a sus propios pacientes. */
@@ -167,13 +171,13 @@ create procedure sp_analisis_por_doctor
     @cedula_medico varchar(20)
 as
 begin
-    select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaorden, analisis.fecharesultado, analisis.estado, analisis.resultado, tipo_analisis.codigo_tipo, tipo_analisis.nombre as tipo_nombre, tipo_analisis.descripcion as tipo_desc 
-    from analisis 
-    left join tipo_analisis on analisis.codigo_tipo = tipo_analisis.codigo_tipo 
-    inner join consulta on analisis.codigo_cons = consulta.codigo_cons 
-    inner join medico on consulta.codigo_medico = medico.codigo_persona 
-    inner join persona on medico.codigo_persona = persona.codigo_persona 
-    where persona.cedula = @cedula_medico;
+select analisis.codigo_analisis, analisis.codigo_cons, analisis.fechaorden, analisis.fecharesultado, analisis.estado, analisis.resultado, tipo_analisis.codigo_tipo, tipo_analisis.nombre as tipo_nombre, tipo_analisis.descripcion as tipo_desc
+from analisis
+         left join tipo_analisis on analisis.codigo_tipo = tipo_analisis.codigo_tipo
+         inner join consulta on analisis.codigo_cons = consulta.codigo_cons
+         inner join medico on consulta.codigo_medico = medico.codigo_persona
+         inner join persona on medico.codigo_persona = persona.codigo_persona
+where persona.cedula = @cedula_medico;
 end;
 go
 
@@ -183,7 +187,7 @@ go
 -- =========================================================================
 
 /* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Realiza la inserción de una nueva cita médica
-buscando los códigos internos (codigo_persona) correspondientes a las cédulas del médico y del paciente. 
+buscando los códigos internos (codigo_persona) correspondientes a las cédulas del médico y del paciente.
 Si la operación es exitosa realiza COMMIT, de lo contrario revierte los cambios con ROLLBACK. */
 
 /* Para qué sirve: Garantiza que la cita quede agendada de forma consistente vinculando correctamente las entidades de médico y
@@ -197,9 +201,9 @@ create procedure sp_crear_cita
     @motivo text
 as
 begin
-    begin transaction;
-    begin try
-        insert into cita (codigo_medico, codigo_cliente, fechacita, estado, motivo)
+begin transaction;
+begin try
+insert into cita (codigo_medico, codigo_cliente, fechacita, estado, motivo)
         values (
             (select persona.codigo_persona from persona where persona.cedula = @cedula_medico),
             (select persona.codigo_persona from persona where persona.cedula = @cedula_cliente),
@@ -208,12 +212,12 @@ begin
             @motivo
         );
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -228,19 +232,19 @@ create procedure sp_editar_cita
     @cedula_medico varchar(20)
 as
 begin
-    begin transaction;
-    begin try
-        update cita 
-        set cita.fechacita = @nueva_fechahora, 
-            cita.codigo_medico = (select persona.codigo_persona from persona where persona.cedula = @cedula_medico)
-        where cita.codigo_cita = @codigo_cita;
+begin transaction;
+begin try
+update cita
+set cita.fechacita = @nueva_fechahora,
+    cita.codigo_medico = (select persona.codigo_persona from persona where persona.cedula = @cedula_medico)
+where cita.codigo_cita = @codigo_cita;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -252,18 +256,18 @@ create procedure sp_cancelar_cita
     @codigo_cita int
 as
 begin
-    begin transaction;
-    begin try
-        update cita 
-        set cita.estado = 'Cancelada' 
-        where cita.codigo_cita = @codigo_cita;
+begin transaction;
+begin try
+update cita
+set cita.estado = 'Cancelada'
+where cita.codigo_cita = @codigo_cita;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -272,11 +276,11 @@ go
 -- SECCIÓN: CLIENTES / PACIENTES
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta primero los datos en la tabla persona, 
+/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta primero los datos en la tabla persona,
 recupera el ID generado mediante SCOPE_IDENTITY y evalúa si el expediente viene vacío para autogenerar uno con el formato "EXP-ID".
 Luego inserta en la tabla cliente. Si ocurre un error revierte con ROLLBACK, de lo contrario confirma con COMMIT. */
 
-/* Para qué sirve: Mantiene la integridad referencial al crear pacientes, delegando la lógica de autogenerar el número de expediente 
+/* Para qué sirve: Mantiene la integridad referencial al crear pacientes, delegando la lógica de autogenerar el número de expediente
 directamente al motor de la base de datos para no sobrecargar el backend en Java. */
 
 create procedure sp_crear_cliente
@@ -293,35 +297,35 @@ create procedure sp_crear_cliente
     @antecedentes text
 as
 begin
-    begin transaction;
-    begin try
-        insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero)
+begin transaction;
+begin try
+insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero)
         values (@fechanacimiento, @nombre, @apellido, @cedula, @telefono, @estado, @direccion, @genero);
 
         declare @id_persona int = scope_identity();
         declare @exp_final varchar(50) = @numexpediente;
 
         if (@exp_final is null or @exp_final = '' or @exp_final = 'N/A')
-        begin
+begin
             set @exp_final = 'EXP-' + cast(@id_persona as varchar(10));
-        end
+end
 
-        insert into cliente (codigo_persona, numexpediente, enfermo, antecedentes)
-        values (@id_persona, @exp_final, @enfermo, @antecedentes);
+insert into cliente (codigo_persona, numexpediente, enfermo, antecedentes)
+values (@id_persona, @exp_final, @enfermo, @antecedentes);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
 /* Qué hace: Inicia una transacción para ejecutar un UPDATE primero en los datos personales (tabla persona) y
 luego en los datos médicos (tabla cliente), usando la cédula como filtro de búsqueda. */
 
-/* Para qué sirve: Permite modificar el perfil de un paciente de forma atómica, asegurando que si falla la actualización de los antecedentes, 
+/* Para qué sirve: Permite modificar el perfil de un paciente de forma atómica, asegurando que si falla la actualización de los antecedentes,
 tampoco se guarden los cambios de dirección o teléfono, previniendo historiales corruptos. */
 
 create procedure sp_editar_cliente
@@ -338,99 +342,100 @@ create procedure sp_editar_cliente
     @antecedentes text
 as
 begin
-    begin transaction;
-    begin try
-        update persona 
-        set persona.fechanacimiento = @fechanacimiento, 
-            persona.nombre = @nombre, 
-            persona.apellido = @apellido, 
-            persona.telefono = @telefono, 
-            persona.direccion = @direccion, 
-            persona.estado = @estado, 
-            persona.genero = @genero 
-        where persona.cedula = @cedula;
+begin transaction;
+begin try
+update persona
+set persona.fechanacimiento = @fechanacimiento,
+    persona.nombre = @nombre,
+    persona.apellido = @apellido,
+    persona.telefono = @telefono,
+    persona.direccion = @direccion,
+    persona.estado = @estado,
+    persona.genero = @genero
+where persona.cedula = @cedula;
 
-        update cliente 
-        set cliente.enfermo = @enfermo, 
-            cliente.numexpediente = @numexpediente, 
-            cliente.antecedentes = @antecedentes 
-        where cliente.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
+update cliente
+set cliente.enfermo = @enfermo,
+    cliente.numexpediente = @numexpediente,
+    cliente.antecedentes = @antecedentes
+where cliente.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
 /* Qué hace: Envuelve en una transacción segura una actualización sobre la tabla persona para cambiar la columna estado a 0. */
 
-/* Para qué sirve: Realiza un borrado lógico (soft delete) del paciente en el sistema, asegurando que sus datos no aparezcan en 
+/* Para qué sirve: Realiza un borrado lógico (soft delete) del paciente en el sistema, asegurando que sus datos no aparezcan en
 listados activos pero se mantengan intactos para la bitácora del hospital. */
 
 create procedure sp_eliminar_cliente
     @cedula varchar(20)
 as
 begin
-    begin transaction;
-    begin try
-        update persona 
-        set persona.estado = 0 
-        where persona.cedula = @cedula;
+begin transaction;
+begin try
+update persona
+set persona.estado = 0
+where persona.cedula = @cedula;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
+
 
 
 -- =========================================================================
 -- SECCIÓN: CONSULTAS Y EVALUACIÓN FÍSICA
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Primero, inserta los datos principales de la consulta médica 
-en la tabla consulta, luego, captura automáticamente el código generado (SCOPE_IDENTITY()) e inserta los signos vitales 
-y datos antropométricos correspondientes en la tabla evaluacionFisica. 
+/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Primero, inserta los datos principales de la consulta médica
+en la tabla consulta, luego, captura automáticamente el código generado (SCOPE_IDENTITY()) e inserta los signos vitales
+y datos antropométricos correspondientes en la tabla evaluacionFisica.
 Finalmente si todo sale bien, guarda los cambios (COMMIT), y si algo falla revierte todo (ROLLBACK). */
 
-/* Para qué sirve: Garantiza la consistencia de los datos. En nuestro sistema médico, una consulta y su evaluación física van 
+/* Para qué sirve: Garantiza la consistencia de los datos. En nuestro sistema médico, una consulta y su evaluación física van
 de la mano, este procedimiento evita que se guarde una consulta a medias si ocurre un error en el sistema a mitad del proceso. */
 
 create procedure sp_registrar_consulta
-    @codigo_medico int, 
-    @codigo_cliente int, 
-    @fechaconsulta datetime, 
-    @sintomas text, 
+    @codigo_medico int,
+    @codigo_cliente int,
+    @fechaconsulta datetime,
+    @sintomas text,
     @diagnostico text,
-    @temperatura float, 
-    @frecuenciacardiaca int, 
-    @presionarterial varchar(20), 
-    @peso float, 
+    @temperatura float,
+    @frecuenciacardiaca int,
+    @presionarterial varchar(20),
+    @peso float,
     @talla float
 as
 begin
-    begin transaction;
-    begin try
-        insert into consulta (codigo_medico, codigo_cliente, fechaconsulta, sintomas, diagnostico, addresumen)
+begin transaction;
+begin try
+insert into consulta (codigo_medico, codigo_cliente, fechaconsulta, sintomas, diagnostico, addresumen)
         values (@codigo_medico, @codigo_cliente, @fechaconsulta, @sintomas, @diagnostico, 1);
 
         declare @codigo_cons int = scope_identity();
 
-        insert into evaluacionfisica (codigo_cons, temperatura, frecuenciacardiaca, presionarterial, peso, talla)
-        values (@codigo_cons, @temperatura, @frecuenciacardiaca, @presionarterial, @peso, @talla);
+insert into evaluacionfisica (codigo_cons, temperatura, frecuenciacardiaca, presionarterial, peso, talla)
+values (@codigo_cons, @temperatura, @frecuenciacardiaca, @presionarterial, @peso, @talla);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -448,17 +453,17 @@ create procedure sp_crear_evaluacion_fisica
     @talla float
 as
 begin
-    begin transaction;
-    begin try
-        insert into evaluacionfisica (codigo_cons, temperatura, frecuenciacardiaca, presionarterial, peso, talla)
+begin transaction;
+begin try
+insert into evaluacionfisica (codigo_cons, temperatura, frecuenciacardiaca, presionarterial, peso, talla)
         values (@codigo_cons, @temperatura, @frecuenciacardiaca, @presionarterial, @peso, @talla);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -478,17 +483,17 @@ create procedure sp_crear_enfermedad
     @vigilancia bit
 as
 begin
-    begin transaction;
-    begin try
-        insert into enfermedad (nombre, descripcion, vigilancia)
+begin transaction;
+begin try
+insert into enfermedad (nombre, descripcion, vigilancia)
         values (@nombre, @descripcion, @vigilancia);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -503,20 +508,20 @@ create procedure sp_editar_enfermedad
     @vigilancia bit
 as
 begin
-    begin transaction;
-    begin try
-        update enfermedad 
-        set enfermedad.nombre = @nombre, 
-            enfermedad.descripcion = @descripcion, 
-            enfermedad.vigilancia = @vigilancia 
-        where enfermedad.codigo_enfermedad = @codigo_enfermedad;
+begin transaction;
+begin try
+update enfermedad
+set enfermedad.nombre = @nombre,
+    enfermedad.descripcion = @descripcion,
+    enfermedad.vigilancia = @vigilancia
+where enfermedad.codigo_enfermedad = @codigo_enfermedad;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -528,17 +533,17 @@ create procedure sp_eliminar_enfermedad
     @codigo_enfermedad int
 as
 begin
-    begin transaction;
-    begin try
-        delete from enfermedad 
-        where enfermedad.codigo_enfermedad = @codigo_enfermedad;
+begin transaction;
+begin try
+delete from enfermedad
+where enfermedad.codigo_enfermedad = @codigo_enfermedad;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -548,7 +553,7 @@ go
 -- =========================================================================
 
 /* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta primero los datos personales en la tabla persona y
-recupera el ID generado usando SCOPE_IDENTITY(). Luego, inserta los datos específicos en la tabla enfermera. 
+recupera el ID generado usando SCOPE_IDENTITY(). Luego, inserta los datos específicos en la tabla enfermera.
 Finaliza con COMMIT o revierte con ROLLBACK si ocurre un error. */
 
 /* Para qué sirve: Mantiene la integridad referencial al registrar una nueva enfermera, asegurando que ambos registros
@@ -566,26 +571,26 @@ create procedure sp_crear_enfermera
     @turno varchar(50)
 as
 begin
-    begin transaction;
-    begin try
-        insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero)
+begin transaction;
+begin try
+insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero)
         values (@fechanacimiento, @nombre, @apellido, @cedula, @telefono, @estado, @direccion, @genero);
 
         declare @id_persona int = scope_identity();
 
-        insert into enfermera (codigo_persona, turno)
-        values (@id_persona, @turno);
+insert into enfermera (codigo_persona, turno)
+values (@id_persona, @turno);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
-/* Qué hace: Inicia una transacción para ejecutar un UPDATE en la tabla persona y luego otro UPDATE en la tabla 
+/* Qué hace: Inicia una transacción para ejecutar un UPDATE en la tabla persona y luego otro UPDATE en la tabla
 enfermera usando la cédula como filtro de búsqueda. */
 
 /* Para qué sirve: Permite modificar el perfil de una enfermera de forma segura, garantizando que tanto sus datos
@@ -603,52 +608,52 @@ create procedure sp_editar_enfermera
     @turno varchar(50)
 as
 begin
-    begin transaction;
-    begin try
-        update persona 
-        set persona.fechanacimiento = @fechanacimiento, 
-            persona.nombre = @nombre, 
-            persona.apellido = @apellido, 
-            persona.telefono = @telefono, 
-            persona.direccion = @direccion, 
-            persona.estado = @estado, 
-            persona.genero = @genero 
-        where persona.cedula = @cedula;
+begin transaction;
+begin try
+update persona
+set persona.fechanacimiento = @fechanacimiento,
+    persona.nombre = @nombre,
+    persona.apellido = @apellido,
+    persona.telefono = @telefono,
+    persona.direccion = @direccion,
+    persona.estado = @estado,
+    persona.genero = @genero
+where persona.cedula = @cedula;
 
-        update enfermera 
-        set enfermera.turno = @turno 
-        where enfermera.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
+update enfermera
+set enfermera.turno = @turno
+where enfermera.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
 /* Qué hace: Envuelve en una transacción un UPDATE sobre la tabla persona para cambiar la columna estado a 0 filtrando por la cédula. */
 
-/* Para qué sirve: Realiza un borrado lógico de la enfermera en el sistema, lo que evita perder el historial de sus acciones mientras se 
+/* Para qué sirve: Realiza un borrado lógico de la enfermera en el sistema, lo que evita perder el historial de sus acciones mientras se
 le revoca el acceso y visibilidad en los listados activos. */
 
 create procedure sp_desactivar_enfermera
     @cedula varchar(20)
 as
 begin
-    begin transaction;
-    begin try
-        update persona 
-        set persona.estado = 0 
-        where persona.cedula = @cedula;
+begin transaction;
+begin try
+update persona
+set persona.estado = 0
+where persona.cedula = @cedula;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -657,7 +662,7 @@ go
 -- SECCIÓN: ESPECIALIDADES
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta el nombre de una nueva especialidad médica en el catálogo. 
+/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta el nombre de una nueva especialidad médica en el catálogo.
 Finaliza con COMMIT o revierte con ROLLBACK si ocurre un error. */
 
 /* Para qué sirve: Mantiene un catálogo estandarizado de las áreas de la medicina que manejan los doctores de la clínica. */
@@ -666,17 +671,17 @@ create procedure sp_crear_especialidad
     @nombre varchar(100)
 as
 begin
-    begin transaction;
-    begin try
-        insert into especialidad (nombre)
+begin transaction;
+begin try
+insert into especialidad (nombre)
         values (@nombre);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -689,18 +694,18 @@ create procedure sp_editar_especialidad
     @nombre varchar(100)
 as
 begin
-    begin transaction;
-    begin try
-        update especialidad 
-        set especialidad.nombre = @nombre 
-        where especialidad.codigo_especialidad = @codigo_especialidad;
+begin transaction;
+begin try
+update especialidad
+set especialidad.nombre = @nombre
+where especialidad.codigo_especialidad = @codigo_especialidad;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -713,17 +718,17 @@ create procedure sp_eliminar_especialidad
     @codigo_especialidad int
 as
 begin
-    begin transaction;
-    begin try
-        delete from especialidad 
-        where especialidad.codigo_especialidad = @codigo_especialidad;
+begin transaction;
+begin try
+delete from especialidad
+where especialidad.codigo_especialidad = @codigo_especialidad;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -744,17 +749,17 @@ create procedure sp_crear_lote_vacuna
     @cantidad int
 as
 begin
-    begin transaction;
-    begin try
-        insert into lote_vacuna (codigo_vacuna, no_lote, fechavencimiento, cantidad)
+begin transaction;
+begin try
+insert into lote_vacuna (codigo_vacuna, no_lote, fechavencimiento, cantidad)
         values (@codigo_vacuna, @no_lote, @fechavencimiento, @cantidad);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -770,44 +775,44 @@ create procedure sp_editar_lote_vacuna
     @cantidad int
 as
 begin
-    begin transaction;
-    begin try
-        update lote_vacuna 
-        set lote_vacuna.codigo_vacuna = @codigo_vacuna, 
-            lote_vacuna.no_lote = @no_lote, 
-            lote_vacuna.fechavencimiento = @fechavencimiento, 
-            lote_vacuna.cantidad = @cantidad 
-        where lote_vacuna.codigo_lote = @codigo_lote;
+begin transaction;
+begin try
+update lote_vacuna
+set lote_vacuna.codigo_vacuna = @codigo_vacuna,
+    lote_vacuna.no_lote = @no_lote,
+    lote_vacuna.fechavencimiento = @fechavencimiento,
+    lote_vacuna.cantidad = @cantidad
+where lote_vacuna.codigo_lote = @codigo_lote;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
 /* Qué hace: Borra un registro de la tabla lote_vacuna utilizando su identificador, asegurando la consistencia mediante una transacción. */
 
-/* Para qué sirve: Elimina un lote del sistema en caso de registro duplicado. Ojo: SQL Server bloqueará automáticamente esta acción si este 
+/* Para qué sirve: Elimina un lote del sistema en caso de registro duplicado. Ojo: SQL Server bloqueará automáticamente esta acción si este
 lote ya tiene registros de vacunación vinculados por llave foránea. */
 
 create procedure sp_eliminar_lote_vacuna
     @codigo_lote int
 as
 begin
-    begin transaction;
-    begin try
-        delete from lote_vacuna 
-        where lote_vacuna.codigo_lote = @codigo_lote;
+begin transaction;
+begin try
+delete from lote_vacuna
+where lote_vacuna.codigo_lote = @codigo_lote;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -816,7 +821,7 @@ go
 -- SECCIÓN: MEDICAMENTOS
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta los datos de un nuevo medicamento en el catálogo. Finaliza con COMMIT o 
+/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta los datos de un nuevo medicamento en el catálogo. Finaliza con COMMIT o
 revierte con ROLLBACK en caso de error. */
 
 /* Para qué sirve: Registra de manera segura un nuevo fármaco disponible para ser recetado posteriormente en las consultas de la clínica. */
@@ -827,17 +832,17 @@ create procedure sp_crear_medicamento
     @descripcion text
 as
 begin
-    begin transaction;
-    begin try
-        insert into medicamento (nombre, concentracion, descripcion)
+begin transaction;
+begin try
+insert into medicamento (nombre, concentracion, descripcion)
         values (@nombre, @concentracion, @descripcion);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -852,42 +857,42 @@ create procedure sp_editar_medicamento
     @descripcion text
 as
 begin
-    begin transaction;
-    begin try
-        update medicamento 
-        set medicamento.nombre = @nombre, 
-            medicamento.concentracion = @concentracion, 
-            medicamento.descripcion = @descripcion 
-        where medicamento.codigo_medicamento = @codigo_medicamento;
+begin transaction;
+begin try
+update medicamento
+set medicamento.nombre = @nombre,
+    medicamento.concentracion = @concentracion,
+    medicamento.descripcion = @descripcion
+where medicamento.codigo_medicamento = @codigo_medicamento;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
 /* Qué hace: Ejecuta un DELETE protegido por un bloque transaccional sobre la tabla medicamento. */
-/* Para qué sirve: Elimina un fármaco del catálogo. La base de datos bloqueará automáticamente esto por la llave foránea 
+/* Para qué sirve: Elimina un fármaco del catálogo. La base de datos bloqueará automáticamente esto por la llave foránea
 si el medicamento ya ha sido asignado en alguna receta médica. */
 
 create procedure sp_eliminar_medicamento
     @codigo_medicamento int
 as
 begin
-    begin transaction;
-    begin try
-        delete from medicamento 
-        where medicamento.codigo_medicamento = @codigo_medicamento;
+begin transaction;
+begin try
+delete from medicamento
+where medicamento.codigo_medicamento = @codigo_medicamento;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -896,8 +901,8 @@ go
 -- SECCIÓN: MÉDICOS
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta los datos personales del médico en la tabla persona y 
-recupera el identificador generado (SCOPE_IDENTITY). Luego inserta los datos profesionales en la tabla medico, manejando el 
+/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta los datos personales del médico en la tabla persona y
+recupera el identificador generado (SCOPE_IDENTITY). Luego inserta los datos profesionales en la tabla medico, manejando el
 código de usuario como nulo si llega en cero. Si todo es correcto hace COMMIT, sino revierte con ROLLBACK. */
 
 /* Para qué sirve: Mantiene la consistencia referencial al registrar un doctor en la clínica, garantizando que su perfil personal y
@@ -917,36 +922,36 @@ create procedure sp_crear_medico
     @maxcitaspordia int
 as
 begin
-    begin transaction;
-    begin try
-        insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero)
+begin transaction;
+begin try
+insert into persona (fechanacimiento, nombre, apellido, cedula, telefono, estado, direccion, genero)
         values (@fechanacimiento, @nombre, @apellido, @cedula, @telefono, @estado, @direccion, @genero);
 
         declare @id_persona int = scope_identity();
 
         if (@codigo_usuario = 0)
-        begin
-            insert into medico (codigo_persona, codigo_usuario, codigo_especialidad, maxcitaspordia)
-            values (@id_persona, null, @codigo_especialidad, @maxcitaspordia);
-        end
-        else
-        begin
-            insert into medico (codigo_persona, codigo_usuario, codigo_especialidad, maxcitaspordia)
-            values (@id_persona, @codigo_usuario, @codigo_especialidad, @maxcitaspordia);
-        end
+begin
+insert into medico (codigo_persona, codigo_usuario, codigo_especialidad, maxcitaspordia)
+values (@id_persona, null, @codigo_especialidad, @maxcitaspordia);
+end
+else
+begin
+insert into medico (codigo_persona, codigo_usuario, codigo_especialidad, maxcitaspordia)
+values (@id_persona, @codigo_usuario, @codigo_especialidad, @maxcitaspordia);
+end
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
 /* Qué hace: Inicia una transacción para ejecutar un UPDATE en la tabla persona y otro en la tabla medico usando la cédula como filtro de búsqueda. */
 
-/* Para qué sirve: Permite modificar de forma atómica y segura el perfil de un médico, asegurando que tanto su información personal como su especialidad o 
+/* Para qué sirve: Permite modificar de forma atómica y segura el perfil de un médico, asegurando que tanto su información personal como su especialidad o
 límite de citas se actualicen simultáneamente. */
 
 create procedure sp_editar_medico
@@ -962,53 +967,53 @@ create procedure sp_editar_medico
     @maxcitaspordia int
 as
 begin
-    begin transaction;
-    begin try
-        update persona 
-        set persona.fechanacimiento = @fechanacimiento, 
-            persona.nombre = @nombre, 
-            persona.apellido = @apellido, 
-            persona.telefono = @telefono, 
-            persona.direccion = @direccion, 
-            persona.estado = @estado, 
-            persona.genero = @genero 
-        where persona.cedula = @cedula;
+begin transaction;
+begin try
+update persona
+set persona.fechanacimiento = @fechanacimiento,
+    persona.nombre = @nombre,
+    persona.apellido = @apellido,
+    persona.telefono = @telefono,
+    persona.direccion = @direccion,
+    persona.estado = @estado,
+    persona.genero = @genero
+where persona.cedula = @cedula;
 
-        update medico 
-        set medico.codigo_especialidad = @codigo_especialidad, 
-            medico.maxcitaspordia = @maxcitaspordia 
-        where medico.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
+update medico
+set medico.codigo_especialidad = @codigo_especialidad,
+    medico.maxcitaspordia = @maxcitaspordia
+where medico.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
 /* Qué hace: Envuelve en una transacción un UPDATE sobre la tabla persona para cambiar la columna estado a 0 filtrando por la cédula. */
 
-/* Para qué sirve: Realiza un borrado lógico del médico en el sistema, removiéndolo de las listas activas pero conservando su 
+/* Para qué sirve: Realiza un borrado lógico del médico en el sistema, removiéndolo de las listas activas pero conservando su
 historial de recetas, consultas y diagnósticos intactos. */
 
 create procedure sp_desactivar_medico
     @cedula varchar(20)
 as
 begin
-    begin transaction;
-    begin try
-        update persona 
-        set persona.estado = 0 
-        where persona.cedula = @cedula;
+begin transaction;
+begin try
+update persona
+set persona.estado = 0
+where persona.cedula = @cedula;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1017,54 +1022,54 @@ go
 -- SECCIÓN: PERSONAS
 -- =========================================================================
 
-/* Qué hace: Recibe una cédula como parámetro, busca el código interno de la persona, y ejecuta dos operaciones en una 
-sola transacción: cambia el estado de la persona a inactivo (estado = 0) y busca todas sus citas futuras que 
+/* Qué hace: Recibe una cédula como parámetro, busca el código interno de la persona, y ejecuta dos operaciones en una
+sola transacción: cambia el estado de la persona a inactivo (estado = 0) y busca todas sus citas futuras que
 estuvieran pendientes para pasarlas automáticamente a estado 'Cancelada'. */
 
-/* Para qué sirve: Automatiza el proceso de dar de baja a un paciente o usuario. Así nos aseguramos de que un paciente inactivo 
+/* Para qué sirve: Automatiza el proceso de dar de baja a un paciente o usuario. Así nos aseguramos de que un paciente inactivo
 no se quede con citas fantasma o pendientes ocupando la agenda de los médicos. */
 
 create procedure sp_desactivar_persona
     @cedula varchar(15)
-as 
+as
 begin
     declare @codigo_persona int;
-    select @codigo_persona = persona.codigo_persona 
-    from persona 
-    where persona.cedula = @cedula;
+select @codigo_persona = persona.codigo_persona
+from persona
+where persona.cedula = @cedula;
 
-    begin transaction;
-    begin try
-        update persona 
-        set persona.estado = 0 
-        where persona.codigo_persona = @codigo_persona;
+begin transaction;
+begin try
+update persona
+set persona.estado = 0
+where persona.codigo_persona = @codigo_persona;
 
-        update cita 
-        set cita.estado = 'Cancelada' 
-        where cita.codigo_cliente = @codigo_persona and cita.fechacita >= getdate() and cita.estado = 'Pendiente';
+update cita
+set cita.estado = 'Cancelada'
+where cita.codigo_cliente = @codigo_persona and cita.fechacita >= getdate() and cita.estado = 'Pendiente';
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
-/* Qué hace: Recibe una cédula como parámetro y actualiza directamente el estado de la persona a activo (estado = 1) 
+/* Qué hace: Recibe una cédula como parámetro y actualiza directamente el estado de la persona a activo (estado = 1)
 en la tabla correspondiente, permitiéndole nuevamente el acceso al sistema. */
 
-/*Para qué sirve: Automatiza el proceso de reactivar a un paciente o usuario de manera rápida y directa, habilitando su perfil 
+/*Para qué sirve: Automatiza el proceso de reactivar a un paciente o usuario de manera rápida y directa, habilitando su perfil
 para que pueda volver a utilizar los servicios clínicos y agendar citas. */
 
 create procedure sp_activar_persona
-    @cedula varchar(20) 
+    @cedula varchar(20)
 as
 begin
-    update persona 
-    set persona.estado = 1 
-    where persona.cedula = @cedula;
+update persona
+set persona.estado = 1
+where persona.cedula = @cedula;
 end;
 go
 
@@ -1073,7 +1078,7 @@ go
 -- SECCIÓN: RECETAS MÉDICAS
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta un nuevo registro en la tabla receta_medica vinculando 
+/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta un nuevo registro en la tabla receta_medica vinculando
 la consulta con el medicamento y sus indicaciones. Si la operación es exitosa realiza COMMIT, de lo contrario revierte con ROLLBACK. */
 
 /* Para qué sirve: Registra de forma segura la prescripción de un medicamento a un paciente dentro de una consulta médica específica. */
@@ -1087,17 +1092,17 @@ create procedure sp_crear_receta_medica
     @descripcion text
 as
 begin
-    begin transaction;
-    begin try
-        insert into receta_medica (codigo_cons, codigo_medicamento, frecuencia, duracion, dosis, descripcion)
+begin transaction;
+begin try
+insert into receta_medica (codigo_cons, codigo_medicamento, frecuencia, duracion, dosis, descripcion)
         values (@codigo_cons, @codigo_medicamento, @frecuencia, @duracion, @dosis, @descripcion);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1106,7 +1111,7 @@ go
 -- SECCIÓN: TIPOS DE ANÁLISIS
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta un nuevo registro en la tabla tipo_analisis con su nombre y descripción. 
+/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta un nuevo registro en la tabla tipo_analisis con su nombre y descripción.
 Si todo sale bien ejecuta COMMIT, de lo contrario revierte con ROLLBACK. */
 
 /* Para qué sirve: Registra de manera segura un nuevo tipo de prueba de laboratorio en el catálogo del sistema médico. */
@@ -1116,17 +1121,17 @@ create procedure sp_crear_tipo_analisis
     @descripcion text
 as
 begin
-    begin transaction;
-    begin try
-        insert into tipo_analisis (nombre, descripcion)
+begin transaction;
+begin try
+insert into tipo_analisis (nombre, descripcion)
         values (@nombre, @descripcion);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1140,19 +1145,19 @@ create procedure sp_editar_tipo_analisis
     @descripcion text
 as
 begin
-    begin transaction;
-    begin try
-        update tipo_analisis 
-        set tipo_analisis.nombre = @nombre, 
-            tipo_analisis.descripcion = @descripcion 
-        where tipo_analisis.codigo_tipo = @codigo_tipo;
+begin transaction;
+begin try
+update tipo_analisis
+set tipo_analisis.nombre = @nombre,
+    tipo_analisis.descripcion = @descripcion
+where tipo_analisis.codigo_tipo = @codigo_tipo;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1164,17 +1169,17 @@ create procedure sp_eliminar_tipo_analisis
     @codigo_tipo int
 as
 begin
-    begin transaction;
-    begin try
-        delete from tipo_analisis 
-        where tipo_analisis.codigo_tipo = @codigo_tipo;
+begin transaction;
+begin try
+delete from tipo_analisis
+where tipo_analisis.codigo_tipo = @codigo_tipo;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1183,10 +1188,10 @@ go
 -- SECCIÓN: USUARIOS
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta el nuevo usuario y, si se le pasa una cédula, busca a qué tabla de personal 
+/* Qué hace: Utiliza una transacción (BEGIN TRANSACTION). Inserta el nuevo usuario y, si se le pasa una cédula, busca a qué tabla de personal
 (medico o enfermera) pertenece para enlazar automáticamente el código de usuario generado (SCOPE_IDENTITY). Termina con COMMIT o revierte con ROLLBACK. */
 
-/* Para qué sirve: Centraliza la creación de credenciales y su asignación al personal médico en un solo paso atómico, 
+/* Para qué sirve: Centraliza la creación de credenciales y su asignación al personal médico en un solo paso atómico,
 evitando que un doctor se quede sin poder iniciar sesión por un error de red. */
 
 create procedure sp_crear_usuario
@@ -1196,36 +1201,36 @@ create procedure sp_crear_usuario
     @cedula varchar(20)
 as
 begin
-    begin transaction;
-    begin try
-        insert into usuario (nombreusuario, password, rol)
+begin transaction;
+begin try
+insert into usuario (nombreusuario, password, rol)
         values (@nombreusuario, @password, @rol);
 
         declare @id_usuario int = scope_identity();
 
         if (@cedula is not null and @cedula != '')
-        begin
+begin
             if (@rol = 'Medico' or @rol = 'Médico')
-            begin
-                update medico
-                set medico.codigo_usuario = @id_usuario
-                where medico.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
-            end
-            
-            if (@rol = 'Enfermera')
-            begin
-                update enfermera
-                set enfermera.codigo_usuario = @id_usuario
-                where enfermera.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
-            end
-        end
+begin
+update medico
+set medico.codigo_usuario = @id_usuario
+where medico.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
+end
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+            if (@rol = 'Enfermera')
+begin
+update enfermera
+set enfermera.codigo_usuario = @id_usuario
+where enfermera.codigo_persona = (select persona.codigo_persona from persona where persona.cedula = @cedula);
+end
+end
+
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1239,19 +1244,19 @@ create procedure sp_editar_usuario
     @rol varchar(50)
 as
 begin
-    begin transaction;
-    begin try
-        update usuario 
-        set usuario.password = @password, 
-            usuario.rol = @rol 
-        where usuario.nombreusuario = @nombreusuario;
+begin transaction;
+begin try
+update usuario
+set usuario.password = @password,
+    usuario.rol = @rol
+where usuario.nombreusuario = @nombreusuario;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1263,17 +1268,17 @@ create procedure sp_eliminar_usuario
     @nombreusuario varchar(100)
 as
 begin
-    begin transaction;
-    begin try
-        delete from usuario 
-        where usuario.nombreusuario = @nombreusuario;
+begin transaction;
+begin try
+delete from usuario
+where usuario.nombreusuario = @nombreusuario;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1282,7 +1287,7 @@ go
 -- SECCIÓN: VACUNAS
 -- =========================================================================
 
-/* Qué hace: Utiliza una transacción (begin transaction). Inserta una nueva vacuna en el catálogo. 
+/* Qué hace: Utiliza una transacción (begin transaction). Inserta una nueva vacuna en el catálogo.
 Si todo sale bien ejecuta commit, de lo contrario revierte con rollback. */
 
 /* Para qué sirve: Registra de manera segura un nuevo tipo de vacuna en el sistema del hospital. */
@@ -1292,17 +1297,17 @@ create procedure sp_crear_vacuna
     @descripcion text
 as
 begin
-    begin transaction;
-    begin try
-        insert into vacuna (nombre, descripcion)
+begin transaction;
+begin try
+insert into vacuna (nombre, descripcion)
         values (@nombre, @descripcion);
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1316,19 +1321,19 @@ create procedure sp_editar_vacuna
     @descripcion text
 as
 begin
-    begin transaction;
-    begin try
-        update vacuna 
-        set vacuna.nombre = @nombre, 
-            vacuna.descripcion = @descripcion 
-        where vacuna.codigo_vacuna = @codigo_vacuna;
+begin transaction;
+begin try
+update vacuna
+set vacuna.nombre = @nombre,
+    vacuna.descripcion = @descripcion
+where vacuna.codigo_vacuna = @codigo_vacuna;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1341,21 +1346,21 @@ create procedure sp_eliminar_vacuna
     @codigo_vacuna int
 as
 begin
-    begin transaction;
-    begin try
-        delete from vacuna 
-        where vacuna.codigo_vacuna = @codigo_vacuna;
+begin transaction;
+begin try
+delete from vacuna
+where vacuna.codigo_vacuna = @codigo_vacuna;
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
-/* Qué hace: Inicia una transacción para insertar el registro de la aplicación de una vacuna a un paciente en la tabla regvacuna. 
+/* Qué hace: Inicia una transacción para insertar el registro de la aplicación de una vacuna a un paciente en la tabla regvacuna.
 Obtiene el id de la persona mediante una subconsulta a la cédula. */
 
 /* Para qué sirve: Registra de manera segura cuándo, quién y a qué paciente se le aplicó una dosis específica, blindando el proceso ante fallos de conexión. */
@@ -1368,9 +1373,9 @@ create procedure sp_aplicar_vacuna
     @aplicada bit
 as
 begin
-    begin transaction;
-    begin try
-        insert into regvacuna (codigo_cliente, codigo_lote, codigo_enfermera, fecha, aplicada)
+begin transaction;
+begin try
+insert into regvacuna (codigo_cliente, codigo_lote, codigo_enfermera, fecha, aplicada)
         values (
             (select persona.codigo_persona from persona where persona.cedula = @cedula_cliente),
             @codigo_lote,
@@ -1379,12 +1384,12 @@ begin
             @aplicada
         );
 
-        commit transaction;
-    end try
-    begin catch
-        rollback transaction;
+commit transaction;
+end try
+begin catch
+rollback transaction;
         throw;
-    end catch
+end catch
 end;
 go
 
@@ -1392,59 +1397,59 @@ go
 
 
 -- =========================================================================
--- SECCIÓN: DISPARADORES (TRIGGERS)
+-- DISPARADORES (TRIGGERS)
 -- =========================================================================
 
-/* Qué hace: Es un disparador de tipo AFTER INSERT en la tabla regVacuna. Cada vez que se registra la aplicación de una vacuna a 
+/* Qué hace: Es un disparador de tipo AFTER INSERT en la tabla regVacuna. Cada vez que se registra la aplicación de una vacuna a
 un paciente, el trigger detecta qué lote se usó y le resta exactamente 1 a la cantidad disponible en la tabla lote_vacuna. */
 
-/* Para qué sirve: Automatiza el control del inventario. El personal de enfermería solo registra la vacunación y el sistema 
+/* Para qué sirve: Automatiza el control del inventario. El personal de enfermería solo registra la vacunación y el sistema
 se encarga de descontar la dosis del almacén en tiempo real, evitando errores humanos de conteo manual. */
 create trigger trg_descontar_stock_vacuna
-on regvacuna
-after insert
+    on regvacuna
+    after insert
 as
 begin
-    update lote_vacuna
-    set lote_vacuna.cantidad = lote_vacuna.cantidad - 1
-    from lote_vacuna 
+update lote_vacuna
+set lote_vacuna.cantidad = lote_vacuna.cantidad - 1
+    from lote_vacuna
     inner join inserted on lote_vacuna.codigo_lote = inserted.codigo_lote;
 end;
 go
 
-/* Qué hace: Es un trigger que antes de permitir que se guarde un nuevo lote o se modifique uno existente, revisa si la 
-fecha de vencimiento es menor a la fecha actual (< GETDATE()).  Si detecta que está vencido, lanza un error con RAISERROR 
+/* Qué hace: Es un trigger que antes de permitir que se guarde un nuevo lote o se modifique uno existente, revisa si la
+fecha de vencimiento es menor a la fecha actual (< GETDATE()).  Si detecta que está vencido, lanza un error con RAISERROR
 y cancela la operación con un ROLLBACK. */
 
-/* Para qué sirve: Funciona como un mecanismo de seguridad a nivel de base de datos que imposibilita físicamente que 
+/* Para qué sirve: Funciona como un mecanismo de seguridad a nivel de base de datos que imposibilita físicamente que
 alguien ingrese un medicamento o vacuna caducada por descuido al sistema. */
 create trigger trg_validar_vencimiento_lote
-on lote_vacuna
-instead of insert, update
-as
+    on lote_vacuna
+    instead of insert, update
+                           as
 begin
     if exists (select 1 from inserted where inserted.fechavencimiento < getdate())
-    begin
+begin
         raiserror('Error: No se puede registrar o actualizar un lote con una fecha de vencimiento pasada.', 16, 1);
-        rollback transaction;
-        return;
-    end
+rollback transaction;
+return;
+end
 
     if exists (select * from deleted)
-    begin
-        update lote_vacuna 
-        set lote_vacuna.codigo_vacuna = inserted.codigo_vacuna, 
-            lote_vacuna.no_lote = inserted.no_lote, 
-            lote_vacuna.fechavencimiento = inserted.fechavencimiento, 
-            lote_vacuna.cantidad = inserted.cantidad
-        from lote_vacuna 
+begin
+update lote_vacuna
+set lote_vacuna.codigo_vacuna = inserted.codigo_vacuna,
+    lote_vacuna.no_lote = inserted.no_lote,
+    lote_vacuna.fechavencimiento = inserted.fechavencimiento,
+    lote_vacuna.cantidad = inserted.cantidad
+    from lote_vacuna
         inner join inserted on lote_vacuna.codigo_lote = inserted.codigo_lote;
-    end
-    else
-    begin
-        insert into lote_vacuna (codigo_vacuna, no_lote, fechavencimiento, cantidad)
-        select inserted.codigo_vacuna, inserted.no_lote, inserted.fechavencimiento, inserted.cantidad 
-        from inserted;
-    end
+end
+else
+begin
+insert into lote_vacuna (codigo_vacuna, no_lote, fechavencimiento, cantidad)
+select inserted.codigo_vacuna, inserted.no_lote, inserted.fechavencimiento, inserted.cantidad
+from inserted;
+end
 end;
 go
