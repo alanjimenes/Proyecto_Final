@@ -16,6 +16,20 @@ import logico.ReporteHistorial;
 
 public class HistorialService {
 
+
+    /**
+     * PROCESO: Obtiene o crea el registro de cabecera del historial clínico de un cliente utilizando su cédula, vinculando además el historial de sus consultas registradas.
+     * * ENTRADAS:
+     * - cedula: Cédula de identidad del paciente/cliente.
+     * * SALIDA: Objeto Historial instanciado con sus consultas asociadas, o null si el cliente no existe.
+     * * FLUJO DE LLAMADAS:
+     * 1. Llama a ClienteService.buscarClientePorCedula() para validar y recuperar al paciente.
+     * 2. Conecta a la base de datos vía ConexionDB.getConexion().
+     * 3. Ejecuta un SELECT en 'historial' por 'codigo_cliente' para verificar si posee un historial.
+     * 4. Si no tiene historial registrado, ejecuta un INSERT con RETURN_GENERATED_KEYS para crearlo de forma implícita.
+     * 5. Instancia el objeto Historial y recupera sus consultas llamando a ConsultaService.getConsultasPorCliente(cedula).
+     */
+
     public static Historial obtenerHistorialPorCedula(String cedula) {
         ClienteService clienteService = new ClienteService();
         Cliente cliente = clienteService.buscarClientePorCedula(cedula);
@@ -80,6 +94,18 @@ public class HistorialService {
         return historial;
     }
 
+
+    /**
+     * PROCESO: Genera un reporte detallado e integral del historial médico del paciente reuniendo datos personales, edad calculada, consultas, diagnósticos (concatenados vía string_agg) y registros de vacunación.
+     * * ENTRADAS:
+     * - cedula: Documento de identidad único del paciente.
+     * * SALIDA: List de objetos ReporteHistorial estructurados para presentación o exportación.
+     * * FLUJO DE LLAMADAS:
+     * 1. Conecta con la base de datos a través de ConexionDB.getConexion().
+     * 2. Prepara la consulta compleja uniendo 'persona', 'cliente', 'consulta', 'medico', 'especialidad' e invocando subconsultas con 'string_agg' para agrupar enfermedades y vacunas.
+     * 3. Setea la cédula con ps.setString(1, cedula).
+     * 4. Mapea cada tupla del ResultSet creando instancias de ReporteHistorial y asignando valores por defecto si los listados de vacunas o diagnósticos son nulos.
+     */
 
     public static List<ReporteHistorial> obtenerReporteHistorialCompleto(String cedula) {
         List<ReporteHistorial> listaReporte = new ArrayList<>();

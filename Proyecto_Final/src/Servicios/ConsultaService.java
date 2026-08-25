@@ -10,6 +10,24 @@ import java.util.ArrayList;
 
 public class ConsultaService {
 
+
+    /**
+     * PROCESO: Registra una consulta médica completa dentro de una transacción, integrando la resolución de cédulas de médico y cliente, evaluación física, recetas médicas y enfermedades diagnosticadas.
+     * * ENTRADAS:
+     * - con: Objeto Consulta que contiene la información básica (fecha, síntomas, diagnóstico) y sus listados/objetos asociados.
+     * - cedulaMedico: Cédula de identidad del médico que atiende la consulta.
+     * - cedulaCliente: Cédula de identidad del cliente/paciente que recibe la consulta.
+     * * SALIDA: boolean (true si toda la transacción se completa con éxito, false en caso de error o rollback).
+     * * FLUJO DE LLAMADAS:
+     * 1. Solicita la conexión mediante ConexionDB.getConexion() y desactiva el autoCommit para iniciar una transacción.
+     * 2. Prepara e ejecuta la sentencia INSERT en 'consulta' resolviendo las llaves foráneas mediante subconsultas por cédula y solicita las llaves generadas (RETURN_GENERATED_KEYS).
+     * 3. Recupera el ID autogenerado de la consulta registrada. Si falla, ejecuta rollback.
+     * 4. Si la consulta incluye evaluación física, delega a EvaluacionFisicaService.registrarEvaluacion().
+     * 5. Si incluye recetas, itera y llama a RecetaMedicaService.registrarReceta().
+     * 6. Si incluye enfermedades diagnosticadas, itera y llama a EnfermedadConsultaService.registrarDiagnostico().
+     * 7. Confirma la transacción con conn.commit() y reestablece el autoCommit/cierra la conexión en el bloque finally.
+     */
+
     public boolean registrarConsultaCompleta(Consulta con, String cedulaMedico, String cedulaCliente) {
         String sqlConsulta = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) " +
                 "values (?, ?, ?, (" +
@@ -91,6 +109,29 @@ public class ConsultaService {
         }
     }
 
+
+
+    /**
+     * PROCESO: Ejecuta un procedimiento almacenado ('sp_registrar_consulta') para registrar una consulta e incluir simultáneamente sus constantes vitales o evaluación física inicial.
+     * * ENTRADAS:
+     * - codigoMedico: Código numérico de la persona/médico.
+     * - codigoCliente: Código numérico de la persona/cliente.
+     * - fechaConsulta: Fecha y hora exacta en que se realiza la consulta.
+     * - sintomas: Cuadro clínico expresado por el cliente.
+     * - diagnostico: Juicio o dictamen clínico emitido por el médico.
+     * - temperatura: Medición de temperatura corporal del paciente.
+     * - frecuenciaCardiaca: Frecuencia cardíaca registrada (ppm).
+     * - presionArterial: Indicador de presión arterial (ej. "120/80").
+     * - peso: Peso registrado del cliente.
+     * - talla: Estatura o talla registrada del cliente.
+     * * SALIDA: boolean (true si la ejecución del Stored Procedure es exitosa, false en caso contrario).
+     * * FLUJO DE LLAMADAS:
+     * 1. Obtiene la conexión desde ConexionDB.getConexion().
+     * 2. Prepara la llamada al procedimiento mediante conn.prepareCall("{CALL sp_registrar_consulta(...)}").
+     * 3. Setea los 10 parámetros requeridos por el procedimiento almacenado.
+     * 4. Ejecuta el CallableStatement mediante stmt.execute().
+     */
+
     public boolean registrarConsultaSp(int codigoMedico, int codigoCliente, LocalDateTime fechaConsulta, String sintomas, String diagnostico, double temperatura, int frecuenciaCardiaca, String presionArterial, double peso, double talla) {
 
         String sql = "{CALL sp_registrar_consulta(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
@@ -116,86 +157,18 @@ public class ConsultaService {
         }
     }
 
-    public int iniciarConsulta(Consulta con, int codigoMedico, int codigoCliente) {
-        String sql = "insert into consulta (fechaconsulta, sintomas, diagnostico, codigo_medico, codigo_cliente) " +
-                "values (?, ?, ?, ?, ?)";
-        int generatedId = -1;
 
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            stmt.setTimestamp(1, Timestamp.valueOf(con.getFechaConsulta().atStartOfDay()));
-            stmt.setString(2, con.getSintomas());
-            stmt.setString(3, con.getDiagnostico());
-            stmt.setInt(4, codigoMedico);
-            stmt.setInt(5, codigoCliente);
-            stmt.executeUpdate();
-
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    generatedId = rs.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return generatedId;
-    }
-
-    public boolean guardarConsulta(int codigoConsulta, String sintomas, String diagnostico, ArrayList<Enfermedad> enfermedades) {
-        String sqlUpdate = "update consulta set consulta.sintomas = ?, consulta.diagnostico = ? " +
-                "where consulta.codigo_cons = ?";
-
-        String sqlEnfermedad = "insert into enfermedad_consulta (codigo_enfermedad, codigo_consulta) " +
-                "values (?, ?)";
-
-        Connection conn = null;
-
-        try {
-            conn = ConexionDB.getConexion();
-            conn.setAutoCommit(false);
-
-            try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
-                stmtUpdate.setString(1, sintomas);
-                stmtUpdate.setString(2, diagnostico);
-                stmtUpdate.setInt(3, codigoConsulta);
-                stmtUpdate.executeUpdate();
-            }
-
-            if (enfermedades != null && !enfermedades.isEmpty()) {
-                try (PreparedStatement stmtEnf = conn.prepareStatement(sqlEnfermedad)) {
-                    for (Enfermedad enf : enfermedades) {
-                        stmtEnf.setInt(1, enf.getCodigoEnfermedad());
-                        stmtEnf.setInt(2, codigoConsulta);
-                        stmtEnf.addBatch();
-                    }
-                    stmtEnf.executeBatch();
-                }
-            }
-
-            conn.commit();
-            return true;
-
-        } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+    /**
+     * PROCESO: Consulta el registro global de consultas ordenadas por fecha de forma descendente, construyendo y vinculando los objetos completos de Cliente, Medico, Especialidad y Enfermedades asociadas.
+     * * ENTRADAS: Ninguna.
+     * * SALIDA: ArrayList de objetos Consulta completamente poblados.
+     * * FLUJO DE LLAMADAS:
+     * 1. Conecta a la base de datos a través de ConexionDB.getConexion().
+     * 2. Prepara la sentencia SQL integrando múltiples INNER JOIN y LEFT JOIN (consulta, cliente, medico, persona, especialidad).
+     * 3. En cada iteración del ResultSet, instancia y puebla las entidades Consulta, Cliente y Medico (incluyendo Especialidad si corresponde).
+     * 4. Llama privadamente a obtenerEnfermedadesDeConsulta() usando la misma conexión para asociar el listado de enfermedades registradas en cada consulta.
+     * 5. Agrega el objeto estructurado a la lista de retorno.
+     */
 
     public ArrayList<Consulta> getTodasLasConsultas() {
         ArrayList<Consulta> lista = new ArrayList<>();
@@ -261,12 +234,8 @@ public class ConsultaService {
 
                 Consulta consulta = new Consulta();
 
-                // ==========================================
                 // DATOS DE LA CONSULTA
-                // ==========================================
-
                 consulta.setCodigoConsulta(rs.getInt("codigo_cons"));
-
                 Timestamp fechaConsulta = rs.getTimestamp("fechaconsulta");
 
                 if (fechaConsulta != null) {
@@ -274,25 +243,15 @@ public class ConsultaService {
                 }
 
                 consulta.setSintomas(rs.getString("sintomas"));
-
                 consulta.setDiagnostico(rs.getString("diagnostico"));
 
-                // ==========================================
                 // CLIENTE
-                // ==========================================
-
                 Cliente cliente = new Cliente();
-
                 cliente.setCodigoPersona(rs.getInt("codigo_cliente"));
-
                 cliente.setNombre(rs.getString("nombre_cliente"));
-
                 cliente.setApellido(rs.getString("apellido_cliente"));
-
                 cliente.setCedula(rs.getString("cedula_cliente"));
-
                 cliente.setTelefono(rs.getString("telefono_cliente"));
-
                 Date fechaNacimientoCliente = rs.getDate("fecha_nacimiento_cliente");
 
                 if (fechaNacimientoCliente != null) {
@@ -300,35 +259,20 @@ public class ConsultaService {
                 }
 
                 cliente.setDireccion(rs.getString("direccion_cliente"));
-
                 cliente.setEstado(rs.getBoolean("estado_cliente"));
-
                 cliente.setGenero(rs.getString("genero_cliente"));
-
                 cliente.setNumExpediente(rs.getString("numexpediente"));
-
                 cliente.setEnfermo(rs.getBoolean("enfermo"));
-
                 cliente.setAntecedentes(rs.getString("antecedentes"));
-
                 consulta.setCliente(cliente);
 
-                // ==========================================
                 // MEDICO
-                // ==========================================
-
                 Medico medico = new Medico();
-
                 medico.setCodigoPersona(rs.getInt("codigo_medico"));
-
                 medico.setNombre(rs.getString("nombre_medico"));
-
                 medico.setApellido(rs.getString("apellido_medico"));
-
                 medico.setCedula(rs.getString("cedula_medico"));
-
                 medico.setTelefono(rs.getString("telefono_medico"));
-
                 Date fechaNacimientoMedico = rs.getDate("fecha_nacimiento_medico");
 
                 if (fechaNacimientoMedico != null) {
@@ -336,41 +280,27 @@ public class ConsultaService {
                 }
 
                 medico.setDireccion(rs.getString("direccion_medico"));
-
                 medico.setEstado(rs.getBoolean("estado_medico"));
-
                 medico.setGenero(rs.getString("genero_medico"));
-
                 medico.setMaxCitasPorDia(rs.getInt("maxcitaspordia"));
 
-                // ==========================================
                 // ESPECIALIDAD
-                // ==========================================
-
                 if (rs.getObject("codigo_especialidad") != null) {
-
                     Especialidad especialidad = new Especialidad();
-
                     especialidad.setCodigoEspecialidad(rs.getInt("codigo_especialidad"));
-
                     especialidad.setNombre(rs.getString("nombre_especialidad"));
-
                     medico.setEspecialidad(especialidad);
                 }
 
                 consulta.setMedico(medico);
 
-                // ==========================================
-                // ENFERMEDADES DIAGNOSTICADAS
-                // ==========================================
 
+                // ENFERMEDADES DIAGNOSTICADAS
                 ArrayList<Enfermedad> enfermedades = obtenerEnfermedadesDeConsulta(conn, consulta.getCodigoConsulta());
                 consulta.setEnfermedadesDiag(enfermedades);
 
-                // ==========================================
-                // AGREGAR CONSULTA
-                // ==========================================
 
+                // AGREGAR CONSULTA
                 lista.add(consulta);
             }
 
@@ -381,6 +311,19 @@ public class ConsultaService {
 
         return lista;
     }
+
+
+    /**
+     * PROCESO: Obtiene la lista de consultas atendidas por un médico específico filtrando por su número de cédula.
+     * * ENTRADAS:
+     * - cedulaDoctor: Cédula de identidad del médico.
+     * * SALIDA: ArrayList de objetos Consulta asociados a dicho profesional.
+     * * FLUJO DE LLAMADAS:
+     * 1. Conecta con la base de datos mediante ConexionDB.getConexion().
+     * 2. Prepara la sentencia SQL uniendo las tablas consulta, medico, cliente y persona.
+     * 3. Setea la cédula del doctor con stmt.setString(1, cedulaDoctor).
+     * 4. Mapea el ResultSet para incluir el código de la consulta, los datos básicos del cliente (nombre y apellido), fecha, síntomas y diagnóstico.
+     */
 
     public ArrayList<Consulta> getConsultasPorDoctor(String cedulaDoctor) {
         ArrayList<Consulta> lista = new ArrayList<>();
@@ -422,6 +365,20 @@ public class ConsultaService {
         }
         return lista;
     }
+
+
+    /**
+     * PROCESO: Recupera de forma estática la lista de consultas pertenecientes a un cliente dado su número de cédula, incluyendo los datos del médico tratante y las enfermedades diagnosticadas en cada evento.
+     * * ENTRADAS:
+     * - cedulaCliente: Cédula de identidad del paciente/cliente.
+     * * SALIDA: ArrayList de objetos Consulta pertenecientes al cliente.
+     * * FLUJO DE LLAMADAS:
+     * 1. Conecta con la base de datos a través de ConexionDB.getConexion().
+     * 2. Prepara el SQL que une las tablas consulta, cliente, medico y persona.
+     * 3. Asigna el parámetro con stmt.setString(1, cedulaCliente).
+     * 4. Para cada consulta recuperada, abre una segunda conexión (connEnfermedad) e invoca a obtenerEnfermedadesDeConsulta() para poblar sus diagnósticos.
+     * 5. Asegura el cierre manual de connEnfermedad en el bloque finally.
+     */
 
     public static ArrayList<Consulta> getConsultasPorCliente(String cedulaCliente) {
         ArrayList<Consulta> lista = new ArrayList<>();
@@ -471,6 +428,19 @@ public class ConsultaService {
         return lista;
     }
 
+    /**
+     * PROCESO: Método auxiliar privado que obtiene la lista de enfermedades vinculadas a una consulta médica dada utilizando una conexión activa.
+     * * ENTRADAS:
+     * - conn: Objeto Connection abierto previamente.
+     * - codigoConsulta: Identificador único de la consulta.
+     * * SALIDA: ArrayList de objetos Enfermedad asociados a dicha consulta.
+     * * FLUJO DE LLAMADAS:
+     * 1. Prepara la sentencia SQL uniendo 'enfermedad_consulta' y 'enfermedad' mediante el parámetro 'codigo_cons'.
+     * 2. Asigna la clave primaria de la consulta mediante stmt.setInt(1, codigoConsulta).
+     * 3. Recorre el ResultSet para reconstruir cada entidad Enfermedad (código, activo, nombre, vigilancia, descripción).
+     * 4. Retorna la lista poblada.
+     */
+
     private ArrayList<Enfermedad> obtenerEnfermedadesDeConsulta(Connection conn, int codigoConsulta) {
 
         ArrayList<Enfermedad> enfermedades = new ArrayList<>();
@@ -490,17 +460,11 @@ public class ConsultaService {
                 while (rs.next()) {
 
                     Enfermedad enfermedad = new Enfermedad();
-
                     enfermedad.setCodigoEnfermedad(rs.getInt("codigo_enfermedad"));
-
                     enfermedad.setActivo(rs.getBoolean("activo"));
-
                     enfermedad.setNombre(rs.getString("nombre"));
-
                     enfermedad.setVigilancia(rs.getBoolean("vigilancia"));
-
                     enfermedad.setDescripcion(rs.getString("descripcion"));
-
                     enfermedades.add(enfermedad);
                 }
             }

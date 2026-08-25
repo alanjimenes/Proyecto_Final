@@ -6,6 +6,18 @@ import java.net.Socket;
 import Utils.ConexionDB;
 
 public class Server {
+
+    /**
+     * PROCESO: Punto de entrada (main) que arranca el servicio del servidor de la clínica.
+     * * ENTRADAS:
+     * - args: Arreglo de cadenas con parámetros del sistema.
+     * * SALIDA: Ninguna.
+     * * FLUJO DE LLAMADAS:
+     * 1. Llama a ConexionDB.getConexion().
+     * 2. Inicializa ServerSocket(7000).
+     * 3. Ejecuta el bucle continuo sfd.accept() -> new Flujo() -> flujo.start().
+     */
+
     public static void main(String[] args) {
         ServerSocket sfd = null;
 

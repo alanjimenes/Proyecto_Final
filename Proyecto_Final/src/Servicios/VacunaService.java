@@ -16,6 +16,22 @@ import Utils.ConexionDB;
 
 public class VacunaService {
 
+
+    /**
+     * PROCESO: Agrega una nueva vacuna al catálogo invocando un procedimiento almacenado.
+     * <p>
+     * ENTRADAS:
+     * - vac: Objeto Vacuna con el nombre y la descripción descriptiva a registrar.
+     * <p>
+     * SALIDA: boolean (true si la adición se concretó, false en caso de falla o error de SQL).
+     * <p>
+     * FLUJO DE LLAMADAS:
+     * 1. Llama a ConexionDB.getConexion() para conectarse a la base de datos.
+     * 2. Llama a conn.prepareCall() con el procedimiento almacenado sp_crear_vacuna.
+     * 3. Carga los valores de nombre y descripción mediante stmt.setString().
+     * 4. Confirma la ejecución utilizando stmt.executeUpdate() > 0.
+     */
+
     public boolean agregarVacuna(Vacuna vac) {
         String sql = "{call sp_crear_vacuna(?, ?)}";
         try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
@@ -30,6 +46,21 @@ public class VacunaService {
             return false;
         }
     }
+
+
+    /**
+     * PROCESO: Obtiene la lista completa de las vacunas registradas en la base de datos.
+     * <p>
+     * ENTRADAS: Ninguna.
+     * <p>
+     * SALIDA: ArrayList<Vacuna> con todas las vacunas del catálogo marcadas como activas.
+     * <p>
+     * FLUJO DE LLAMADAS:
+     * 1. Llama a ConexionDB.getConexion() para habilitar la comunicación con la base de datos.
+     * 2. Llama a conn.prepareStatement() con la sentencia SELECT sobre la tabla vacuna.
+     * 3. Mapea en un bucle while las propiedades codigo_vacuna, nombre y descripcion.
+     * 4. Asigna vac.setActivo(true) y añade el elemento al ArrayList de salida.
+     */
 
     public ArrayList<Vacuna> listarVacunas() {
         ArrayList<Vacuna> lista = new ArrayList<>();
@@ -53,6 +84,22 @@ public class VacunaService {
         return lista;
     }
 
+
+    /**
+     * PROCESO: Actualiza la información detallada de una vacuna existente.
+     * <p>
+     * ENTRADAS:
+     * - vac: Objeto Vacuna con los atributos actualizados.
+     * <p>
+     * SALIDA: boolean (true si el registro fue modificado con éxito, false en caso contrario).
+     * <p>
+     * FLUJO DE LLAMADAS:
+     * 1. Llama a ConexionDB.getConexion() para solicitar la conexión.
+     * 2. Llama a conn.prepareCall() invocando el procedimiento sp_editar_vacuna.
+     * 3. Establece los parámetros correspondientes al código, nombre y descripción de la vacuna.
+     * 4. Realiza la ejecución vía stmt.executeUpdate() notificando el resultado.
+     */
+
     public boolean actualizarVacuna(Vacuna vac) {
         String sql = "{call sp_editar_vacuna(?, ?, ?)}";
         try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
@@ -69,6 +116,22 @@ public class VacunaService {
         }
     }
 
+
+    /**
+     * PROCESO: Da de baja una vacuna del catálogo según su código identificador.
+     * <p>
+     * ENTRADAS:
+     * - codigoVacuna: Identificador entero de la vacuna a eliminar.
+     * <p>
+     * SALIDA: boolean (true si la vacuna fue eliminada, false en caso de fallo).
+     * <p>
+     * FLUJO DE LLAMADAS:
+     * 1. Llama a ConexionDB.getConexion() para interactuar con la base de datos.
+     * 2. Llama a conn.prepareCall() sobre el procedimiento almacenado sp_eliminar_vacuna.
+     * 3. Setea el identificador de la vacuna mediante stmt.setInt(1, codigoVacuna).
+     * 4. Procesa la orden llamando a stmt.executeUpdate().
+     */
+
     public boolean eliminarVacuna(int codigoVacuna) {
         String sql = "{call sp_eliminar_vacuna(?)}";
         try (Connection conn = ConexionDB.getConexion(); CallableStatement stmt = conn.prepareCall(sql)) {
@@ -82,6 +145,25 @@ public class VacunaService {
             return false;
         }
     }
+
+
+    /**
+     * PROCESO: Procesa el registro de la aplicación de un lote de vacuna a un cliente especificando el personal interviniente y la fecha.
+     * <p>
+     * ENTRADAS:
+     * - cedulaCliente: Documento de identidad del cliente receptor.
+     * - codigoLote: Identificador numérico del lote de la vacuna aplicada.
+     * - codigoPersonalLogueado: Código del usuario/personal de salud que aplica la dosis.
+     * - fecha: Timestamp con la fecha y hora exactas del evento.
+     * <p>
+     * SALIDA: boolean (true si la aplicación de la vacuna fue registrada correctamente, false si falló).
+     * <p>
+     * FLUJO DE LLAMADAS:
+     * 1. Llama a ConexionDB.getConexion() para obtener la conexión a la base de datos.
+     * 2. Llama a conn.prepareCall() con la firma del procedimiento almacenado sp_aplicar_vacuna.
+     * 3. Carga los 5 parámetros exigidos (cédula, lote, personal, timestamp y flag booleano).
+     * 4. Ejecuta el procedimiento utilizando stmt.executeUpdate() para impactar la transacción.
+     */
 
     public boolean aplicarVacunaCliente(String cedulaCliente, int codigoLote, int codigoPersonalLogueado, Timestamp fecha) {
         String sql = "{call sp_aplicar_vacuna(?, ?, ?, ?, ?)}";
@@ -99,69 +181,5 @@ public class VacunaService {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public HashMap<String, Integer> getFrecuenciaVacunas() {
-        HashMap<String, Integer> mapa = new HashMap<>();
-        String sql = "select vacuna.nombre, count(regvacuna.codigo_reg) AS total " +
-                "from vacuna " +
-                "inner join regvacuna on vacuna.codigo_vacuna = regvacuna.codigo_vacuna " +
-                "group by vacuna.nombre";
-
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                mapa.put(rs.getString("nombre"), rs.getInt("total"));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return mapa;
-    }
-
-    public ArrayList<Cliente> getClientesPorVacuna(String nombreVacuna) {
-        ArrayList<Cliente> lista = new ArrayList<>();
-        String sql = "select persona.codigo_persona, persona.nombre, persona.apellido, persona.cedula, persona.telefono, " +
-                "persona.fechanacimiento, persona.direccion, persona.estado, persona.genero, cliente.numexpediente, " +
-                "cliente.enfermo, cliente.antecedentes " +
-                "from cliente " +
-                "inner join persona on cliente.codigo_persona = persona.codigo_persona " +
-                "inner join regvacuna on cliente.codigo_persona = regvacuna.codigo_cliente " +
-                "inner join vacuna on regvacuna.codigo_vacuna = vacuna.codigo_vacuna " +
-                "where vacuna.nombre = ?";
-
-        try (Connection conn = ConexionDB.getConexion(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, nombreVacuna);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Cliente cliente = new Cliente();
-                cliente.setCodigoPersona(rs.getInt("codigo_persona"));
-                cliente.setNombre(rs.getString("nombre"));
-                cliente.setApellido(rs.getString("apellido"));
-                cliente.setCedula(rs.getString("cedula"));
-                cliente.setTelefono(rs.getString("telefono"));
-
-                if (rs.getDate("fechanacimiento") != null) {
-                    cliente.setFechaNacimiento(rs.getDate("fechanacimiento").toLocalDate());
-                }
-
-                cliente.setDireccion(rs.getString("direccion"));
-                cliente.setEstado(rs.getBoolean("estado"));
-                cliente.setGenero(rs.getString("genero"));
-                cliente.setNumExpediente(rs.getString("numexpediente"));
-                cliente.setEnfermo(rs.getBoolean("enfermo"));
-                cliente.setAntecedentes(rs.getString("antecedentes"));
-                cliente.setHistorial(new Historial());
-
-                lista.add(cliente);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return lista;
     }
 }

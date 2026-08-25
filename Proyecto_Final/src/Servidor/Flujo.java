@@ -15,6 +15,19 @@ public class Flujo extends Thread {
     ObjectOutputStream FlujoEscritura = null;
     private UserService userService = new UserService();
 
+
+    /**
+     * PROCESO: Constructor de la clase Flujo. Configura los flujos de lectura y escritura serializada sobre el socket.
+     * * ENTRADAS:
+     * - sfd: Socket de la conexión aceptada por el ServerSocket.
+     * * SALIDA: Instancia inicializada del hilo Flujo.
+     * * FLUJO DE LLAMADAS:
+     * 1. Asigna el socket a la variable de instancia nsfd.
+     * 2. Instancia ObjectOutputStream sobre un BufferedOutputStream para la escritura de datos.
+     * 3. Ejecuta flush() inmediato para escribir la cabecera del stream y evitar bloqueos (deadlocks) en el cliente.
+     * 4. Instancia ObjectInputStream sobre un BufferedInputStream para la recepción de objetos.
+     */
+
     public Flujo(Socket sfd) {
         nsfd = sfd;
         try {
@@ -26,6 +39,20 @@ public class Flujo extends Thread {
             System.out.println("Error creando flujos: " + ioe);
         }
     }
+
+
+    /**
+     * PROCESO: Punto de entrada del hilo de ejecución (Thread.start()). Escucha y despacha las peticiones del cliente.
+     * * ENTRADAS: Ninguna. Utiliza los atributos de clase FlujoLectura, FlujoEscritura y nsfd.
+     * * SALIDA: Ninguna (método void).
+     * * FLUJO DE LLAMADAS:
+     * 1. Valida que los flujos de lectura y escritura no sean nulos; de lo contrario, cierra el socket y finaliza.
+     * 2. Inicializa las instancias de los servicios (ClienteService, MedicoService, CitaService, etc.).
+     * 3. Lee continuamente objetos PaqueteDeDatos desde la red.
+     * 4. Enruta la ejecución hacia el método del servicio indicado en paquete.getComando().
+     * 5. Responde al cliente escribiendo el paquete procesado en el flujo de salida.
+     * 6. En el bloque finally, garantiza el cierre del socket al salir del bucle.
+     */
 
     public void run() {
         if (FlujoLectura == null || FlujoEscritura == null) {

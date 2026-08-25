@@ -12,6 +12,19 @@ import java.util.ArrayList;
 
 public class EspecialidadService {
 
+
+    /**
+     * PROCESO: Registra una nueva especialidad médica invocando el procedimiento almacenado 'sp_crear_especialidad'.
+     * * ENTRADAS:
+     * - esp: Objeto Especialidad conteniendo el nombre descriptivo de la misma.
+     * * SALIDA: boolean (true si la creación se efectúa con éxito, false en caso contrario).
+     * * FLUJO DE LLAMADAS:
+     * 1. Conecta a la base de datos vía ConexionDB.getConexion().
+     * 2. Invocación de la instrucción "{call sp_crear_especialidad(?)}".
+     * 3. Setea el nombre mediante stmt.setString(1, esp.getNombre()).
+     * 4. Ejecuta la llamada evaluando las filas afectadas.
+     */
+
     public boolean registrarEspecialidad(Especialidad esp) {
         String sql = "{call sp_crear_especialidad(?)}";
         try (Connection conn = ConexionDB.getConexion();
@@ -25,6 +38,19 @@ public class EspecialidadService {
             return false;
         }
     }
+
+
+
+    /**
+     * PROCESO: Retorna el catálogo completo de especialidades médicas registradas en el sistema.
+     * * ENTRADAS: Ninguna.
+     * * SALIDA: ArrayList de objetos Especialidad.
+     * * FLUJO DE LLAMADAS:
+     * 1. Obtiene la conexión con ConexionDB.getConexion().
+     * 2. Prepara e ejecuta la sentencia SQL SELECT sobre la tabla 'especialidad'.
+     * 3. Transforma cada tupla del ResultSet a una instancia de Especialidad.
+     * 4. Retorna la lista construida.
+     */
 
     public ArrayList<Especialidad> listarEspecialidades() {
         ArrayList<Especialidad> lista = new ArrayList<>();
@@ -47,6 +73,20 @@ public class EspecialidadService {
         }
         return lista;
     }
+
+
+
+    /**
+     * PROCESO: Busca los datos de una especialidad médica mediante su nombre exacto.
+     * * ENTRADAS:
+     * - nombre: Cadena de texto con el nombre de la especialidad.
+     * * SALIDA: Objeto Especialidad correspondiente o null si no se encuentra.
+     * * FLUJO DE LLAMADAS:
+     * 1. Abre la conexión invocando a ConexionDB.getConexion().
+     * 2. Prepara la sentencia SQL buscando coincidencia exacta en 'especialidad.nombre'.
+     * 3. Asigna la condición con stmt.setString(1, nombre).
+     * 4. Retorna la entidad Especialidad mapeada a partir del ResultSet.
+     */
 
     public Especialidad buscarEspecialidadPorNombre(String nombre) {
         Especialidad especialidad = null;
@@ -72,6 +112,19 @@ public class EspecialidadService {
         return especialidad;
     }
 
+
+    /**
+     * PROCESO: Edita los atributos de una especialidad médica existente mediante el procedimiento almacenado 'sp_editar_especialidad'.
+     * * ENTRADAS:
+     * - esp: Objeto Especialidad con el código único y la información actualizada.
+     * * SALIDA: boolean (true si la modificación fue exitosa, false en caso de error).
+     * * FLUJO DE LLAMADAS:
+     * 1. Crea la conexión con ConexionDB.getConexion().
+     * 2. Invocación de la consulta "{call sp_editar_especialidad(?, ?)}".
+     * 3. Pasa el identificador y el nuevo nombre como parámetros.
+     * 4. Valida la actualización con stmt.executeUpdate().
+     */
+
     public boolean actualizarEspecialidad(Especialidad esp) {
         String sql = "{call sp_editar_especialidad(?, ?)}";
         try (Connection conn = ConexionDB.getConexion();
@@ -86,6 +139,19 @@ public class EspecialidadService {
             return false;
         }
     }
+
+
+    /**
+     * PROCESO: Elimina una especialidad de la base de datos utilizando el procedimiento almacenado 'sp_eliminar_especialidad'.
+     * * ENTRADAS:
+     * - codigo: Representación en texto (String) del identificador numérico de la especialidad.
+     * * SALIDA: boolean (true si la eliminación fue satisfactoria, false en caso de fallo).
+     * * FLUJO DE LLAMADAS:
+     * 1. Conecta con ConexionDB.getConexion().
+     * 2. Invocación de la sentencia "{call sp_eliminar_especialidad(?)}".
+     * 3. Convierte 'codigo' a entero mediante Integer.parseInt() y lo setea en la consulta.
+     * 4. Ejecuta la eliminación comprobando si modificó filas.
+     */
 
     public boolean eliminarEspecialidad(String codigo) {
         String sql = "{call sp_eliminar_especialidad(?)}";
