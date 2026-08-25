@@ -350,6 +350,32 @@ public class Principal extends JFrame {
         });
         menuGestionEspecialidades.add(itemListarEspecialidades);
         menuAdministracion.add(menuGestionEspecialidades);
+        JMenu menuGestionMedicamentos = new JMenu("Gestionar Medicamentos");
+        menuGestionMedicamentos.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+
+        JMenuItem itemRegMedicamento = new JMenuItem("Registrar Medicamento");
+        itemRegMedicamento.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemRegMedicamento.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RegMedicamento regMed = new RegMedicamento();
+                regMed.setModal(true);
+                regMed.setVisible(true);
+            }
+        });
+        menuGestionMedicamentos.add(itemRegMedicamento);
+
+        JMenuItem itemListarMedicamentos = new JMenuItem("Consultar Medicamentos");
+        itemListarMedicamentos.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+        itemListarMedicamentos.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ConsultarMedicamentos consultaMed = new ConsultarMedicamentos(usuarioActual);
+                consultaMed.setModal(true);
+                consultaMed.setVisible(true);
+            }
+        });
+        menuGestionMedicamentos.add(itemListarMedicamentos);
+
+        menuAdministracion.add(menuGestionMedicamentos);
 
         menuEnfermedades = new JMenu("  Gestión Enfermedades  ");
         menuEnfermedades.setForeground(Color.WHITE);
