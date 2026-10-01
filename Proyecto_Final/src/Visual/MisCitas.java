@@ -154,14 +154,17 @@ public class MisCitas extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 if (citaSeleccionada != null) {
                     try {
-                        RealizarConsulta consulta = new RealizarConsulta(citaSeleccionada);
-                        consulta.setModal(true);
+                        RegConsultaCompleta consulta = new RegConsultaCompleta(medicoActual);
+
+                        if (citaSeleccionada.getCliente() != null) {
+                            consulta.setCedulaPaciente(citaSeleccionada.getCliente().getCedula());
+                        }
                         consulta.setVisible(true);
-                        cargarCitasHoy();
-                        btnAtender.setEnabled(false);
-                        citaSeleccionada = null;
+                        dispose();
+
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null, "Asegúrese de tener la clase RealizarConsulta");
+                        JOptionPane.showMessageDialog(null, "Asegúrese de tener la clase RegConsultaCompleta", "Error", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
                     }
                 }
             }

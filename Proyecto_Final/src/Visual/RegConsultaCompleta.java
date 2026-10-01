@@ -535,4 +535,10 @@ public class RegConsultaCompleta extends JFrame {
             JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    public void setCedulaPaciente(String cedula) {
+        if (this.txtCedulaPaciente != null && cedula != null) {
+            this.txtCedulaPaciente.setText(cedula);
+        }
+    }
 }
